@@ -1,0 +1,60 @@
+# Godot 4+ specific ignores
+.godot/
+android/
+ios/
+
+# Godot-specific ignores (for older versions compatibility)
+.import/
+.nomedia
+
+# Export files - содержат настройки экспорта
+export.cfg
+export_credentials.cfg
+# export_presets.cfg - НЕ игнорируем, команда делится настройками экспорта
+
+# Imported translations (автоматически генерируются из CSV)
+*.translation
+
+# Mono-specific ignores (если используете C#)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Builds and exports
+*.tmp
+builds/
+exports/
+dist/
+releases/
+
+# Logs
+logs/
+*.log
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Backup files
+*~
+*.bak
+*.backup
+*.orig
+
+# System files
+*.pid
+*.seed
+*.csv
+*.dat
+*.out
