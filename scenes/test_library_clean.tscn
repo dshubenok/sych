@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://ddfavw28yokyn"]
+
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_room.tscn" id="1_library"]
+[ext_resource type="PackedScene" uid="uid://bqxv8yqxqxqxq" path="res://scenes/player/player.tscn" id="2_player"]
+
+[node name="TestLibraryClean" type="Node3D"]
+
+[node name="LibraryRoom" parent="." instance=ExtResource("1_library")]
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 2)
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
+shadow_enabled = true

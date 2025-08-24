@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://d9xq9yqxqxqxt"]
+
+[ext_resource type="PackedScene" path="res://scenes/rooms/room1.tscn" id="1_room1"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/corridor.tscn" id="2_corridor"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/room2.tscn" id="3_room2"]
+[ext_resource type="PackedScene" path="res://scenes/rooms/library_room.tscn" id="4_library"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="5_player"]
+[ext_resource type="Script" path="res://scripts/main_controller.gd" id="6_main"]
+[ext_resource type="Script" path="res://scripts/input_test.gd" id="7_test"]
+
+[node name="Main" type="Node3D"]
+script = ExtResource("6_main")
+
+[node name="InputTest" type="Node" parent="."]
+script = ExtResource("7_test")
+
+[node name="Room1" parent="." instance=ExtResource("1_room1")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="Corridor" parent="." instance=ExtResource("2_corridor")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 22)
+
+[node name="Room2" parent="." instance=ExtResource("3_room2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 44)
+
+[node name="LibraryRoom" parent="." instance=ExtResource("4_library")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 66)
+
+[node name="Player" parent="." instance=ExtResource("5_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.0, 0) 
