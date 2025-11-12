@@ -97,6 +97,7 @@ git count-objects -vH
 3. Мерж релизного PR создаёт тег `vX.Y.Z`; его появление запускает workflow `build-and-deploy`, который экспортирует HTML5 сборку Godot в `build/web` и выкладывает её в `occultnerdbird/sych-game` через секрет `SYCH_GAME_TOKEN`.
 4. GitHub Pages на `sych-game` обновляется автоматически — итоговую версию смотрите по адресу `https://occultnerdbird.github.io/sych-game/`.
 5. Для повторного деплоя перезапустите workflow на нужном теге или пересоздайте тег `vX.Y.Z`.
+6. После публикации релиза убедитесь, что уведомление дошло в целевой Telegram-чат.
 
 Чтобы Telegram-бот присылал уведомления после публикации релиза, добавьте в `Settings → Secrets and variables → Actions` секреты `TELEGRAM_BOT_TOKEN` (токен бота) и `TELEGRAM_CHAT_ID` (ID целевого чата).
 После успешного релиза бот автоматически пришлёт сообщение в чат с описанием изменений и ссылкой на игру.
