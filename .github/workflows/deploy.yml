@@ -1,12 +1,12 @@
 name: build-and-deploy
 
 on:
-  push:
-    tags:
-      - 'v*'
   release:
     types:
       - published
+  push:
+    tags:
+      - 'v*'
   workflow_dispatch:
     inputs:
       tag:
@@ -22,17 +22,10 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+          ref: ${{ github.event.release.tag_name || github.ref }}
 
       - name: Install Git LFS
         run: git lfs install
-
-      - name: Checkout release tag
-        if: github.event_name == 'release'
-        run: git checkout ${{ github.event.release.tag_name }}
-
-      - name: Checkout dispatch ref
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.tag != ''
-        run: git checkout ${{ github.event.inputs.tag }}
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v1
