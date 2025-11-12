@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/occultnerdbird/sych/compare/v0.2.0...v0.2.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* notify telegram on tag push ([36471a7](https://github.com/occultnerdbird/sych/commit/36471a71530d328d696a24a35a46ff92d7dac79c))
+* notify telegram on tag push ([1eee6e2](https://github.com/occultnerdbird/sych/commit/1eee6e20f8b93c5069f7e754e654396901d5093e))
+
 ## [0.2.0](https://github.com/occultnerdbird/sych/compare/v0.1.3...v0.2.0) (2025-11-12)
 
 
