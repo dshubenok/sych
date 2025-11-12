@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/occultnerdbird/sych/compare/v0.3.0...v0.3.1) (2025-11-12)
+
+
+### Bug Fixes
+
+* allow telegram notify on manual/tag triggers ([dc32b47](https://github.com/occultnerdbird/sych/commit/dc32b47fdb2c51460a3727f6fad9a0c1bc137684))
+* allow telegram notify on manual/tag triggers ([b5352c8](https://github.com/occultnerdbird/sych/commit/b5352c84eb0319e4f54f99645dbddbd6d1b8a9cc))
+
 ## [0.3.0](https://github.com/occultnerdbird/sych/compare/v0.2.1...v0.3.0) (2025-11-12)
 
 
