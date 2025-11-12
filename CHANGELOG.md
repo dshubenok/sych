@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/occultnerdbird/sych/compare/v0.1.1...v0.1.2) (2025-11-12)
+
+
+### Bug Fixes
+
+* add telegram verification step ([bc1850b](https://github.com/occultnerdbird/sych/commit/bc1850b8d161e6c2766d7d89d19aea82dad6bc66))
+* add telegram verification step ([d580ae9](https://github.com/occultnerdbird/sych/commit/d580ae9147ba6e42f580c61aaea22d264d38b190))
+
 ## [0.1.1](https://github.com/occultnerdbird/sych/compare/v0.1.0...v0.1.1) (2025-11-12)
 
 
