@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.0](https://github.com/occultnerdbird/sych/compare/v0.2.1...v0.3.0) (2025-11-12)
+
+
+### Features
+
+* align deploy triggers ([acdd927](https://github.com/occultnerdbird/sych/commit/acdd9270167f11dc755b21041f9f9b7c822e45c1))
+* align deploy triggers ([72b95c9](https://github.com/occultnerdbird/sych/commit/72b95c99a0aeb330c9f649ab87c5fca6f0a2be83))
+
 ## [0.2.1](https://github.com/occultnerdbird/sych/compare/v0.2.0...v0.2.1) (2025-11-12)
 
 
