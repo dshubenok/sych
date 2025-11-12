@@ -92,7 +92,7 @@ git count-objects -vH
 
 ## Релизы и деплой
 
-1. Создайте рабочую ветку `feature/...`, фиксируйте изменения в стиле Conventional Commits и опишите функциональность в PR на `main`.
+1. Создайте рабочую ветку `feature/...` (например, `feature/dialogue-system`), фиксируйте изменения в стиле Conventional Commits и опишите функциональность в PR на `main`.
 2. После мержа Release Please автоматически откроет PR `chore: release` с обновлёнными `VERSION` и `CHANGELOG.md`. Проверьте заметки и смёржьте PR.
 3. Мерж релизного PR создаёт тег `vX.Y.Z`; его появление запускает workflow `build-and-deploy`, который экспортирует HTML5 сборку Godot в `build/web` и выкладывает её в `occultnerdbird/sych-game` через секрет `SYCH_GAME_TOKEN`.
 4. GitHub Pages на `sych-game` обновляется автоматически — итоговую версию смотрите по адресу `https://occultnerdbird.github.io/sych-game/`.
