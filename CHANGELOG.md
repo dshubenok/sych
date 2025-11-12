@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.0](https://github.com/occultnerdbird/sych/compare/v0.1.3...v0.2.0) (2025-11-12)
+
+
+### Features
+
+* test tg message ([4a2a34c](https://github.com/occultnerdbird/sych/commit/4a2a34c7737b40ce4e6aa88076d98f24acf71381))
+* test tg message ([0cb9915](https://github.com/occultnerdbird/sych/commit/0cb99151fd11dc8f413749754f984949b175136f))
+
 ## [0.1.3](https://github.com/occultnerdbird/sych/compare/v0.1.2...v0.1.3) (2025-11-12)
 
 
