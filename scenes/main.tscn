@@ -1,17 +1,22 @@
-[gd_scene load_steps=5 format=3 uid="uid://fjvowto6qu6y"]
+[gd_scene load_steps=6 format=3 uid="uid://fjvowto6qu6y"]
 
-[ext_resource type="PackedScene" path="res://scenes/rooms/library_room.tscn" id="1_library_room"]
-[ext_resource type="PackedScene" uid="uid://bqxv8yqxqxqxq" path="res://scenes/player/player.tscn" id="2_player"]
-[ext_resource type="Script" uid="uid://qhspgmdxa8wu" path="res://scripts/main_controller.gd" id="3_main"]
-[ext_resource type="Script" uid="uid://dxqn3uf2o7alt" path="res://scripts/debug_collisions.gd" id="4_debug"]
+[ext_resource type="PackedScene" path="res://scenes/world/sharaga/floor_1.tscn" id="1_floor1"]
+[ext_resource type="PackedScene" path="res://scenes/actors/player/player.tscn" id="2_player"]
+[ext_resource type="Script" path="res://scripts/main_controller.gd" id="3_main"]
+[ext_resource type="Script" path="res://scripts/tools/debug_collisions.gd" id="4_debug"]
+[ext_resource type="PackedScene" path="res://scenes/actors/npcs/demonologist.tscn" id="5_demonologist"]
 
 [node name="Main" type="Node3D"]
 script = ExtResource("3_main")
 
-[node name="LibraryRoom" parent="." instance=ExtResource("1_library_room")]
+[node name="Floor1" parent="." instance=ExtResource("1_floor1")]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
+[node name="Demonologist" parent="." instance=ExtResource("5_demonologist")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5, 1.5, 0)
+
 [node name="DebugCollisions" type="Node3D" parent="."]
 script = ExtResource("4_debug")
+

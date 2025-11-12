@@ -15,14 +15,21 @@ extends CharacterBody3D
 @onready var camera: Camera3D = $Camera3D
 # Ссылки на части тела для анимации
 @onready var body: MeshInstance3D = $Body
-@onready var body_material: StandardMaterial3D = body.get_active_material(0)
+# Флаг для включения/выключения управления
+var controls_enabled: bool = true
+var run_time := 0.0
 
 func _ready():
+	add_to_group("player")
 	# Захватываем мышь для управления камерой
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	print("Игрок готов! Управление: WASD - движение, мышь - поворот камеры, Space - прыжок, Escape - освободить мышь")
 
 func _input(event):
+	# Пропускаем ввод, если управление отключено
+	if not controls_enabled:
+		return
+	
 	# Обработка движения мыши для поворота камеры
 	if event is InputEventMouseMotion:
 		# Поворачиваем игрока влево-вправо
@@ -54,6 +61,13 @@ func _physics_process(delta):
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	
+	# Пропускаем движение, если управление отключено
+	if not controls_enabled:
+		velocity.x = move_toward(velocity.x, 0, speed)
+		velocity.z = move_toward(velocity.z, 0, speed)
+		move_and_slide()
+		return
+	
 	# Получаем ввод для движения
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	
@@ -69,10 +83,12 @@ func _physics_process(delta):
 	if direction:
 		velocity.x = direction.x * speed
 		velocity.z = direction.z * speed
+		run_time += delta * run_animation_speed
 	else:
 		# Плавная остановка
 		velocity.x = move_toward(velocity.x, 0, speed)
 		velocity.z = move_toward(velocity.z, 0, speed)
+		run_time = 0.0
 	
 	# Перемещаем персонажа
 	move_and_slide()
@@ -80,14 +96,11 @@ func _physics_process(delta):
 	# Анимация бега
 	_animate_run(direction, delta)
 
-func _animate_run(direction: Vector3, delta: float):
+func _animate_run(direction: Vector3, _delta: float):
 	# Анимация только при движении и на полу
 	if direction.length() > 0.1 and is_on_floor():
-		# Время для анимации
-		var time = Time.get_time_dict_from_system()["second"] * run_animation_speed
-		
 		# Покачивание тела вверх-вниз
-		var body_bounce = sin(time * 2) * 0.05
+		var body_bounce = sin(run_time * 2.0) * 0.05
 		body.position.y = body_bounce
 		
 		# Наклон тела в сторону движения
@@ -96,4 +109,13 @@ func _animate_run(direction: Vector3, delta: float):
 	else:
 		# Возвращаем все в исходное положение при остановке
 		body.position.y = 0
-		body.rotation.z = 0 
+		body.rotation.z = 0
+
+func set_controls_enabled(enabled: bool):
+	controls_enabled = enabled
+	if not enabled:
+		# При отключении освобождаем мышь
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	else:
+		# При включении захватываем мышь
+		Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)

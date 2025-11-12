@@ -2,14 +2,15 @@ extends Node3D
 
 func _ready():
 	print("=== ГЛАВНАЯ СЦЕНА ЗАГРУЖЕНА ===")
-	print("Библиотечная комната загружена: ", $LibraryRoom != null)
-	print("3D модель библиотеки: ", $LibraryRoom/LibraryModel != null)
-	print("Коллизия пола: ", $LibraryRoom/FloorCollision != null)
-	print("Стены библиотеки: ", $LibraryRoom/WallNorth != null and $LibraryRoom/WallSouth != null and $LibraryRoom/WallEast != null and $LibraryRoom/WallWest != null)
-	print("Мебель с коллизиями: ", $LibraryRoom/Bookshelf1 != null and $LibraryRoom/Table1 != null and $LibraryRoom/CenterTable != null)
+	print("Floor1 загружен: ", $Floor1 != null)
+	print("Пол первого этажа (коллизия) есть: ", $Floor1/FirstFloorCollision != null)
 	print("Игрок загружен: ", $Player != null)
 	print("Камера игрока: ", $Player/Camera3D != null)
 	print("Скрипт игрока: ", $Player.get_script() != null)
+	# Установим позицию игрока в точку спавна
+	var spawn := $Floor1/PlayerSpawn
+	if spawn and $Player and $Player is Node3D:
+		$Player.global_transform.origin = spawn.global_transform.origin
 	print("=== ГОТОВ К ИГРЕ ===")
 	print("Управление:")
 	print("- WASD: движение")

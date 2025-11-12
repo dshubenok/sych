@@ -1,0 +1,18 @@
+[gd_scene load_steps=4 format=3 uid="uid://da3gxrljs2l6s"]
+
+[ext_resource type="Script" path="res://scripts/world/location.gd" id="1_location"]
+[ext_resource type="PackedScene" path="res://scenes/world/sharaga/floor_1.tscn" id="2_floor1"]
+[ext_resource type="PackedScene" path="res://scenes/world/sharaga/floor_2.tscn" id="3_floor2"]
+
+[node name="Sharaga" type="Node3D"]
+script = ExtResource("1_location")
+location_id = &"sharaga"
+location_title = "Шарага"
+entry_points = Array[NodePath]([NodePath("EntryA")])
+
+[node name="Floor1" parent="." instance=ExtResource("2_floor1")]
+
+[node name="Floor2" parent="." instance=ExtResource("3_floor2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+
+[node name="EntryA" type="Node3D" parent="."]

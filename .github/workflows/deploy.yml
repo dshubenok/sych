@@ -1,0 +1,51 @@
+name: build-and-deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  export-web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: '4.5.0'
+          include-templates: true
+
+      - name: Export HTML5 build
+        run: godot --headless --path . --export-release "Web" build/web/index.html
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+  deploy:
+    needs: export-web
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download exported build
+        uses: actions/download-artifact@v4
+        with:
+          name: web-build
+          path: build/web
+
+      - name: Deploy to sych-game
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.SYCH_GAME_TOKEN }}
+          external_repository: occultnerdbird/sych-game
+          publish_branch: main
+          publish_dir: build/web
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+
