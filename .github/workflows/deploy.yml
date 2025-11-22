@@ -63,8 +63,13 @@ jobs:
       - name: Extract changelog for version
         id: changelog
         run: |
+          # Получаем тег и обрабатываем разные форматы
           TAG="${{ github.event.release.tag_name || github.event.inputs.tag || github.ref_name }}"
-          VERSION="${TAG#v}"  # Убираем префикс 'v' если есть
+          # Убираем префикс 'refs/tags/' если есть, затем префикс 'v'
+          TAG="${TAG#refs/tags/}"
+          VERSION="${TAG#v}"
+          
+          echo "Looking for version: $VERSION (from tag: $TAG)"
           
           # Извлекаем секцию для версии из CHANGELOG.md
           # Используем Python для более надежного парсинга
@@ -72,8 +77,14 @@ jobs:
           CHANGELOG_TEXT=$(python3 << 'PYTHON'
           import re
           import os
+          import sys
           
           version = os.environ.get('VERSION_TO_FIND', '')
+          
+          if not version:
+              print("Начальная версия проекта", file=sys.stderr)
+              print("Начальная версия проекта")
+              sys.exit(0)
           
           try:
               with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
@@ -96,9 +107,9 @@ jobs:
                   result = '\n'.join(lines).strip()
                   if result:
                       print(result)
-                      exit(0)
+                      sys.exit(0)
           except Exception as e:
-              pass
+              print(f"Error: {e}", file=sys.stderr)
           
           # Если не нашли, возвращаем дефолтное сообщение
           print("Начальная версия проекта")
@@ -111,6 +122,8 @@ jobs:
             echo "$CHANGELOG_TEXT"
             echo "EOF"
           } >> $GITHUB_OUTPUT
+          
+          echo "Extracted changelog text (first 100 chars): ${CHANGELOG_TEXT:0:100}"
 
       - name: Download exported build
         uses: actions/download-artifact@v4
