@@ -53,6 +53,64 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
     steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: true
+          ref: ${{ github.event.release.tag_name || github.event.inputs.tag || github.ref }}
+
+      - name: Extract changelog for version
+        id: changelog
+        run: |
+          TAG="${{ github.event.release.tag_name || github.event.inputs.tag || github.ref_name }}"
+          VERSION="${TAG#v}"  # Убираем префикс 'v' если есть
+          
+          # Извлекаем секцию для версии из CHANGELOG.md
+          # Используем Python для более надежного парсинга
+          CHANGELOG_TEXT=$(python3 << 'PYTHON'
+          import re
+          import sys
+          
+          version = sys.argv[1]
+          
+          try:
+              with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
+                  content = f.read()
+              
+              # Ищем секцию для версии: ## [VERSION] или ## [VERSION] - ...
+              pattern = rf'^## \[{re.escape(version)}\][^\n]*\n(.*?)(?=^## \[|\Z)'
+              match = re.search(pattern, content, re.MULTILINE | re.DOTALL)
+              
+              if match:
+                  section = match.group(1).strip()
+                  # Убираем лишние пустые строки в начале и конце, но оставляем форматирование
+                  lines = section.split('\n')
+                  # Убираем пустые строки в начале
+                  while lines and not lines[0].strip():
+                      lines.pop(0)
+                  # Убираем пустые строки в конце
+                  while lines and not lines[-1].strip():
+                      lines.pop()
+                  result = '\n'.join(lines).strip()
+                  if result:
+                      print(result)
+                      sys.exit(0)
+          except Exception as e:
+              pass
+          
+          # Если не нашли, возвращаем дефолтное сообщение
+          print("Начальная версия проекта")
+          PYTHON
+          "$VERSION")
+          
+          # Сохраняем в output для использования в следующем шаге
+          {
+            echo "changelog_text<<EOF"
+            echo "$CHANGELOG_TEXT"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
       - name: Download exported build
         uses: actions/download-artifact@v4
         with:
@@ -69,6 +127,26 @@ jobs:
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
 
+      - name: Prepare release message
+        id: prepare_message
+        run: |
+          RELEASE_BODY="${{ github.event.release.body }}"
+          CHANGELOG_TEXT="${{ steps.changelog.outputs.changelog_text }}"
+          
+          if [ -n "$RELEASE_BODY" ] && [ "$RELEASE_BODY" != "null" ]; then
+            MESSAGE_BODY="$RELEASE_BODY"
+          elif [ -n "$CHANGELOG_TEXT" ]; then
+            MESSAGE_BODY="$CHANGELOG_TEXT"
+          else
+            MESSAGE_BODY="Начальная версия проекта"
+          fi
+          
+          {
+            echo "message_body<<EOF"
+            echo "$MESSAGE_BODY"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
       - name: Notify Telegram
         if: ${{ (github.event_name == 'release' || startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && github.event.inputs.tag != '')) && env.TELEGRAM_BOT_TOKEN != '' && env.TELEGRAM_CHAT_ID != '' }}
         uses: appleboy/telegram-action@v1.0.1
@@ -79,7 +157,7 @@ jobs:
           message: |
             🎉 *${{ github.event.release.name || github.event.inputs.tag || github.ref_name }}*
 
-            ${{ github.event.release.body || 'Без описания изменений.' }}
+            ${{ steps.prepare_message.outputs.message_body }}
 
             [Подробнее о релизе](${{ github.event.release.html_url || format('https://github.com/{0}/releases/tag/{1}', github.repository, github.event.release.tag_name || github.event.inputs.tag || github.ref_name) }})
             [Играть](https://occultnerdbird.github.io/sych-game/)
