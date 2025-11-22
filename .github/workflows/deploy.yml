@@ -68,11 +68,12 @@ jobs:
           
           # Извлекаем секцию для версии из CHANGELOG.md
           # Используем Python для более надежного парсинга
+          export VERSION_TO_FIND="$VERSION"
           CHANGELOG_TEXT=$(python3 << 'PYTHON'
           import re
-          import sys
+          import os
           
-          version = sys.argv[1]
+          version = os.environ.get('VERSION_TO_FIND', '')
           
           try:
               with open('CHANGELOG.md', 'r', encoding='utf-8') as f:
@@ -95,14 +96,14 @@ jobs:
                   result = '\n'.join(lines).strip()
                   if result:
                       print(result)
-                      sys.exit(0)
+                      exit(0)
           except Exception as e:
               pass
           
           # Если не нашли, возвращаем дефолтное сообщение
           print("Начальная версия проекта")
           PYTHON
-          "$VERSION")
+          )
           
           # Сохраняем в output для использования в следующем шаге
           {
