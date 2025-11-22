@@ -49,6 +49,8 @@ jobs:
   deploy:
     needs: export-web
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -140,6 +142,19 @@ jobs:
           publish_dir: build/web
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
+
+      - name: Create GitHub Release if not exists
+        if: ${{ github.event_name != 'release' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.release.tag_name || github.event.inputs.tag || github.ref_name }}
+          name: Release ${{ github.event.release.tag_name || github.event.inputs.tag || github.ref_name }}
+          body: |
+            ${{ steps.changelog.outputs.changelog_text || 'Начальная версия проекта' }}
+          draft: false
+          prerelease: false
+          fail_on_unmatched: false
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Prepare release message
         id: prepare_message
