@@ -148,12 +148,23 @@ jobs:
           CHANGELOG_TEXT="${{ steps.changelog.outputs.changelog_text }}"
           
           if [ -n "$RELEASE_BODY" ] && [ "$RELEASE_BODY" != "null" ]; then
-            MESSAGE_BODY="$RELEASE_BODY"
+            RAW_MESSAGE="$RELEASE_BODY"
           elif [ -n "$CHANGELOG_TEXT" ]; then
-            MESSAGE_BODY="$CHANGELOG_TEXT"
+            RAW_MESSAGE="$CHANGELOG_TEXT"
           else
-            MESSAGE_BODY="Начальная версия проекта"
+            RAW_MESSAGE="Начальная версия проекта"
           fi
+          
+          # Конвертируем Markdown в простой текст для Telegram
+          # Убираем Markdown синтаксис и оставляем только текст
+          MESSAGE_BODY=$(echo "$RAW_MESSAGE" | sed \
+            -e 's/^### //g' \
+            -e 's/^## \[\([^\]]*\)\].*/\1/g' \
+            -e 's/^\* /• /g' \
+            -e 's/^- /• /g' \
+            -e 's/\*\*\([^*]*\)\*\*/\1/g' \
+            -e 's/\[\([^\]]*\)\]([^)]*)/\1/g' \
+            -e 's/^---$//g')
           
           {
             echo "message_body<<EOF"
@@ -167,12 +178,12 @@ jobs:
         with:
           to: ${{ env.TELEGRAM_CHAT_ID }}
           token: ${{ env.TELEGRAM_BOT_TOKEN }}
-          format: markdown
+          format: html
           message: |
-            🎉 *${{ github.event.release.name || github.event.inputs.tag || github.ref_name }}*
+            🎉 <b>${{ github.event.release.name || github.event.inputs.tag || github.ref_name }}</b>
 
             ${{ steps.prepare_message.outputs.message_body }}
 
-            [Подробнее о релизе](${{ github.event.release.html_url || format('https://github.com/{0}/releases/tag/{1}', github.repository, github.event.release.tag_name || github.event.inputs.tag || github.ref_name) }})
-            [Играть](https://occultnerdbird.github.io/sych-game/)
+            <a href="${{ github.event.release.html_url || format('https://github.com/{0}/releases/tag/{1}', github.repository, github.event.release.tag_name || github.event.inputs.tag || github.ref_name) }}">Подробнее о релизе</a>
+            <a href="https://occultnerdbird.github.io/sych-game/">Играть</a>
 
