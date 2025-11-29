@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://fjvowto6qu6y"]
 
-[ext_resource type="PackedScene" path="res://scenes/world/sharaga/floor_1.tscn" id="1_floor1"]
+[ext_resource type="PackedScene" path="res://scenes/world/space.tscn" id="1_space"]
 [ext_resource type="PackedScene" path="res://scenes/actors/player/player.tscn" id="2_player"]
 [ext_resource type="Script" path="res://scripts/main_controller.gd" id="3_main"]
 [ext_resource type="Script" path="res://scripts/tools/debug_collisions.gd" id="4_debug"]
@@ -9,7 +9,7 @@
 [node name="Main" type="Node3D"]
 script = ExtResource("3_main")
 
-[node name="Floor1" parent="." instance=ExtResource("1_floor1")]
+[node name="Space" parent="." instance=ExtResource("1_space")]
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
