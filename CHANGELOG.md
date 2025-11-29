@@ -6,6 +6,7 @@
 ### Features
 
 * add automatic changelog extraction for Telegram notifications ([9e2682a](https://github.com/occultnerdbird/sych/commit/9e2682a2479b647e75dc2bc95b42912cce2f58e9))
+* add automatic collisions for walls in space model ([c5a8a1e](https://github.com/occultnerdbird/sych/commit/c5a8a1e))
 * align deploy triggers ([acdd927](https://github.com/occultnerdbird/sych/commit/acdd9270167f11dc755b21041f9f9b7c822e45c1))
 * align deploy triggers ([72b95c9](https://github.com/occultnerdbird/sych/commit/72b95c99a0aeb330c9f649ab87c5fca6f0a2be83))
 * auto-create GitHub releases for tags ([31ea38b](https://github.com/occultnerdbird/sych/commit/31ea38b891f236b26ee7d5560963924f252729e1))
