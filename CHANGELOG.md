@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/occultnerdbird/sych/compare/v0.1.0...v0.2.0) (2025-11-29)
+
+
+### Features
+
+* add automatic collisions for walls in space model ([753812b](https://github.com/occultnerdbird/sych/commit/753812bd5e31cce82acdb35e428ea5a2b611a205))
+
 ## [0.1.0](https://github.com/occultnerdbird/sych/compare/v0.0.2...v0.1.0) (2025-11-29)
 
 
