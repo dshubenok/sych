@@ -70,6 +70,6 @@
 *.so filter=lfs diff=lfs merge=lfs -text
 *.dylib filter=lfs diff=lfs merge=lfs -text
 
-# Специфичные для Godot файлы
-*.import filter=lfs diff=lfs merge=lfs -text
-*.remap filter=lfs diff=lfs merge=lfs -text
+# Специфичные для Godot файлы (текстовые — обычный git, не LFS)
+*.import text eol=lf
+*.remap text eol=lf
