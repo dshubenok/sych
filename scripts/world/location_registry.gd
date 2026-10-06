@@ -20,29 +20,17 @@ func _build_tree() -> void:
 	# 1.1. Сычевальня
 	_add(&"sychevalnya", "Сычевальня", &"mir", T.AREA,
 		"%s/sychevalnya/sychevalnya.tscn" % SCENES_ROOT)
-	# 1.2. Территория шараги
-	_add(&"territoriya_sharagi", "Территория шараги", &"mir", T.AREA,
-		"%s/territoriya_sharagi/territoriya_sharagi.tscn" % SCENES_ROOT)
-	# 1.2.1. Шарага
-	_add(&"sharaga", "Шарага", &"territoriya_sharagi", T.BUILDING,
+	# 1.2. Шарага
+	_add(&"sharaga", "Шарага", &"mir", T.BUILDING,
 		"%s/sharaga/sharaga.tscn" % SCENES_ROOT)
-	# 1.2.1.1. Первый этаж (крылья в меше Шараги); слоты кабинетов
+	# 1.2.1. Первый этаж (крылья в меше Шараги); слоты кабинетов
 	_add(&"first_floor", "Первый этаж", &"sharaga", T.FLOOR, "")
 	for i in range(1, 7):
 		_add(StringName("cabinet_slot_%d" % i), "Кабинет %d" % i, &"first_floor", T.ROOM, "")
-	# 1.2.1.2. Второй этаж (крылья в меше Шараги); слоты кабинетов
+	# 1.2.2. Второй этаж (крылья в меше Шараги); слоты кабинетов
 	_add(&"second_floor", "Второй этаж", &"sharaga", T.FLOOR, "")
 	for i in range(7, 11):
 		_add(StringName("cabinet_slot_%d" % i), "Кабинет %d" % i, &"second_floor", T.ROOM, "")
-	# 1.2.2. Наружа
-	_add(&"naruzha", "Наружа", &"territoriya_sharagi", T.AREA,
-		"%s/naruzha/naruzha.tscn" % SCENES_ROOT)
-	_add(&"kladbische", "Кладбище", &"naruzha", T.ROOM,
-		"%s/naruzha/kladbische.tscn" % SCENES_ROOT)
-	_add(&"besedka", "Беседка", &"naruzha", T.ROOM,
-		"%s/naruzha/besedka.tscn" % SCENES_ROOT)
-	_add(&"skver", "Сквер с памятником", &"naruzha", T.ROOM,
-		"%s/naruzha/skver.tscn" % SCENES_ROOT)
 
 func _add(id: StringName, title: String, parent_id: StringName,
 		type: LocationTypes.Type, scene_path: String) -> void:
@@ -89,7 +77,7 @@ func breadcrumb(id: StringName) -> Array:
 		cur = (_defs[cur] as LocationDef).parent_id
 	return chain
 
-## Хлебные крошки строкой: «Мир › Территория шараги › Шарага › …».
+## Хлебные крошки строкой: «Мир › Шарага › …».
 func breadcrumb_text(id: StringName, sep: String = " › ") -> String:
 	var parts: Array = []
 	for d in breadcrumb(id):

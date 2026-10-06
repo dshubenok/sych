@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c0h7t8wkjxu84"
-path="res://.godot/imported/frame_4.png-b1f26fdc3ed7081fb1de469624866cc4.ctex"
+uid="uid://cdjfd1uoa03qx"
+path="res://.godot/imported/frame_3.png-53ba107f85a4719b5125624046873947.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/comic_dialogues/demonologist_intro/frame_4.png"
-dest_files=["res://.godot/imported/frame_4.png-b1f26fdc3ed7081fb1de469624866cc4.ctex"]
+source_file="res://assets/comic_dialogues/historian_intro/frame_3.png"
+dest_files=["res://.godot/imported/frame_3.png-53ba107f85a4719b5125624046873947.ctex"]
 
 [params]
 

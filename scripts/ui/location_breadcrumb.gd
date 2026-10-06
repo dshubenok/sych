@@ -16,7 +16,7 @@ func _on_location_entered(location_id: StringName) -> void:
 
 func _apply(location_id: StringName) -> void:
 	# Имя кабинета живёт только на 3D-вывеске в кабинете.
-	# Старый 2D-хлеб (крошки с «Демонолог» и т.п.) рядом с ней не показываем.
+	# Старый 2D-хлеб (крошки с именем кабинета) рядом с ней не показываем.
 	if CabinetPool.is_cabinet_slot(location_id):
 		_label.text = ""
 		_label.visible = false

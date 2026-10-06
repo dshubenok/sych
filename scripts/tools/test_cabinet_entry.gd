@@ -67,8 +67,8 @@ func _test_breadcrumb_hidden(errors: Array) -> void:
 
 func _test_cabinet_choice_and_cost(errors: Array) -> void:
 	CabinetPool.reroll_sharaga()
-	if CabinetPool.energinka_cost(&"demonologist") != 2 or CabinetPool.energinka_cost(&"library") != 2:
-		errors.append("демонолог/библиотека должны стоить 2")
+	if CabinetPool.energinka_cost(&"library") != 2:
+		errors.append("библиотека должна стоить 2")
 	if CabinetPool.energinka_cost(&"toilet") != 1 or CabinetPool.energinka_cost(&"classroom") != 1:
 		errors.append("туалет и classroom должны стоить 1")
 	if not CabinetPool._allowed_in_wing(&"classroom", CabinetPool.Wing.FIRST_FLOOR_LEFT) \
@@ -78,11 +78,6 @@ func _test_cabinet_choice_and_cost(errors: Array) -> void:
 		errors.append("classroom должен появляться в любом крыле без условий")
 	if not CabinetPool.is_base_cabinet(&"classroom") or CabinetPool.is_base_cabinet(&"library"):
 		errors.append("базовый кабинет — только classroom")
-	if CabinetPool._allowed_in_wing(&"demonologist", CabinetPool.Wing.FIRST_FLOOR_LEFT) \
-			or CabinetPool._allowed_in_wing(&"demonologist", CabinetPool.Wing.SECOND_FLOOR_RIGHT):
-		errors.append("демонолог должен быть только справа на 1 этаже")
-	if not CabinetPool._allowed_in_wing(&"demonologist", CabinetPool.Wing.FIRST_FLOOR_RIGHT):
-		errors.append("демонолог должен быть справа на 1 этаже")
 	if CabinetPool._allowed_in_wing(&"library", CabinetPool.Wing.FIRST_FLOOR_LEFT) \
 			or CabinetPool._allowed_in_wing(&"library", CabinetPool.Wing.FIRST_FLOOR_RIGHT) \
 			or CabinetPool._allowed_in_wing(&"library", CabinetPool.Wing.SECOND_FLOOR_LEFT):
@@ -98,17 +93,13 @@ func _test_cabinet_choice_and_cost(errors: Array) -> void:
 		errors.append("повторный выбор кабинетов той же двери должен совпадать")
 	if CabinetPool.cabinet_choice_for(&"cabinet_slot_2") != left or CabinetPool.cabinet_choice_for(&"cabinet_slot_3") != left:
 		errors.append("все закрытые двери левого крыла 1 этажа должны показывать один выбор кабинетов")
-	if left.has(&"demonologist") or left.has(&"library") or left.has(&"cafeteria"):
-		errors.append("на 1 этаже слева появились кабинеты 2 этажа или демонолог")
-	if left.has(&"historian_cabinet"):
-		errors.append("кабинет Историка в выборе до демонолога")
+	if left.has(&"library") or left.has(&"cafeteria"):
+		errors.append("на 1 этаже слева появились кабинеты 2 этажа")
 	var right: Array[StringName] = CabinetPool.cabinet_choice_for(&"cabinet_slot_4")
 	if CabinetPool.cabinet_choice_for(&"cabinet_slot_5") != right or CabinetPool.cabinet_choice_for(&"cabinet_slot_6") != right:
 		errors.append("все закрытые двери правого крыла 1 этажа должны показывать один выбор кабинетов")
 	if right.has(&"library"):
 		errors.append("библиотека попала в выбор 1 этажа")
-	if right.has(&"historian_cabinet"):
-		errors.append("кабинет Историка в правом выборе до демонолога")
 	var f2_left: Array[StringName] = CabinetPool.cabinet_choice_for(&"cabinet_slot_7")
 	if f2_left.size() != 2:
 		errors.append("выбор кабинетов 2 этажа слева должен быть из 2 кабинетов, было %d" % f2_left.size())
@@ -116,8 +107,8 @@ func _test_cabinet_choice_and_cost(errors: Array) -> void:
 		errors.append("в левом выборе 2 этажа нет ни classroom, ни столовой")
 	if CabinetPool.cabinet_choice_for(&"cabinet_slot_8") != f2_left:
 		errors.append("обе закрытые двери левого крыла 2 этажа должны показывать один выбор кабинетов")
-	if f2_left.has(&"demonologist") or f2_left.has(&"library"):
-		errors.append("демонолог или библиотека попали в левое крыло 2 этажа")
+	if f2_left.has(&"library"):
+		errors.append("библиотека попала в левое крыло 2 этажа")
 	if f2_left.has(&"gym"):
 		errors.append("спортзал в выборе до столовой")
 	var f2_right: Array[StringName] = CabinetPool.cabinet_choice_for(&"cabinet_slot_9")

@@ -11,10 +11,11 @@ const KOTIK_EMPTY_HEART_PATH := "res://Board_Test_Cut/Heart_Kotik_Empty.png"
 const KOTIK_SELECTED_HEART_PATH := "res://Board_Test_Cut/Heart_Kotik_Selected.png"
 const KOTIK_ACTIVE_HEART_PATH := "res://Board_Test_Cut/Heart_Kotik_Active.png"
 const KOTIK_COMPLETED_HEART_PATH := "res://Board_Test_Cut/Heart_Kotik_Completed.png"
-const LISIK_EMPTY_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Empty.png"
-const LISIK_SELECTED_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Selected.png"
-const LISIK_ACTIVE_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Active.png"
-const LISIK_COMPLETED_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Completed.png"
+## У ветки Историка пока нет своих сердечек — временно используются сердечки Лисика.
+const HISTORIAN_EMPTY_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Empty.png"
+const HISTORIAN_SELECTED_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Selected.png"
+const HISTORIAN_ACTIVE_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Active.png"
+const HISTORIAN_COMPLETED_HEART_PATH := "res://Board_Test_Cut/Heart_Lisik_Completed.png"
 const ENERGINKA_ICON_SIZE := Vector2(34.0, 67.0)
 const HEART_SIZE := Vector2(96.0, 96.0)
 const STICKER_ROTATION_DEG := 17.5
@@ -39,8 +40,8 @@ const ENERGINKA_DRAG_ICON_SCRIPT := preload("res://scripts/ui/energinka_drag_ico
 const CORKBOARD_HEART_SCRIPT := preload("res://scripts/ui/corkboard_heart.gd")
 
 @onready var _available_energinka: EnerginkaReturnZone = $Root/BoardFrame/BoardContent/AvailableEnerginka/Icons
+@onready var _historian_hearts: HBoxContainer = $Root/BoardFrame/BoardContent/HistorianHearts
 @onready var _kotik_hearts: HBoxContainer = $Root/BoardFrame/BoardContent/KotikHearts
-@onready var _lisik_hearts: HBoxContainer = $Root/BoardFrame/BoardContent/LisikHearts
 @onready var _confirm_plan_button: Button = $Root/BoardFrame/BoardContent/ConfirmPlanButton
 @onready var _close_button: Button = $Root/BoardFrame/BoardContent/CloseButton
 @onready var _hint: Label = $Root/Hint
@@ -69,11 +70,11 @@ func _ready() -> void:
 			BranchSystem.State.ACTIVE: _load_texture(KOTIK_ACTIVE_HEART_PATH),
 			BranchSystem.State.COMPLETED: _load_texture(KOTIK_COMPLETED_HEART_PATH),
 		},
-		BranchSystem.BRANCH_LISIK: {
-			BranchSystem.State.EMPTY: _load_texture(LISIK_EMPTY_HEART_PATH),
-			BranchSystem.State.PENDING: _load_texture(LISIK_SELECTED_HEART_PATH),
-			BranchSystem.State.ACTIVE: _load_texture(LISIK_ACTIVE_HEART_PATH),
-			BranchSystem.State.COMPLETED: _load_texture(LISIK_COMPLETED_HEART_PATH),
+		BranchSystem.BRANCH_HISTORIAN: {
+			BranchSystem.State.EMPTY: _load_texture(HISTORIAN_EMPTY_HEART_PATH),
+			BranchSystem.State.PENDING: _load_texture(HISTORIAN_SELECTED_HEART_PATH),
+			BranchSystem.State.ACTIVE: _load_texture(HISTORIAN_ACTIVE_HEART_PATH),
+			BranchSystem.State.COMPLETED: _load_texture(HISTORIAN_COMPLETED_HEART_PATH),
 		},
 	}
 	_confirm_plan_button.text = "ок"
@@ -204,8 +205,8 @@ func _energinka_icon_size() -> Vector2:
 
 
 func _refresh_hearts() -> void:
-	_fill_hearts(_kotik_hearts, HISTORIAN_SLOTS, BranchSystem.BRANCH_LISIK)
-	_fill_hearts(_lisik_hearts, KOTIK_SLOTS, BranchSystem.BRANCH_KOTIK)
+	_fill_hearts(_historian_hearts, HISTORIAN_SLOTS, BranchSystem.BRANCH_HISTORIAN)
+	_fill_hearts(_kotik_hearts, KOTIK_SLOTS, BranchSystem.BRANCH_KOTIK)
 
 
 func _fill_hearts(container: HBoxContainer, slot_indices: Array[int], branch: String) -> void:
