@@ -94,14 +94,14 @@ visible = false
 [node name="CollisionShape3D" parent="Corkboard/InteractionArea"]
 shape = SubResource("Sphere_board")
 
-[node name="PortalToTerritory" parent="." instance=ExtResource("9_portal")]
+[node name="PortalToSharaga" parent="." instance=ExtResource("9_portal")]
 transform = Transform3D(0, 0, 0.978491, 0, 1.241981, 0, -1, 0, 0, -2.997433, 0.06864, 2.010457)
-target_location_id = &"territoriya_sharagi"
+target_location_id = &"sharaga"
 auto_travel = false
 unlock_on_plan = true
 vorchanie_before_travel = "Наружа. Вэээ."
 
-[node name="CollisionShape3D" parent="PortalToTerritory"]
+[node name="CollisionShape3D" parent="PortalToSharaga"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -0.35)
 shape = SubResource("Box_portal")
 
