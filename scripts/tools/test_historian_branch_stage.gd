@@ -1,10 +1,10 @@
 extends Node
 
-## Квест историка на ветке Демонолога:
-##   godot --headless --path . res://scenes/tools/test_historian_quest.tscn
+## Этап ветки «найти Историка» на ветке Демонолога:
+##   godot --headless --path . res://scenes/tools/test_historian_branch_stage.tscn
 
 const HISTORIAN := "res://scenes/actors/npcs/historian.tscn"
-const BOARD_UI := "res://scenes/ui/energy_board_ui.tscn"
+const CORKBOARD_UI := "res://scenes/ui/corkboard_ui.tscn"
 const RUMOR := "До меня дошел слух, что наш жуткий Демонолог был когда-то студентом преподавателя Истории. Проверим из первых рук."
 
 
@@ -13,59 +13,59 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	await get_tree().process_frame
 	var errors: Array[String] = []
-	EnergySystem.reset_progress()
-	QuestSystem.reset_progress()
-	RoomPool._reset_day()
+	EnerginkaSystem.reset_progress()
+	BranchSystem.reset_progress()
+	CabinetPool.reroll_sharaga()
 
-	await _test_board_and_unlock(errors)
-	await _test_spawn_in_history(errors)
-	await _test_dialog_reward(errors)
+	await _test_corkboard_and_unlock(errors)
+	await _test_spawn_in_historian_cabinet(errors)
+	await _test_comic_dialogue_reward(errors)
 	await _test_scale_and_banner(errors)
 
-	EnergySystem.reset_progress()
-	QuestSystem.reset_progress()
-	RoomPool._reset_day()
+	EnerginkaSystem.reset_progress()
+	BranchSystem.reset_progress()
+	CabinetPool.reroll_sharaga()
 	for e in errors:
 		print("  [ERROR] %s" % e)
 	if errors.is_empty():
-		print("[test_historian_quest] OK")
+		print("[test_historian_branch_stage] OK")
 	else:
-		print("[test_historian_quest] ПРОВАЛ — ошибок: %d" % errors.size())
+		print("[test_historian_branch_stage] ПРОВАЛ — ошибок: %d" % errors.size())
 	get_tree().quit(errors.size())
 
 
-func _test_board_and_unlock(errors: Array) -> void:
-	EnergySystem.reset_progress()
-	QuestSystem.reset_progress()
-	if not QuestSystem.has_quest_for_slot(4):
-		errors.append("первое сердце ветки Демонолога пусто")
-	if QuestSystem.get_quest_id_for_slot(4) != QuestSystem.QUEST_FIND_HISTORIAN:
+func _test_corkboard_and_unlock(errors: Array) -> void:
+	EnerginkaSystem.reset_progress()
+	BranchSystem.reset_progress()
+	if not BranchSystem.has_branch_stage_for_slot(4):
+		errors.append("первое сердечко ветки Демонолога пусто")
+	if BranchSystem.get_branch_stage_id_for_slot(4) != BranchSystem.BRANCH_STAGE_FIND_HISTORIAN:
 		errors.append("слот 4 должен быть find_historian")
-	if not QuestSystem.is_slot_unlocked(4):
-		errors.append("первое сердце Демонолога должно быть открыто с утра")
-	if QuestSystem.is_slot_unlocked(5):
-		errors.append("второе сердце открылось до выполнения историка")
-	if QuestSystem.set_pending(QuestSystem.QUEST_DEMONOLOG_2):
-		errors.append("второе сердце приняло энергию до историка")
-	if not QuestSystem.set_pending(QuestSystem.QUEST_FIND_HISTORIAN):
-		errors.append("не удалось вложить энергию в историка")
-	if not EnergySystem.try_spend(1):
-		errors.append("не удалось списать энергию за квест")
-	var spawned: Array = QuestSystem.confirm_pending()
-	if spawned != [QuestSystem.QUEST_FIND_HISTORIAN]:
-		errors.append("confirm не заспавнил find_historian")
-	if QuestSystem.get_state(QuestSystem.QUEST_FIND_HISTORIAN) != QuestSystem.State.ACTIVE:
-		errors.append("после ОК квест историка не ACTIVE")
-	if QuestSystem.get_board_message() != RUMOR:
+	if not BranchSystem.is_slot_unlocked(4):
+		errors.append("первое сердечко Демонолога должно быть открыто с утра")
+	if BranchSystem.is_slot_unlocked(5):
+		errors.append("второе сердечко открылось до закрытия этапа Историка")
+	if BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_DEMONOLOG_2):
+		errors.append("второе сердечко приняло энергинку до Историка")
+	if not BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN):
+		errors.append("не удалось вложить энергинку в Историка")
+	if not EnerginkaSystem.spend_energinka(1):
+		errors.append("не удалось потратить энергинку за этап ветки")
+	var planned: Array = BranchSystem.confirm_plan()
+	if planned != [BranchSystem.BRANCH_STAGE_FIND_HISTORIAN]:
+		errors.append("confirm_plan не запланировал find_historian")
+	if BranchSystem.get_state(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN) != BranchSystem.State.ACTIVE:
+		errors.append("после ОК этап Историка не ACTIVE")
+	if BranchSystem.get_corkboard_message() != RUMOR:
 		errors.append("нет слуха для ворчания")
-	if QuestSystem.get_confirmed_description(4) != RUMOR:
-		errors.append("наведение на сердце историка не возвращает слух")
-	if QuestSystem.get_confirmed_description(0) != "":
+	if BranchSystem.get_confirmed_description(4) != RUMOR:
+		errors.append("наведение на сердечко Историка не возвращает слух")
+	if BranchSystem.get_confirmed_description(0) != "":
 		errors.append("неподтверждённый Котик отдаёт описание")
-	if EnergySystem.current_energy != 4:
-		errors.append("после взятия квеста энергия должна быть 4, было %d" % EnergySystem.current_energy)
+	if EnerginkaSystem.energinka_pool != 4:
+		errors.append("после планирования этапа пул энергинок должен быть 4, было %d" % EnerginkaSystem.energinka_pool)
 
-	var ui: EnergyBoardUi = load(BOARD_UI).instantiate()
+	var ui: CorkboardUi = load(CORKBOARD_UI).instantiate()
 	add_child(ui)
 	await get_tree().process_frame
 	ui.setup(8)
@@ -75,133 +75,133 @@ func _test_board_and_unlock(errors: Array) -> void:
 		errors.append("слух висит на доске, а должен быть только нижним ворчанием")
 	ui.queue_free()
 	await get_tree().process_frame
-	print("  OK  доска: слух не на доске, первое сердце")
+	print("  OK  доска: слух не на доске, первое сердечко")
 
 
-func _test_spawn_in_history(errors: Array) -> void:
-	EnergySystem.reset_progress()
-	QuestSystem.reset_progress()
-	RoomPool._reset_day()
-	_force_history_offer()
+func _test_spawn_in_historian_cabinet(errors: Array) -> void:
+	EnerginkaSystem.reset_progress()
+	BranchSystem.reset_progress()
+	CabinetPool.reroll_sharaga()
+	_force_historian_cabinet_choice()
 	var closed := Marker3D.new()
 	closed.position = Vector3(0, 1.5, 0)
 	add_child(closed)
-	if not RoomPool.commit(&"kabinet_1", &"history"):
-		errors.append("не удалось открыть кабинет истории")
-	RoomPool.apply_to_anchor(&"kabinet_1", closed)
+	if not CabinetPool.select_cabinet(&"cabinet_slot_1", &"historian_cabinet"):
+		errors.append("не удалось открыть кабинет Историка")
+	CabinetPool.apply_to_anchor(&"cabinet_slot_1", closed)
 	await get_tree().process_frame
 	if closed.get_node_or_null(^"Historian") != null:
-		errors.append("историк появился до взятия квеста")
+		errors.append("Историк появился до планирования этапа")
 
-	QuestSystem.set_pending(QuestSystem.QUEST_FIND_HISTORIAN)
-	QuestSystem.confirm_pending()
+	BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN)
+	BranchSystem.confirm_plan()
 	await get_tree().process_frame
 	if closed.get_node_or_null(^"Historian") == null:
-		errors.append("историк не появился в уже открытой истории")
+		errors.append("Историк не появился в уже открытом кабинете Историка")
 
-	RoomPool._reset_day()
-	_force_history_offer()
+	CabinetPool.reroll_sharaga()
+	_force_historian_cabinet_choice()
 	var next := Marker3D.new()
 	next.position = Vector3(0, 1.5, 0)
 	add_child(next)
-	if not RoomPool.commit(&"kabinet_2", &"history"):
-		errors.append("не удалось открыть историю после спавна квеста")
-	RoomPool.apply_to_anchor(&"kabinet_2", next)
+	if not CabinetPool.select_cabinet(&"cabinet_slot_2", &"historian_cabinet"):
+		errors.append("не удалось открыть кабинет Историка после планирования этапа")
+	CabinetPool.apply_to_anchor(&"cabinet_slot_2", next)
 	await get_tree().process_frame
 	if next.get_node_or_null(^"Historian") == null:
-		errors.append("историк не появился при открытии истории с активным квестом")
+		errors.append("Историк не появился при открытии кабинета Историка с активным этапом")
 	closed.queue_free()
 	next.queue_free()
 	await get_tree().process_frame
-	print("  OK  спавн историка в кабинете истории")
+	print("  OK  спавн Историка в кабинете Историка")
 
 
-func _test_dialog_reward(errors: Array) -> void:
-	EnergySystem.reset_progress()
-	QuestSystem.reset_progress()
-	QuestSystem.set_pending(QuestSystem.QUEST_FIND_HISTORIAN)
-	QuestSystem.confirm_pending()
-	var data: Dictionary = DialogSystem._load_dialog("historian_intro")
-	if data.get("panels", []).size() != 4:
-		errors.append("диалог историка должен быть из 4 картинок")
-	var npc: QuestNpc = load(HISTORIAN).instantiate()
+func _test_comic_dialogue_reward(errors: Array) -> void:
+	EnerginkaSystem.reset_progress()
+	BranchSystem.reset_progress()
+	BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN)
+	BranchSystem.confirm_plan()
+	var data: Dictionary = ComicDialogueSystem._load_comic_dialogue("historian_intro")
+	if data.get("frames", []).size() != 4:
+		errors.append("комиксный диалог Историка должен быть из 4 кадров")
+	var npc: BranchStageNpc = load(HISTORIAN).instantiate()
 	add_child(npc)
 	await get_tree().process_frame
-	npc._player_in_range = true
+	npc._sych_in_range = true
 	npc._interact()
 	await get_tree().process_frame
-	if not DialogSystem.is_active():
-		errors.append("E не открыл диалог историка")
+	if not ComicDialogueSystem.is_active():
+		errors.append("E не открыл комиксный диалог Историка")
 	else:
-		DialogSystem._active_player._close()
+		ComicDialogueSystem._active_player._close()
 		await get_tree().process_frame
 		await get_tree().process_frame
-	if QuestSystem.get_state(QuestSystem.QUEST_FIND_HISTORIAN) != QuestSystem.State.COMPLETED:
-		errors.append("после диалога квест не COMPLETED")
-	if EnergySystem.max_energy != 6 or EnergySystem.current_energy != 6:
+	if BranchSystem.get_state(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN) != BranchSystem.State.COMPLETED:
+		errors.append("после комиксного диалога этап ветки не COMPLETED")
+	if EnerginkaSystem.max_energinka != 6 or EnerginkaSystem.energinka_pool != 6:
 		errors.append("после диалога пул должен стать 6/6, было %d/%d" % [
-			EnergySystem.current_energy, EnergySystem.max_energy])
-	var banner := get_tree().root.get_node_or_null(^"QuestCompleteBanner")
+			EnerginkaSystem.energinka_pool, EnerginkaSystem.max_energinka])
+	var banner := get_tree().root.get_node_or_null(^"BranchStageCompleteBanner")
 	if banner == null:
-		errors.append("после квеста нет экрана «Ура!»")
+		errors.append("после закрытия этапа нет экрана «Ура!»")
 	else:
 		var msg := banner.find_child("Message", true, false) as Label
-		if msg == null or msg.text != QuestSystem.COMPLETE_BANNER_TEXT:
-			errors.append("текст экрана выполнения квеста неверный")
-	if EnergySystem.collect_upgrade(&"historian_quest"):
+		if msg == null or msg.text != BranchSystem.COMPLETE_BANNER_TEXT:
+			errors.append("текст экрана закрытия этапа ветки неверный")
+	if EnerginkaSystem.collect_upgrade(&"historian_branch_stage"):
 		errors.append("повтор диалога не должен давать вторую энергинку")
-	if not QuestSystem.is_slot_unlocked(5):
-		errors.append("второе сердце ветки Демонолога не открылось")
-	if not QuestSystem.set_pending(QuestSystem.QUEST_DEMONOLOG_2):
-		errors.append("во второе сердце нельзя вложить энергию после историка")
-	npc._player_in_range = true
+	if not BranchSystem.is_slot_unlocked(5):
+		errors.append("второе сердечко ветки Демонолога не открылось")
+	if not BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_DEMONOLOG_2):
+		errors.append("во второе сердечко нельзя вложить энергинку после Историка")
+	npc._sych_in_range = true
 	npc._interact()
 	await get_tree().process_frame
-	if DialogSystem.is_active():
-		errors.append("после квеста снова открылся диалог")
-		DialogSystem._active_player._close()
+	if ComicDialogueSystem.is_active():
+		errors.append("после закрытия этапа снова открылся комиксный диалог")
+		ComicDialogueSystem._active_player._close()
 		await get_tree().process_frame
 	npc.queue_free()
 	await get_tree().process_frame
-	print("  OK  диалог, +1 к пулу, следующее сердце")
+	print("  OK  комиксный диалог, +1 к пулу, следующее сердечко")
 
 
 func _test_scale_and_banner(errors: Array) -> void:
-	var hist_size := SychScale.quad_size(290, 478, SychScale.ADULT_HEIGHT_SYCHS)
-	if hist_size.y <= SychScale.HEIGHT_M:
-		errors.append("преподаватель должен быть выше 1 сыча")
+	var hist_size := SychUnit.quad_size(290, 478, SychUnit.ADULT_HEIGHT_SYCH_UNITS)
+	if hist_size.y <= SychUnit.HEIGHT_M:
+		errors.append("преподаватель должен быть выше 1 СЫЧа")
 	var packed: PackedScene = load(HISTORIAN)
 	var npc: Node3D = packed.instantiate()
 	add_child(npc)
 	await get_tree().process_frame
 	var mesh := npc.get_node(^"MeshInstance3D") as MeshInstance3D
 	var quad := mesh.mesh as QuadMesh
-	if quad == null or quad.size.y <= SychScale.HEIGHT_M + 0.2:
-		errors.append("спрайт историка должен быть заметно выше Сыча (2 м)")
-	if abs(quad.size.y - SychScale.meters(SychScale.ADULT_HEIGHT_SYCHS)) > 0.05:
-		errors.append("рост историка должен быть %.2f м (%.2f сыча)" % [
-			SychScale.meters(SychScale.ADULT_HEIGHT_SYCHS), SychScale.ADULT_HEIGHT_SYCHS])
+	if quad == null or quad.size.y <= SychUnit.HEIGHT_M + 0.2:
+		errors.append("спрайт Историка должен быть заметно выше Сыча (2 м)")
+	if abs(quad.size.y - SychUnit.meters(SychUnit.ADULT_HEIGHT_SYCH_UNITS)) > 0.05:
+		errors.append("рост Историка должен быть %.2f м (%.2f СЫЧа)" % [
+			SychUnit.meters(SychUnit.ADULT_HEIGHT_SYCH_UNITS), SychUnit.ADULT_HEIGHT_SYCH_UNITS])
 	npc.queue_free()
 
-	var player: CharacterBody3D = load("res://scenes/actors/player/player.tscn").instantiate()
-	add_child(player)
+	var sych: CharacterBody3D = load("res://scenes/actors/sych/sych.tscn").instantiate()
+	add_child(sych)
 	await get_tree().process_frame
-	var rest: float = player._body_rest_y
+	var rest: float = sych._body_rest_y
 	if rest < 0.99:
 		errors.append("спрайт Сыча должен стоять на полу (rest y ≈ 1 м)")
 	for t in [0.0, 0.3, 0.7, 1.1, 2.4]:
-		player.run_time = t
-		if player._run_sprite_y(true) < rest - 0.0001:
+		sych.run_time = t
+		if sych._run_sprite_y(true) < rest - 0.0001:
 			errors.append("на беге спрайт Сыча уходит ниже покоя (ноги в полу)")
 			break
-	if abs(player._run_sprite_y(false) - rest) > 0.0001:
+	if abs(sych._run_sprite_y(false) - rest) > 0.0001:
 		errors.append("в покое спрайт Сыча не на rest y")
-	player.queue_free()
+	sych.queue_free()
 	await get_tree().process_frame
-	print("  OK  масштаб в сычах и ноги на полу")
+	print("  OK  масштаб в сычовых единицах и ноги на полу")
 
 
-func _force_history_offer() -> void:
-	RoomPool._used[&"demonologist"] = true
-	var offer: Array[StringName] = [&"history", &"classroom"]
-	RoomPool._wing_offers[RoomPool.Wing.F1_LEFT] = offer
+func _force_historian_cabinet_choice() -> void:
+	CabinetPool._used[&"demonologist"] = true
+	var choice: Array[StringName] = [&"historian_cabinet", &"classroom"]
+	CabinetPool._wing_cabinet_choices[CabinetPool.Wing.FIRST_FLOOR_LEFT] = choice

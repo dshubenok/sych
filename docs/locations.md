@@ -29,13 +29,13 @@
 
 ```
 scenes/main.tscn (бутстрап, персистентно)
-├── Player, CameraSystem, EnergyHud, Fog   ← не выгружаются
+├── Sych, CameraSystem, EnerginkaHud, Fog  ← не выгружаются
 ├── CurrentLocation                        ← дискретная зона (Сычевальня / Территория)
 └── StreamedLocations                      ← аддитивно застримленные комнаты Территории
 
 автозагрузки:
   LocationRegistry  — дерево локаций (источник правды)
-  LocationManager   — порталы (fade) + стриминг (E), сброс дня, перенос игрока
+  LocationManager   — порталы (fade) + стриминг (E), сброс дня, перенос Сыча
 ```
 
 | Слой | Файл | Зачем |
@@ -44,25 +44,25 @@ scenes/main.tscn (бутстрап, персистентно)
 | Данные | `scripts/world/location_def.gd` | запись реестра: id, title, parent, type, scene |
 | Реестр | `scripts/world/location_registry.gd` | дерево + `get_def`/`children`/`breadcrumb_text` |
 | Менеджер | `scripts/world/location_manager.gd` | `travel_to` (fade), `open_streaming_door`, `reset_streamed`, сброс дня |
-| Локация | `scripts/world/location.gd` | корень сцены: `location_id`, `PlayerSpawn` |
+| Локация | `scripts/world/location.gd` | корень сцены: `location_id`, `SychSpawn` |
 | Заглушка | `scripts/world/placeholder_location.gd` | комната: пол, стены-с-проёмами, двери, зона присутствия |
 | Портал | `scripts/world/location_portal.gd` | граница с затемнением → `travel_to(target)` |
 | Дверь | `scripts/world/streaming_door.gd` | бесшовная дверь по «E» → `open_streaming_door(self)` |
-| Крошки | `scripts/ui/location_breadcrumb.gd` | HUD сверху-слева, обновляется по входу игрока в комнату |
+| Крошки | `scripts/ui/location_breadcrumb.gd` | HUD сверху-слева, обновляется по входу Сыча в локацию |
 
 ## Как работает (поток)
 
 1. `main_controller` отдаёт `LocationManager` оба контейнера и зовёт
    `start_at("sychevalnya")`.
-2. **Портал (граница, fade)** — игрок входит в зону `LocationPortal` →
+2. **Портал (граница, fade)** — Сыч входит в зону `LocationPortal` →
    `travel_to(id)`: fade-out → `reset_streamed()` → выгрузка текущей зоны →
-   async-load → игрок в `PlayerSpawn` → fade-in → `location_entered`.
+   async-load → Сыч в `SychSpawn` → fade-in → `location_entered`.
 3. **Дверь (внутри Территории, бесшовно)** — игрок жмёт «E» у `StreamingDoor` →
    `open_streaming_door`: грузим соседа в `StreamedLocations`, ищем его дверь
-   назад, стыкуем проёмы (`door * flip * ret⁻¹`), открываем обе двери. Игрок не
+   назад, стыкуем проёмы (`door * flip * ret⁻¹`), открываем обе двери. Сыч не
    телепортируется — проходит сам. Загруженное держится до сброса.
-4. **Крошки** — у каждой комнаты зона присутствия; игрок вошёл →
-   `notify_player_entered` → `location_entered` → HUD обновляет путь.
+4. **Крошки** — у каждого кабинета зона присутствия; Сыч вошёл →
+   `notify_sych_entered` → `location_entered` → HUD обновляет путь.
 5. **Конец дня** — `DaySystem.day_ended` → `reset_streamed()` + `travel_to` домой.
 
 ## Иерархия
@@ -87,10 +87,10 @@ scenes/main.tscn (бутстрап, персистентно)
 и выход закрыты. После первого прочтения она больше ничего не блокирует,
 но её можно открыть снова. Первое «E» в тот раз — реплика Сыча, следующее
 открывает записку. Комикс у двери: первое «E» — ворчание, второе даёт +1
-энергию, дальше случайные реплики. Доска открывает планирование. Выход
+энергинку, дальше пул ворчания. Пробковая доска открывает планирование. Выход
 появляется после подтверждённого плана: первое «E» — «Наружа. Вэээ.»,
 второе выводит. Пробуждение и конец дня
-по-прежнему ставят игрока в `PlayerSpawn` этой локации.
+по-прежнему ставят Сыча в `SychSpawn` этой локации.
 
 ## Проверка
 

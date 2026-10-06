@@ -20,7 +20,7 @@ func _ready() -> void:
 	await _check_stream(&"territoriya_sharagi", &"sharaga", errors)
 	await _check_stream(&"territoriya_sharagi", &"naruzha", errors)
 	await _check_stream(&"sharaga", &"territoriya_sharagi", errors)
-	await _check_in_place_rooms(errors)
+	await _check_in_place_cabinets(errors)
 	await _check_doors_stay_open(errors)
 
 	for e in errors:
@@ -92,8 +92,8 @@ func _check_stream(from_id: StringName, to_id: StringName, errors: Array) -> voi
 		from_inst.queue_free()
 		await get_tree().process_frame
 		return
-	EnergySystem.current_energy = EnergySystem.max_energy
-	door.try_open()
+	EnerginkaSystem.energinka_pool = EnerginkaSystem.max_energinka
+	door.open_door()
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await get_tree().physics_frame
@@ -142,7 +142,7 @@ func _find_door_to(node: Node, target: StringName) -> StreamingDoor:
 	return null
 
 
-func _check_in_place_rooms(errors: Array) -> void:
+func _check_in_place_cabinets(errors: Array) -> void:
 	var def: LocationDef = LocationRegistry.get_def(&"sharaga")
 	var inst: Node = load(def.scene_path).instantiate()
 	add_child(inst)
@@ -151,38 +151,38 @@ func _check_in_place_rooms(errors: Array) -> void:
 	await get_tree().physics_frame
 	# Проёмы в меше Шараги: по одному на крыло первого этажа, по два на крыло второго.
 	var expected := [
-		&"kabinet_1", &"kabinet_4",
-		&"kabinet_7", &"kabinet_8", &"kabinet_9", &"kabinet_10",
+		&"cabinet_slot_1", &"cabinet_slot_4",
+		&"cabinet_slot_7", &"cabinet_slot_8", &"cabinet_slot_9", &"cabinet_slot_10",
 	]
-	EnergySystem.current_energy = 10
+	EnerginkaSystem.energinka_pool = 10
 	var found: Array[StringName] = []
 	for door in _find_doors(inst):
 		if not door is StreamingDoor or not door.in_place:
 			continue
 		found.append(door.target_location_id)
-		if not RoomPool.is_slot(door.target_location_id):
-			errors.append("in-place дверь %s не слот пула" % door.target_location_id)
+		if not CabinetPool.is_cabinet_slot(door.target_location_id):
+			errors.append("in-place дверь %s не слот кабинета" % door.target_location_id)
 			continue
-		var icon := door.get_node_or_null(^"EnergyIcon") as Node3D
+		var icon := door.get_node_or_null(^"EnerginkaIcon") as Node3D
 		if icon == null or not icon.visible:
-			errors.append("%s: нет значка энергии над входом" % door.target_location_id)
-		var offer: Array[StringName] = RoomPool.offer_for(door.target_location_id)
-		if offer.is_empty():
+			errors.append("%s: нет значка энергинки над входом" % door.target_location_id)
+		var cabinet_choice: Array[StringName] = CabinetPool.cabinet_choice_for(door.target_location_id)
+		if cabinet_choice.is_empty():
 			print("  IN-PLACE %s (пул исчерпан)" % door.target_location_id)
 			continue
-		EnergySystem.current_energy = 10
-		if not door.apply_choice(offer[0]):
+		EnerginkaSystem.energinka_pool = 10
+		if not door.select_cabinet(cabinet_choice[0]):
 			errors.append("%s: не открылась после выбора" % door.target_location_id)
 			continue
 		await get_tree().process_frame
-		var drawn: StringName = RoomPool.get_drawn(door.target_location_id)
+		var selected: StringName = CabinetPool.get_selected_cabinet(door.target_location_id)
 		var anchor: Node3D = door.get_node_or_null(door.sign_anchor) as Node3D
-		if drawn == &"":
+		if selected == &"":
 			print("  IN-PLACE %s (пул исчерпан)" % door.target_location_id)
-		elif anchor == null or anchor.get_node_or_null(^"RoomSign") == null:
-			errors.append("%s: нет 3D-вывески в комнате" % door.target_location_id)
+		elif anchor == null or anchor.get_node_or_null(^"CabinetSign") == null:
+			errors.append("%s: нет 3D-вывески в кабинете" % door.target_location_id)
 		else:
-			print("  IN-PLACE %s → %s" % [door.target_location_id, drawn])
+			print("  IN-PLACE %s → %s" % [door.target_location_id, selected])
 	for id in expected:
 		if not found.has(id):
 			errors.append("в Шараге нет in-place двери %s" % id)
@@ -191,32 +191,32 @@ func _check_in_place_rooms(errors: Array) -> void:
 	inst.queue_free()
 	await get_tree().process_frame
 	LocationManager.reset_streamed()
-	RoomPool._reset_day()
+	CabinetPool.reroll_sharaga()
 
 
 func _check_doors_stay_open(errors: Array) -> void:
-	RoomPool._reset_day()
-	EnergySystem.current_energy = 10
+	CabinetPool.reroll_sharaga()
+	EnerginkaSystem.energinka_pool = 10
 	var def: LocationDef = LocationRegistry.get_def(&"sharaga")
 	var inst: Node = load(def.scene_path).instantiate()
 	add_child(inst)
 	await get_tree().process_frame
-	var door: StreamingDoor = _find_door_to(inst, &"kabinet_1")
+	var door: StreamingDoor = _find_door_to(inst, &"cabinet_slot_1")
 	if door == null:
-		errors.append("нет двери kabinet_1 для проверки открытия")
+		errors.append("нет двери cabinet_slot_1 для проверки открытия")
 		inst.queue_free()
 		return
-	var offer: Array[StringName] = RoomPool.offer_for(&"kabinet_1")
-	if offer.is_empty():
-		errors.append("пустой оффер kabinet_1")
+	var cabinet_choice: Array[StringName] = CabinetPool.cabinet_choice_for(&"cabinet_slot_1")
+	if cabinet_choice.is_empty():
+		errors.append("пустой выбор кабинетов cabinet_slot_1")
 		inst.queue_free()
 		return
-	if not door.apply_choice(offer[0]):
-		errors.append("не удалось открыть kabinet_1")
+	if not door.select_cabinet(cabinet_choice[0]):
+		errors.append("не удалось открыть cabinet_slot_1")
 		inst.queue_free()
 		return
 	if not door._open:
-		errors.append("kabinet_1 не открылся")
+		errors.append("cabinet_slot_1 не открылся")
 	inst.queue_free()
 	LocationManager.reset_streamed()
 	await get_tree().process_frame
@@ -224,12 +224,12 @@ func _check_doors_stay_open(errors: Array) -> void:
 	add_child(again)
 	await get_tree().process_frame
 	await get_tree().process_frame
-	var restored: StreamingDoor = _find_door_to(again, &"kabinet_1")
+	var restored: StreamingDoor = _find_door_to(again, &"cabinet_slot_1")
 	if restored == null or not restored._open:
-		errors.append("дверь kabinet_1 закрылась после ухода и возвращения")
+		errors.append("дверь cabinet_slot_1 закрылась после ухода и возвращения")
 	else:
 		print("  OK  дверь осталась открытой после перезагрузки локации")
 	again.queue_free()
 	await get_tree().process_frame
 	LocationManager.reset_streamed()
-	RoomPool._reset_day()
+	CabinetPool.reroll_sharaga()
