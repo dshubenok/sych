@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_validate_locations"]
+
+[ext_resource type="Script" path="res://scripts/tools/validate_locations.gd" id="1_validate"]
+
+[node name="ValidateLocations" type="Node"]
+script = ExtResource("1_validate")

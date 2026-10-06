@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3 uid="uid://sych_energy_spend_station"]
+
+[ext_resource type="Script" path="res://scripts/world/energy_spend_station.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Icon_Energy_Full.png" id="2_texture"]
+
+[sub_resource type="QuadMesh" id="QuadMesh_station"]
+size = Vector2(1.4, 1.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_station"]
+albedo_texture = ExtResource("2_texture")
+billboard_mode = 0
+transparency = 2
+cull_mode = 2
+shading_mode = 0
+alpha_scissor_threshold = 0.1
+no_depth_test = false
+
+[node name="EnergySpendStation" type="Node3D"]
+script = ExtResource("1_script")
+interaction_radius = 2.0
+prompt_offset = Vector3(0, 2.0, 0)
+energy_cost = 1
+success_message = "Минус энергинка"
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+mesh = SubResource("QuadMesh_station")
+surface_material_override/0 = SubResource("StandardMaterial3D_station")
+cast_shadow = 2

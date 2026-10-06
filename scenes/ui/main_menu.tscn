@@ -1,0 +1,205 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="1_menu"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_flat"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hover"]
+bg_color = Color(1, 1, 1, 0.16)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_patch"]
+bg_color = Color(0.995, 0.995, 0.995, 1)
+corner_radius_top_right = 46
+corner_radius_bottom_right = 46
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_disabled"]
+bg_color = Color(0.9, 0.89, 0.87, 0.62)
+corner_radius_top_left = 40
+corner_radius_top_right = 40
+corner_radius_bottom_right = 40
+corner_radius_bottom_left = 40
+
+[node name="MainMenu" type="CanvasLayer"]
+layer = 230
+script = ExtResource("1_menu")
+
+[node name="Fill" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.995, 0.995, 0.995, 1)
+
+[node name="SwitchTimer" type="Timer" parent="."]
+wait_time = 3.0
+
+[node name="Frame" type="AspectRatioContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+ratio = 1.3333
+stretch_mode = 2
+
+[node name="Art" type="Control" parent="Frame"]
+layout_mode = 2
+
+[node name="Back" type="TextureRect" parent="Frame/Art"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Front" type="TextureRect" parent="Frame/Art"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Patch" type="Panel" parent="Frame/Art"]
+visible = false
+layout_mode = 1
+anchor_left = -0.02
+anchor_top = 0.487
+anchor_right = 0.335
+anchor_bottom = 1.02
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_patch")
+
+[node name="Overlay" type="TextureRect" parent="Frame/Art"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BootButtons" type="Control" parent="Frame/Art"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="StartButton" type="Button" parent="Frame/Art/BootButtons"]
+layout_mode = 1
+anchor_left = 0.035
+anchor_top = 0.358
+anchor_right = 0.29
+anchor_bottom = 0.484
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Начать"
+theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
+
+[node name="BootQuitButton" type="Button" parent="Frame/Art/BootButtons"]
+layout_mode = 1
+anchor_left = 0.05
+anchor_top = 0.512
+anchor_right = 0.289
+anchor_bottom = 0.625
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Выйти"
+theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
+
+[node name="PauseButtons" type="Control" parent="Frame/Art"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="SaveButton" type="Button" parent="Frame/Art/PauseButtons"]
+layout_mode = 1
+anchor_left = 0.04
+anchor_top = 0.345
+anchor_right = 0.33
+anchor_bottom = 0.482
+grow_horizontal = 2
+grow_vertical = 2
+disabled = true
+tooltip_text = "Сохранить — пока недоступно"
+theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
+
+[node name="EndDayButton" type="Button" parent="Frame/Art/PauseButtons"]
+layout_mode = 1
+anchor_left = 0.042
+anchor_top = 0.499
+anchor_right = 0.287
+anchor_bottom = 0.617
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Закончить день"
+theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
+
+[node name="NewGameButton" type="Button" parent="Frame/Art/PauseButtons"]
+layout_mode = 1
+anchor_left = 0.043
+anchor_top = 0.659
+anchor_right = 0.28
+anchor_bottom = 0.773
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Новая игра"
+theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
+
+[node name="QuitButton" type="Button" parent="Frame/Art/PauseButtons"]
+layout_mode = 1
+anchor_left = 0.044
+anchor_top = 0.801
+anchor_right = 0.283
+anchor_bottom = 0.912
+grow_horizontal = 2
+grow_vertical = 2
+tooltip_text = "Выйти"
+theme_override_styles/disabled = SubResource("StyleBoxFlat_disabled")
+theme_override_styles/focus = SubResource("StyleBoxFlat_hover")
+theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")

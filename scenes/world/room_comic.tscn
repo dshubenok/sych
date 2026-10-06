@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_room_comic"]
+
+[ext_resource type="Script" path="res://scripts/world/room_comic.gd" id="1_script"]
+
+[node name="RoomComic" type="Node3D"]
+script = ExtResource("1_script")

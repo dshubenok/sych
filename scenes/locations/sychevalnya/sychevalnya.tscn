@@ -1,0 +1,114 @@
+[gd_scene load_steps=14 format=3 uid="uid://sych_loc_sychevalnya"]
+
+[ext_resource type="Script" path="res://scripts/world/location.gd" id="1_loc"]
+[ext_resource type="Script" path="res://scripts/world/model_collisions.gd" id="2_col"]
+[ext_resource type="PackedScene" path="res://изометрия сычевальня.blend" id="3_room"]
+[ext_resource type="PackedScene" uid="uid://sych_energy_board" path="res://scenes/world/energy_board.tscn" id="4_board"]
+[ext_resource type="PackedScene" uid="uid://sych_location_portal" path="res://scenes/world/location_portal.tscn" id="9_portal"]
+[ext_resource type="Script" path="res://scripts/camera/location_fixed_camera.gd" id="10_cam"]
+[ext_resource type="PackedScene" uid="uid://sych_starosta_note" path="res://scenes/world/starosta_note.tscn" id="11_note"]
+[ext_resource type="PackedScene" uid="uid://sych_room_comic" path="res://scenes/world/room_comic.tscn" id="12_comic"]
+
+[sub_resource type="Environment" id="Environment_void"]
+background_mode = 1
+background_color = Color(0.165, 0.165, 0.17, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.78, 0.86, 0.95, 1)
+ambient_light_energy = 0.55
+
+[sub_resource type="BoxShape3D" id="Box_floor"]
+size = Vector3(6.2, 0.08, 6.2)
+
+[sub_resource type="BoxShape3D" id="Box_edge_x"]
+size = Vector3(0.4, 4.2, 7.2)
+
+[sub_resource type="BoxShape3D" id="Box_edge_z"]
+size = Vector3(7.2, 4.2, 0.4)
+
+[sub_resource type="SphereShape3D" id="Sphere_board"]
+radius = 4.6
+
+[sub_resource type="BoxShape3D" id="Box_portal"]
+size = Vector3(1.6, 2.4, 1.0)
+
+[node name="Sychevalnya" type="Node3D"]
+script = ExtResource("1_loc")
+location_id = &"sychevalnya"
+display_name = "Сычевальня"
+location_type = 1
+
+[node name="Model" type="Node3D" parent="."]
+script = ExtResource("2_col")
+
+[node name="Room" parent="Model" instance=ExtResource("3_room")]
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.35, 0.7)
+
+[node name="IsoCamera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.736, 6.85, 6.736)
+fov = 40.0
+near = 0.05
+far = 80.0
+environment = SubResource("Environment_void")
+
+[node name="Presentation" type="Node" parent="."]
+script = ExtResource("10_cam")
+camera_path = NodePath("../IsoCamera")
+look_at_local = Vector3(0, 1.35, 0)
+
+[node name="FloorCatch" type="StaticBody3D" parent="."]
+
+[node name="Shape" type="CollisionShape3D" parent="FloorCatch"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.02, 0)
+shape = SubResource("Box_floor")
+
+[node name="EdgeBounds" type="StaticBody3D" parent="."]
+
+[node name="EdgePosX" type="CollisionShape3D" parent="EdgeBounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35, 2.1, 0)
+shape = SubResource("Box_edge_x")
+
+[node name="EdgeNegX" type="CollisionShape3D" parent="EdgeBounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.35, 2.1, 0)
+shape = SubResource("Box_edge_x")
+
+[node name="EdgePosZ" type="CollisionShape3D" parent="EdgeBounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 3.35)
+shape = SubResource("Box_edge_z")
+
+[node name="EdgeNegZ" type="CollisionShape3D" parent="EdgeBounds"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -3.35)
+shape = SubResource("Box_edge_z")
+
+[node name="EnergyBoard" parent="." instance=ExtResource("4_board")]
+transform = Transform3D(0.719, 0, 0, 0, 0.694, 0, 0, 0, 0.7, 1.102, 2.385, -2.97)
+interaction_radius = 3.2
+
+[node name="Frame" parent="EnergyBoard"]
+visible = false
+
+[node name="Cork" parent="EnergyBoard"]
+visible = false
+
+[node name="CollisionShape3D" parent="EnergyBoard/InteractionArea"]
+shape = SubResource("Sphere_board")
+
+[node name="PortalToTerritory" parent="." instance=ExtResource("9_portal")]
+transform = Transform3D(0, 0, 0.978491, 0, 1.241981, 0, -1, 0, 0, -2.997433, 0.06864, 2.010457)
+target_location_id = &"territoriya_sharagi"
+auto_travel = false
+unlock_on_plan = true
+aside_before_travel = "Наружа. Вэээ."
+
+[node name="CollisionShape3D" parent="PortalToTerritory"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -0.35)
+shape = SubResource("Box_portal")
+
+[node name="StarostaNote" parent="." instance=ExtResource("11_note")]
+transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -2.5, 0.09, 1.75)
+interaction_radius = 0.7
+
+[node name="RoomComic" parent="." instance=ExtResource("12_comic")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.314, 0.56, 0.94)
+interaction_radius = 0.65

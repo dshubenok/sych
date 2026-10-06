@@ -8,12 +8,27 @@
 
 config_version=5
 
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
 [application]
 
 config/name="sych"
-run/main_scene="res://scenes/main.tscn"
-config/features=PackedStringArray("4.5", "GL Compatibility")
+run/main_scene="res://scenes/ui/main_menu.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+DialogSystem="*res://scripts/dialog/dialog_system.gd"
+AsideSystem="*res://scripts/aside/aside_system.gd"
+EnergySystem="*res://scripts/energy_system.gd"
+QuestSystem="*res://scripts/quests/quest_system.gd"
+DaySystem="*res://scripts/day_system.gd"
+LocationRegistry="*res://scripts/world/location_registry.gd"
+LocationManager="*res://scripts/world/location_manager.gd"
+RoomPool="*res://scripts/world/room_pool.gd"
 
 [input]
 

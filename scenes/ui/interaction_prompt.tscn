@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://sych_interaction_prompt"]
+
+[node name="InteractionPrompt" type="Node3D"]
+
+[node name="Label3D" type="Label3D" parent="."]
+billboard = 1
+no_depth_test = false
+fixed_size = true
+pixel_size = 0.001
+font_size = 96
+outline_size = 16
+text = "E"
+modulate = Color(1, 0.95, 0.45, 1)
+outline_modulate = Color(0, 0, 0, 1)

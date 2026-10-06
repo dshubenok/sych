@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_location_breadcrumb"]
+
+[ext_resource type="Script" path="res://scripts/ui/location_breadcrumb.gd" id="1_bc"]
+
+[node name="LocationBreadcrumb" type="CanvasLayer"]
+script = ExtResource("1_bc")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 18.0
+offset_top = 12.0
+offset_right = 1400.0
+offset_bottom = 80.0
+theme_override_colors/font_color = Color(1, 0.94, 0.72, 0.9)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.95)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 45
+text = ""

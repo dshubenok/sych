@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://b8x70a02w1v3u"]
+
+[ext_resource type="PackedScene" path="res://assets/models/university.glb" id="1_university"]
+[ext_resource type="Script" path="res://scripts/world/university_collisions.gd" id="2_university_collisions"]
+
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(100, 0.2, 100)
+
+[sub_resource type="Environment" id="Env"]
+ambient_light_color = Color(1, 1, 1, 1)
+ambient_light_energy = 0.15
+
+[node name="Университет" type="Node3D"]
+script = ExtResource("2_university_collisions")
+
+[node name="UniversityModel" parent="." instance=ExtResource("1_university")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="SpaceCollision" type="StaticBody3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SpaceCollision"]
+shape = SubResource("FloorShape")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 10, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env")
+
+[node name="PlayerSpawn" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+

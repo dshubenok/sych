@@ -1,0 +1,37 @@
+[gd_scene load_steps=5 format=3 uid="uid://sych_location_portal"]
+
+[ext_resource type="Script" path="res://scripts/world/location_portal.gd" id="1_portal"]
+
+[sub_resource type="BoxShape3D" id="Shape"]
+size = Vector3(2, 2.5, 1.5)
+
+[sub_resource type="BoxMesh" id="DoorMesh"]
+size = Vector3(1.6, 2.4, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="DoorMat"]
+transparency = 1
+albedo_color = Color(0.95, 0.72, 0.2, 0.55)
+emission_enabled = true
+emission = Color(0.6, 0.45, 0.1, 1)
+emission_energy_multiplier = 0.6
+
+[node name="LocationPortal" type="Area3D"]
+collision_mask = 4294967295
+script = ExtResource("1_portal")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+shape = SubResource("Shape")
+
+[node name="Door" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("DoorMesh")
+surface_material_override/0 = SubResource("DoorMat")
+
+[node name="Label" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+billboard = 1
+no_depth_test = false
+font_size = 48
+outline_size = 12
+text = "→"

@@ -1,0 +1,25 @@
+[gd_scene load_steps=5 format=3 uid="uid://sych_starosta_note"]
+
+[ext_resource type="Script" path="res://scripts/world/floor_note.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://записка староста.png" id="2_texture"]
+
+[sub_resource type="QuadMesh" id="Quad_note"]
+size = Vector2(0.9, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="Mat_note"]
+transparency = 2
+alpha_scissor_threshold = 0.15
+albedo_texture = ExtResource("2_texture")
+roughness = 0.85
+cull_mode = 2
+
+[node name="StarostaNote" type="Node3D"]
+script = ExtResource("1_script")
+note_texture = ExtResource("2_texture")
+aside_before_open = "Записка? Под моей дверью? У МЕНЯ ТАЙНЫЙ ПОКЛОННИК"
+
+[node name="Sheet" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
+mesh = SubResource("Quad_note")
+surface_material_override/0 = SubResource("Mat_note")
+cast_shadow = 0

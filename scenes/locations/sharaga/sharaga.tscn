@@ -1,0 +1,280 @@
+[gd_scene load_steps=10 format=3 uid="uid://sych_loc_sharaga"]
+
+[ext_resource type="Script" path="res://scripts/world/location.gd" id="1_loc"]
+[ext_resource type="Script" path="res://scripts/world/model_collisions.gd" id="2_col"]
+[ext_resource type="PackedScene" uid="uid://b7p1wt680vqtj" path="res://assets/models/sharaga_1_2_floor.glb" id="3_model"]
+[ext_resource type="PackedScene" uid="uid://sych_streaming_door" path="res://scenes/world/streaming_door.tscn" id="4_door"]
+[ext_resource type="Script" path="res://scripts/world/presence_zone.gd" id="5_presence"]
+
+[sub_resource type="BoxShape3D" id="PresenceShape"]
+size = Vector3(43.2, 20.5, 16.5)
+
+[sub_resource type="BoxShape3D" id="Floor1Shape"]
+size = Vector3(26, 3.6, 16)
+
+[sub_resource type="BoxShape3D" id="RoomFrontShape"]
+size = Vector3(6.4, 3.2, 4.8)
+
+[sub_resource type="BoxShape3D" id="RoomMidShape"]
+size = Vector3(6.4, 3.2, 5.6)
+
+[sub_resource type="BoxShape3D" id="RoomBackShape"]
+size = Vector3(6.4, 3.2, 4.0)
+
+[sub_resource type="BoxShape3D" id="RoomHallShape"]
+size = Vector3(6.4, 3.2, 6.5)
+
+[node name="Sharaga" type="Node3D"]
+script = ExtResource("1_loc")
+location_id = &"sharaga"
+display_name = "Шарага"
+location_type = 2
+
+[node name="Model" type="Node3D" parent="."]
+script = ExtResource("2_col")
+
+[node name="Sharaga12Floor" parent="Model" instance=ExtResource("3_model")]
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+
+[node name="DoorToTerritory" parent="." instance=ExtResource("4_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 3.26)
+target_location_id = &"territoriya_sharagi"
+
+[node name="PresenceZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.92, -4.76)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+
+[node name="Shape" type="CollisionShape3D" parent="PresenceZone"]
+shape = SubResource("PresenceShape")
+
+[node name="Etazh1Presence" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.76)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Etazh1Presence"]
+shape = SubResource("Floor1Shape")
+
+[node name="Etazh2Presence" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.48, -4.76)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"etazh_2"
+
+[node name="Shape" type="CollisionShape3D" parent="Etazh2Presence"]
+shape = SubResource("Floor1Shape")
+
+[node name="Kabinet1" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet1" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 0.14, 0.17)
+target_location_id = &"kabinet_1"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.5, 0.66)
+
+[node name="Presence" type="Area3D" parent="Kabinet1"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.7, 0.66)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_1"
+exit_location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet1/Presence"]
+shape = SubResource("RoomFrontShape")
+
+[node name="Kabinet2" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet2" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 0.14, -4.94)
+target_location_id = &"kabinet_2"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.5, -5.15)
+
+[node name="Presence" type="Area3D" parent="Kabinet2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.7, -5.15)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_2"
+exit_location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet2/Presence"]
+shape = SubResource("RoomMidShape")
+
+[node name="Kabinet3" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet3" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 0.14, -10.36)
+target_location_id = &"kabinet_3"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.5, -10.58)
+
+[node name="Presence" type="Area3D" parent="Kabinet3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.7, -10.58)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_3"
+exit_location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet3/Presence"]
+shape = SubResource("RoomBackShape")
+
+[node name="Kabinet4" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet4" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0.14, 0.17)
+target_location_id = &"kabinet_4"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.5, 0.66)
+
+[node name="Presence" type="Area3D" parent="Kabinet4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.7, 0.66)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_4"
+exit_location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet4/Presence"]
+shape = SubResource("RoomFrontShape")
+
+[node name="Kabinet5" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet5" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0.14, -4.94)
+target_location_id = &"kabinet_5"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.5, -5.15)
+
+[node name="Presence" type="Area3D" parent="Kabinet5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.7, -5.15)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_5"
+exit_location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet5/Presence"]
+shape = SubResource("RoomMidShape")
+
+[node name="Kabinet6" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet6" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0.14, -10.36)
+target_location_id = &"kabinet_6"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.5, -10.58)
+
+[node name="Presence" type="Area3D" parent="Kabinet6"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.7, -10.58)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_6"
+exit_location_id = &"etazh_1"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet6/Presence"]
+shape = SubResource("RoomBackShape")
+
+[node name="Kabinet7" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet7" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 9.62, -2.32)
+target_location_id = &"kabinet_7"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 10.98, -2.32)
+
+[node name="Presence" type="Area3D" parent="Kabinet7"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 11.18, -2.32)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_7"
+exit_location_id = &"etazh_2"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet7/Presence"]
+shape = SubResource("RoomHallShape")
+
+[node name="Kabinet8" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet8" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 9.62, -7.57)
+target_location_id = &"kabinet_8"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 10.98, -7.57)
+
+[node name="Presence" type="Area3D" parent="Kabinet8"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 11.18, -7.57)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_8"
+exit_location_id = &"etazh_2"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet8/Presence"]
+shape = SubResource("RoomHallShape")
+
+[node name="Kabinet9" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet9" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 9.62, -2.32)
+target_location_id = &"kabinet_9"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 10.98, -2.32)
+
+[node name="Presence" type="Area3D" parent="Kabinet9"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 11.18, -2.32)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_9"
+exit_location_id = &"etazh_2"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet9/Presence"]
+shape = SubResource("RoomHallShape")
+
+[node name="Kabinet10" type="Node3D" parent="."]
+
+[node name="Door" parent="Kabinet10" instance=ExtResource("4_door")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 9.62, -7.57)
+target_location_id = &"kabinet_10"
+in_place = true
+sign_anchor = NodePath("../SignAnchor")
+
+[node name="SignAnchor" type="Marker3D" parent="Kabinet10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 10.98, -7.57)
+
+[node name="Presence" type="Area3D" parent="Kabinet10"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 11.18, -7.57)
+collision_mask = 4294967295
+script = ExtResource("5_presence")
+location_id = &"kabinet_10"
+exit_location_id = &"etazh_2"
+
+[node name="Shape" type="CollisionShape3D" parent="Kabinet10/Presence"]
+shape = SubResource("RoomHallShape")
+

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_test_energy_upgrade"]
+
+[ext_resource type="Script" path="res://scripts/tools/test_energy_upgrade.gd" id="1_test"]
+
+[node name="TestEnergyUpgrade" type="Node"]
+script = ExtResource("1_test")

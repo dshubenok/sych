@@ -1,0 +1,43 @@
+[gd_scene load_steps=7 format=3 uid="uid://sych_energy_board"]
+
+[ext_resource type="Script" path="res://scripts/world/energy_board.gd" id="1_script"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_board"]
+size = Vector3(3.2, 2.0, 0.16)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cork"]
+albedo_color = Color(0.62, 0.38, 0.18, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_frame"]
+size = Vector3(3.45, 2.25, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_frame"]
+albedo_color = Color(0.22, 0.12, 0.06, 1)
+roughness = 0.7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_interaction"]
+radius = 2.6
+
+[node name="EnergyBoard" type="Node3D"]
+script = ExtResource("1_script")
+interaction_radius = 2.6
+prompt_offset = Vector3(0, 1.75, 0.25)
+slot_count = 8
+
+[node name="Frame" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_frame")
+surface_material_override/0 = SubResource("StandardMaterial3D_frame")
+
+[node name="Cork" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.03)
+mesh = SubResource("BoxMesh_board")
+surface_material_override/0 = SubResource("StandardMaterial3D_cork")
+
+[node name="InteractionArea" type="Area3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+shape = SubResource("SphereShape3D_interaction")
+
+[node name="SpawnPoint" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.25, 2.0)

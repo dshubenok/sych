@@ -1,19 +1,39 @@
 extends Node3D
 
+## Корневая «бутстрап»-сцена. Держит персистентные узлы (игрок, камера, HUD,
+## глобальные системы) и поручает загрузку самих локаций LocationManager.
+
+const START_LOCATION := &"sychevalnya"
+
+@onready var current_location: Node3D = $CurrentLocation
+@onready var streamed_locations: Node3D = $StreamedLocations
+
 func _ready():
 	print("=== ГЛАВНАЯ СЦЕНА ЗАГРУЖЕНА ===")
-	print("Floor1 загружен: ", $Floor1 != null)
-	print("Пол первого этажа (коллизия) есть: ", $Floor1/FirstFloorCollision != null)
-	print("Игрок загружен: ", $Player != null)
-	print("Камера игрока: ", $Player/Camera3D != null)
-	print("Скрипт игрока: ", $Player.get_script() != null)
-	# Установим позицию игрока в точку спавна
-	var spawn := $Floor1/PlayerSpawn
-	if spawn and $Player and $Player is Node3D:
-		$Player.global_transform.origin = spawn.global_transform.origin
-	print("=== ГОТОВ К ИГРЕ ===")
+	LocationManager.set_container(current_location)
+	LocationManager.set_stream_container(streamed_locations)
+	LocationManager.location_entered.connect(_on_location_entered)
+	# Отложенно: на момент _ready корень сцены ещё «занят» настройкой детей.
+	LocationManager.start_at.call_deferred(START_LOCATION)
+	DaySystem.begin_day.call_deferred()
 	print("Управление:")
 	print("- WASD: движение")
 	print("- Мышь: поворот камеры")
 	print("- Space: прыжок")
-	print("- Escape: освободить/захватить мышь")
+	print("- Escape: меню")
+
+
+## Escape открывает меню поверх игры. Пока открыт другой модальный экран
+## (диалог, выбор кабинета, доска энергии) — дерево уже на паузе, не мешаем.
+func _unhandled_input(event: InputEvent) -> void:
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	if event.keycode != KEY_ESCAPE:
+		return
+	if MainMenu.is_open() or get_tree().paused or DialogSystem.is_active():
+		return
+	get_viewport().set_input_as_handled()
+	MainMenu.open_paused(get_tree())
+
+func _on_location_entered(location_id: StringName) -> void:
+	print("=== ЛОКАЦИЯ: %s ===" % LocationRegistry.breadcrumb_text(location_id))

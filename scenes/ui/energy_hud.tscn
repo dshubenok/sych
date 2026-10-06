@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_energy_hud"]
+
+[ext_resource type="Script" path="res://scripts/energy_hud.gd" id="1_script"]
+
+[node name="EnergyHud" type="CanvasLayer"]
+layer = 10
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="TopRight" type="VBoxContainer" parent="Root"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -464.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 260.0
+grow_horizontal = 0
+grow_vertical = 1
+mouse_filter = 0
+theme_override_constants/separation = 8
+alignment = 0
+
+[node name="Hearts" type="HBoxContainer" parent="Root/TopRight"]
+layout_mode = 2
+size_flags_horizontal = 8
+mouse_filter = 2
+theme_override_constants/separation = 10
+alignment = 2
+
+[node name="RefillEnergyButton" type="Button" parent="Root/TopRight"]
+layout_mode = 2
+size_flags_horizontal = 8
+custom_minimum_size = Vector2(220, 44)
+text = "Повысить энергию"
+flat = true

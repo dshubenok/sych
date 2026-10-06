@@ -12,18 +12,20 @@ size = Vector2(1.0, 2.0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1"]
 albedo_texture = ExtResource("2_texture")
-billboard_mode = 1
+billboard_mode = 0
 transparency = 2
 cull_mode = 2
 shading_mode = 0
 alpha_scissor_threshold = 0.1
-no_depth_test = true
+no_depth_test = false
 
 
 [node name="Player" type="CharacterBody3D"]
+floor_snap_length = 0.2
 script = ExtResource("1_player")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
 shape = SubResource("CapsuleShape3D_1")
 
 [node name="Body" type="MeshInstance3D" parent="."]
@@ -32,6 +34,15 @@ mesh = SubResource("QuadMesh_1")
 surface_material_override/0 = SubResource("StandardMaterial3D_1")
 cast_shadow = 2
 
-[node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 5)
+[node name="CameraPivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.65, 0)
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraPivot"]
+transform = Transform3D(1, 0, 0, 0, 0.9659, 0.2588, 0, -0.2588, 0.9659, 0, 0, 0)
+collision_mask = 1
+spring_length = 3.5
+margin = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="CameraPivot/SpringArm3D"]
+current = false
 fov = 60.0

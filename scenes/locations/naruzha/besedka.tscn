@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_loc_besedka"]
+
+[ext_resource type="Script" path="res://scripts/world/placeholder_location.gd" id="1_loc"]
+
+[node name="Besedka" type="Node3D"]
+script = ExtResource("1_loc")
+location_id = &"besedka"
+floor_color = Color(0.24, 0.26, 0.22, 1)
+stream_exits = Array[StringName]([&"naruzha"])
