@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://cdjfd1uoa03qx"
-path="res://.godot/imported/panel_3.png-7c91ab9c7baa1396b02f4e778f98619b.ctex"
+path="res://.godot/imported/frame_3.png-4c6e140ffa7c16d008380b7a91461df8.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/dialogs/demonologist_intro/panel_3.png"
-dest_files=["res://.godot/imported/panel_3.png-7c91ab9c7baa1396b02f4e778f98619b.ctex"]
+source_file="res://assets/comic_dialogues/demonologist_intro/frame_3.png"
+dest_files=["res://.godot/imported/frame_3.png-4c6e140ffa7c16d008380b7a91461df8.ctex"]
 
 [params]
 

@@ -3,21 +3,19 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://o2n7lbqkw4ex"
-path="res://.godot/imported/library.glb-dd0b9da4ffee582e8b21843f37748977.scn"
+uid="uid://cf3bktk1owxt0"
+path="res://.godot/imported/demonologist.glb-0e86b515196d108c5f9b30ea0c40005a.scn"
 
 [deps]
 
-source_file="res://assets/models/rooms/library.glb"
-dest_files=["res://.godot/imported/library.glb-dd0b9da4ffee582e8b21843f37748977.scn"]
+source_file="res://assets/models/cabinets/demonologist.glb"
+dest_files=["res://.godot/imported/demonologist.glb-0e86b515196d108c5f9b30ea0c40005a.scn"]
 
 [params]
 
 nodes/root_type=""
 nodes/root_name=""
 nodes/root_script=null
-mesh_library/use_node_names_as_mesh_names=false
-array_mesh/deduplicate_surfaces=true
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 nodes/import_as_skeleton_bones=false
@@ -42,4 +40,3 @@ materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
-gltf/texture_map_mode=1

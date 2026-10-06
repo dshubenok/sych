@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c31d02q45lvfy"
-path.s3tc="res://.godot/imported/Icon_Energy_Full.png-6a3ff3921991509071c03f7d987a9877.s3tc.ctex"
+path.s3tc="res://.godot/imported/Icon_Energinka_Full.png-15389df4f900814048de8cfc4b962e44.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://Icon_Energy_Full.png"
-dest_files=["res://.godot/imported/Icon_Energy_Full.png-6a3ff3921991509071c03f7d987a9877.s3tc.ctex"]
+source_file="res://Icon_Energinka_Full.png"
+dest_files=["res://.godot/imported/Icon_Energinka_Full.png-15389df4f900814048de8cfc4b962e44.s3tc.ctex"]
 
 [params]
 

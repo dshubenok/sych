@@ -3,15 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://djqcgxagc78gs"
-path="res://.godot/imported/Heart_Kotik_Spawned.png-c94a81fea3a65fbca92671356fbc8f9b.ctex"
+path="res://.godot/imported/Heart_Kotik_Active.png-f9883d0b48dbbfedca23265b4cbd29c2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Board_Test_Cut/Heart_Kotik_Spawned.png"
-dest_files=["res://.godot/imported/Heart_Kotik_Spawned.png-c94a81fea3a65fbca92671356fbc8f9b.ctex"]
+source_file="res://Board_Test_Cut/Heart_Kotik_Active.png"
+dest_files=["res://.godot/imported/Heart_Kotik_Active.png-f9883d0b48dbbfedca23265b4cbd29c2.ctex"]
 
 [params]
 

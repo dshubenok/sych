@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://brtplol35toof"
-path="res://.godot/imported/panel_1.png-cd4ef712a1f111d6108ea51333f8b095.ctex"
+uid="uid://dm0u50gxe0gwm"
+path="res://.godot/imported/Heart_Lisik_Active.png-a3b5dfffe41128972aa4136c9575884b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/dialogs/demonologist_intro/panel_1.png"
-dest_files=["res://.godot/imported/panel_1.png-cd4ef712a1f111d6108ea51333f8b095.ctex"]
+source_file="res://Board_Test_Cut/Heart_Lisik_Active.png"
+dest_files=["res://.godot/imported/Heart_Lisik_Active.png-a3b5dfffe41128972aa4136c9575884b.ctex"]
 
 [params]
 

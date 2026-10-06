@@ -1,29 +1,29 @@
 {
   "id": "demonologist_intro",
   "title": "Зачёт по демонологии",
-  "panels": [
+  "frames": [
     {
       "speaker": "",
       "text": "",
-      "image": "res://assets/dialogs/demonologist_intro/panel_1.png",
+      "image": "res://assets/comic_dialogues/demonologist_intro/frame_1.png",
       "color": "#f5f5f0"
     },
     {
       "speaker": "",
       "text": "",
-      "image": "res://assets/dialogs/demonologist_intro/panel_2.png",
+      "image": "res://assets/comic_dialogues/demonologist_intro/frame_2.png",
       "color": "#f5f5f0"
     },
     {
       "speaker": "",
       "text": "",
-      "image": "res://assets/dialogs/demonologist_intro/panel_3.png",
+      "image": "res://assets/comic_dialogues/demonologist_intro/frame_3.png",
       "color": "#f5f5f0"
     },
     {
       "speaker": "",
       "text": "",
-      "image": "res://assets/dialogs/demonologist_intro/panel_4.png",
+      "image": "res://assets/comic_dialogues/demonologist_intro/frame_4.png",
       "color": "#f5f5f0"
     }
   ]

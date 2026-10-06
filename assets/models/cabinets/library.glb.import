@@ -3,21 +3,19 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://cpf3r6h5x6ijj"
-path="res://.godot/imported/classroom.glb-e4cfcf0bde0d61161c341e2a40b88924.scn"
+uid="uid://o2n7lbqkw4ex"
+path="res://.godot/imported/library.glb-8d77045f2d494c8f59aa01f72e7e6e4a.scn"
 
 [deps]
 
-source_file="res://assets/models/rooms/classroom.glb"
-dest_files=["res://.godot/imported/classroom.glb-e4cfcf0bde0d61161c341e2a40b88924.scn"]
+source_file="res://assets/models/cabinets/library.glb"
+dest_files=["res://.godot/imported/library.glb-8d77045f2d494c8f59aa01f72e7e6e4a.scn"]
 
 [params]
 
 nodes/root_type=""
 nodes/root_name=""
 nodes/root_script=null
-mesh_library/use_node_names_as_mesh_names=false
-array_mesh/deduplicate_surfaces=true
 nodes/apply_root_scale=true
 nodes/root_scale=1.0
 nodes/import_as_skeleton_bones=false
@@ -42,4 +40,3 @@ materials/extract_path=""
 _subresources={}
 gltf/naming_version=2
 gltf/embedded_image_handling=1
-gltf/texture_map_mode=1
