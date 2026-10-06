@@ -2,8 +2,8 @@ extends Node
 ## Глобальная система веток и их этапов. Autoload (см. project.godot → [autoload] BranchSystem).
 ##
 ## Цепочка прогрессии: branch → branch_stage → encounter.
-## Каждый этап ветки привязан к ветке (kotik / demonolog) и к слоту сердечка на пробковой доске.
-## Нижний ряд доски — ветка Демонолога (пока портрет и сердца Лисика).
+## Каждый этап ветки привязан к ветке (kotik / historian) и к слоту сердечка на пробковой доске.
+## Верхний ряд доски — ветка Историка (пока с временными сердечками Лисика), нижний — Котика.
 ## Жизненный цикл состояния этапа ветки:
 ##   EMPTY      — ничего не перетаскивали;
 ##   PENDING    — энергинка вложена в сердечко, но план не подтверждён (не нажато «Принять»);
@@ -13,12 +13,10 @@ extends Node
 enum State { EMPTY, PENDING, ACTIVE, COMPLETED }
 
 const BRANCH_KOTIK := "kotik"
-const BRANCH_LISIK := "lisik"
-const BRANCH_DEMONOLOG := BRANCH_LISIK
+const BRANCH_HISTORIAN := "historian"
 
 const BRANCH_STAGE_FIND_KOTIK := "find_kotik"
 const BRANCH_STAGE_FIND_HISTORIAN := "find_historian"
-const BRANCH_STAGE_DEMONOLOG_2 := "demonologist_2"
 
 const HISTORIAN_CORKBOARD_MESSAGE := "До меня дошел слух, что наш жуткий Демонолог был когда-то студентом преподавателя Истории. Проверим из первых рук."
 const COMPLETE_BANNER_TEXT := "Ура! Этап ветки закрыт!"
@@ -46,18 +44,11 @@ func _define_branch_stages() -> void:
 	_define_branch_stage(BRANCH_STAGE_FIND_KOTIK, BRANCH_KOTIK, 0, "Найти Котика и поговорить")
 	_define_branch_stage(
 		BRANCH_STAGE_FIND_HISTORIAN,
-		BRANCH_DEMONOLOG,
+		BRANCH_HISTORIAN,
 		4,
 		"Поговорить с преподавателем Истории",
 		"",
 		HISTORIAN_CORKBOARD_MESSAGE,
-	)
-	_define_branch_stage(
-		BRANCH_STAGE_DEMONOLOG_2,
-		BRANCH_DEMONOLOG,
-		5,
-		"Следующий шаг ветки Демонолога",
-		BRANCH_STAGE_FIND_HISTORIAN,
 	)
 
 
