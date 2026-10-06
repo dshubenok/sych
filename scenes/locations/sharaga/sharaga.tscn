@@ -1,28 +1,56 @@
-[gd_scene load_steps=10 format=3 uid="uid://sych_loc_sharaga"]
+[gd_scene load_steps=22 format=3 uid="uid://sych_loc_sharaga"]
 
 [ext_resource type="Script" path="res://scripts/world/location.gd" id="1_loc"]
 [ext_resource type="Script" path="res://scripts/world/model_collisions.gd" id="2_col"]
-[ext_resource type="PackedScene" uid="uid://b7p1wt680vqtj" path="res://assets/models/sharaga_1_2_floor.glb" id="3_model"]
+[ext_resource type="PackedScene" uid="uid://bd42vuyxld07w" path="res://assets/models/sharaga.glb" id="3_model"]
 [ext_resource type="PackedScene" uid="uid://sych_streaming_door" path="res://scenes/world/streaming_door.tscn" id="4_door"]
 [ext_resource type="Script" path="res://scripts/world/presence_zone.gd" id="5_presence"]
+[ext_resource type="Script" path="res://scripts/world/collision_cutout.gd" id="6_cutout"]
 
 [sub_resource type="BoxShape3D" id="PresenceShape"]
-size = Vector3(43.2, 20.5, 16.5)
+size = Vector3(56.6, 14.0, 32.4)
 
-[sub_resource type="BoxShape3D" id="Floor1Shape"]
-size = Vector3(26, 3.6, 16)
+[sub_resource type="BoxShape3D" id="FloorShape"]
+size = Vector3(56.4, 6.5, 32.2)
 
-[sub_resource type="BoxShape3D" id="RoomFrontShape"]
-size = Vector3(6.4, 3.2, 4.8)
+[sub_resource type="BoxShape3D" id="RoomF1Shape"]
+size = Vector3(18.3, 6.4, 16.2)
 
-[sub_resource type="BoxShape3D" id="RoomMidShape"]
-size = Vector3(6.4, 3.2, 5.6)
+[sub_resource type="BoxShape3D" id="RoomF2Shape"]
+size = Vector3(11.9, 6.4, 8.0)
 
-[sub_resource type="BoxShape3D" id="RoomBackShape"]
-size = Vector3(6.4, 3.2, 4.0)
+[sub_resource type="BoxShape3D" id="BlockerEntryShape"]
+size = Vector3(5.0, 6.8, 0.5)
 
-[sub_resource type="BoxShape3D" id="RoomHallShape"]
-size = Vector3(6.4, 3.2, 6.5)
+[sub_resource type="BoxMesh" id="SlabEntryMesh"]
+size = Vector3(4.9, 6.7, 0.16)
+
+[sub_resource type="BoxShape3D" id="BlockerF1Shape"]
+size = Vector3(3.9, 4.9, 0.5)
+
+[sub_resource type="BoxMesh" id="SlabF1Mesh"]
+size = Vector3(3.7, 4.8, 0.16)
+
+[sub_resource type="BoxShape3D" id="BlockerF2Shape"]
+size = Vector3(2.5, 4.2, 0.5)
+
+[sub_resource type="BoxMesh" id="SlabF2Mesh"]
+size = Vector3(2.3, 4.1, 0.16)
+
+[sub_resource type="BoxShape3D" id="Ramp1Shape"]
+size = Vector3(3.3, 0.3, 8.7)
+
+[sub_resource type="BoxShape3D" id="Ramp2SideShape"]
+size = Vector3(3.3, 0.3, 8.12)
+
+[sub_resource type="BoxShape3D" id="Ramp2TopShape"]
+size = Vector3(3.3, 0.3, 1.0)
+
+[sub_resource type="BoxShape3D" id="StairFenceShape"]
+size = Vector3(3.4, 2.0, 0.2)
+
+[sub_resource type="BoxShape3D" id="DoorWedgeShape"]
+size = Vector3(1.02, 0.2, 2.6)
 
 [node name="Sharaga" type="Node3D"]
 script = ExtResource("1_loc")
@@ -33,17 +61,25 @@ location_type = 2
 [node name="Model" type="Node3D" parent="."]
 script = ExtResource("2_col")
 
-[node name="Sharaga12Floor" parent="Model" instance=ExtResource("3_model")]
+[node name="SharagaModel" parent="Model" instance=ExtResource("3_model")]
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 4)
 
 [node name="DoorToTerritory" parent="." instance=ExtResource("4_door")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.14, 3.26)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, -0.07, 16)
 target_location_id = &"territoriya_sharagi"
 
+[node name="Shape" parent="DoorToTerritory/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
+shape = SubResource("BlockerEntryShape")
+
+[node name="Slab" parent="DoorToTerritory"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
+mesh = SubResource("SlabEntryMesh")
+
 [node name="PresenceZone" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 9.92, -4.76)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.7, 0.2)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 
@@ -51,230 +87,244 @@ script = ExtResource("5_presence")
 shape = SubResource("PresenceShape")
 
 [node name="Etazh1Presence" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -4.76)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.3, 0.2)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"etazh_1"
 
 [node name="Shape" type="CollisionShape3D" parent="Etazh1Presence"]
-shape = SubResource("Floor1Shape")
+shape = SubResource("FloorShape")
 
 [node name="Etazh2Presence" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.48, -4.76)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.1, 0.2)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"etazh_2"
 
 [node name="Shape" type="CollisionShape3D" parent="Etazh2Presence"]
-shape = SubResource("Floor1Shape")
+shape = SubResource("FloorShape")
+
+[node name="Stairs" type="Node3D" parent="."]
+
+[node name="Flight2Overhang" type="Node3D" parent="Stairs"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01, 4.6, -9.925)
+script = ExtResource("6_cutout")
+size = Vector3(3.2, 2.0, 3.05)
+
+[node name="Ramps" type="StaticBody3D" parent="Stairs"]
+
+[node name="Flight1" type="CollisionShape3D" parent="Stairs/Ramps"]
+transform = Transform3D(1, 0, 0, 0, 0.9135, -0.4069, 0, 0.4069, 0.9135, 0.01, 1.603, -7.166)
+shape = SubResource("Ramp1Shape")
+
+[node name="Flight2Left" type="CollisionShape3D" parent="Stairs/Ramps"]
+transform = Transform3D(1, 0, 0, 0, 0.9142, 0.4053, 0, -0.4053, 0.9142, -3.33, 4.978, -8.229)
+shape = SubResource("Ramp2SideShape")
+
+[node name="Flight2LeftTop" type="CollisionShape3D" parent="Stairs/Ramps"]
+transform = Transform3D(1, 0, 0, 0, 0.9869, 0.1611, 0, -0.1611, 0.9869, -3.33, 6.692, -4.066)
+shape = SubResource("Ramp2TopShape")
+
+[node name="Flight2Right" type="CollisionShape3D" parent="Stairs/Ramps"]
+transform = Transform3D(1, 0, 0, 0, 0.9142, 0.4053, 0, -0.4053, 0.9142, 3.31, 4.978, -8.229)
+shape = SubResource("Ramp2SideShape")
+
+[node name="Flight2RightTop" type="CollisionShape3D" parent="Stairs/Ramps"]
+transform = Transform3D(1, 0, 0, 0, 0.9869, 0.1611, 0, -0.1611, 0.9869, 3.31, 6.692, -4.066)
+shape = SubResource("Ramp2TopShape")
+
+[node name="Flight2CenterFence" type="CollisionShape3D" parent="Stairs/Ramps"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.01, 7.9, -3.86)
+shape = SubResource("StairFenceShape")
+
+[node name="WingDoorWedges" type="StaticBody3D" parent="."]
+
+[node name="Kabinet7" type="CollisionShape3D" parent="WingDoorWedges"]
+transform = Transform3D(0.981, -0.196, 0, 0.196, 0.981, 0, 0, 0, 1, -16.48, 6.722, 3.81)
+shape = SubResource("DoorWedgeShape")
+
+[node name="Kabinet8" type="CollisionShape3D" parent="WingDoorWedges"]
+transform = Transform3D(0.981, -0.196, 0, 0.196, 0.981, 0, 0, 0, 1, -16.48, 6.722, -4.4)
+shape = SubResource("DoorWedgeShape")
+
+[node name="Kabinet9" type="CollisionShape3D" parent="WingDoorWedges"]
+transform = Transform3D(0.981, 0.196, 0, -0.196, 0.981, 0, 0, 0, 1, 16.48, 6.722, 3.81)
+shape = SubResource("DoorWedgeShape")
+
+[node name="Kabinet10" type="CollisionShape3D" parent="WingDoorWedges"]
+transform = Transform3D(0.981, 0.196, 0, -0.196, 0.981, 0, 0, 0, 1, 16.48, 6.722, -4.4)
+shape = SubResource("DoorWedgeShape")
 
 [node name="Kabinet1" type="Node3D" parent="."]
 
 [node name="Door" parent="Kabinet1" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 0.14, 0.17)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -9.35, -0.03, -0.275)
 target_location_id = &"kabinet_1"
 in_place = true
 sign_anchor = NodePath("../SignAnchor")
 
+[node name="Shape" parent="Kabinet1/Door/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0)
+shape = SubResource("BlockerF1Shape")
+
+[node name="Slab" parent="Kabinet1/Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0)
+mesh = SubResource("SlabF1Mesh")
+
 [node name="SignAnchor" type="Marker3D" parent="Kabinet1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.5, 0.66)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.4, 1.33, -0.275)
 
 [node name="Presence" type="Area3D" parent="Kabinet1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.7, 0.66)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.7, 3.3, -0.285)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"kabinet_1"
 exit_location_id = &"etazh_1"
 
 [node name="Shape" type="CollisionShape3D" parent="Kabinet1/Presence"]
-shape = SubResource("RoomFrontShape")
-
-[node name="Kabinet2" type="Node3D" parent="."]
-
-[node name="Door" parent="Kabinet2" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 0.14, -4.94)
-target_location_id = &"kabinet_2"
-in_place = true
-sign_anchor = NodePath("../SignAnchor")
-
-[node name="SignAnchor" type="Marker3D" parent="Kabinet2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.5, -5.15)
-
-[node name="Presence" type="Area3D" parent="Kabinet2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.7, -5.15)
-collision_mask = 4294967295
-script = ExtResource("5_presence")
-location_id = &"kabinet_2"
-exit_location_id = &"etazh_1"
-
-[node name="Shape" type="CollisionShape3D" parent="Kabinet2/Presence"]
-shape = SubResource("RoomMidShape")
-
-[node name="Kabinet3" type="Node3D" parent="."]
-
-[node name="Door" parent="Kabinet3" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 0.14, -10.36)
-target_location_id = &"kabinet_3"
-in_place = true
-sign_anchor = NodePath("../SignAnchor")
-
-[node name="SignAnchor" type="Marker3D" parent="Kabinet3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.5, -10.58)
-
-[node name="Presence" type="Area3D" parent="Kabinet3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 1.7, -10.58)
-collision_mask = 4294967295
-script = ExtResource("5_presence")
-location_id = &"kabinet_3"
-exit_location_id = &"etazh_1"
-
-[node name="Shape" type="CollisionShape3D" parent="Kabinet3/Presence"]
-shape = SubResource("RoomBackShape")
+shape = SubResource("RoomF1Shape")
 
 [node name="Kabinet4" type="Node3D" parent="."]
 
 [node name="Door" parent="Kabinet4" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0.14, 0.17)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 9.35, -0.03, -0.275)
 target_location_id = &"kabinet_4"
 in_place = true
 sign_anchor = NodePath("../SignAnchor")
 
+[node name="Shape" parent="Kabinet4/Door/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0)
+shape = SubResource("BlockerF1Shape")
+
+[node name="Slab" parent="Kabinet4/Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, 0)
+mesh = SubResource("SlabF1Mesh")
+
 [node name="SignAnchor" type="Marker3D" parent="Kabinet4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.5, 0.66)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14.4, 1.33, -0.275)
 
 [node name="Presence" type="Area3D" parent="Kabinet4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.7, 0.66)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.7, 3.3, -0.285)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"kabinet_4"
 exit_location_id = &"etazh_1"
 
 [node name="Shape" type="CollisionShape3D" parent="Kabinet4/Presence"]
-shape = SubResource("RoomFrontShape")
-
-[node name="Kabinet5" type="Node3D" parent="."]
-
-[node name="Door" parent="Kabinet5" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0.14, -4.94)
-target_location_id = &"kabinet_5"
-in_place = true
-sign_anchor = NodePath("../SignAnchor")
-
-[node name="SignAnchor" type="Marker3D" parent="Kabinet5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.5, -5.15)
-
-[node name="Presence" type="Area3D" parent="Kabinet5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.7, -5.15)
-collision_mask = 4294967295
-script = ExtResource("5_presence")
-location_id = &"kabinet_5"
-exit_location_id = &"etazh_1"
-
-[node name="Shape" type="CollisionShape3D" parent="Kabinet5/Presence"]
-shape = SubResource("RoomMidShape")
-
-[node name="Kabinet6" type="Node3D" parent="."]
-
-[node name="Door" parent="Kabinet6" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 0.14, -10.36)
-target_location_id = &"kabinet_6"
-in_place = true
-sign_anchor = NodePath("../SignAnchor")
-
-[node name="SignAnchor" type="Marker3D" parent="Kabinet6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.5, -10.58)
-
-[node name="Presence" type="Area3D" parent="Kabinet6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 1.7, -10.58)
-collision_mask = 4294967295
-script = ExtResource("5_presence")
-location_id = &"kabinet_6"
-exit_location_id = &"etazh_1"
-
-[node name="Shape" type="CollisionShape3D" parent="Kabinet6/Presence"]
-shape = SubResource("RoomBackShape")
+shape = SubResource("RoomF1Shape")
 
 [node name="Kabinet7" type="Node3D" parent="."]
 
 [node name="Door" parent="Kabinet7" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 9.62, -2.32)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 6.85, 3.81)
 target_location_id = &"kabinet_7"
 in_place = true
 sign_anchor = NodePath("../SignAnchor")
 
+[node name="Shape" parent="Kabinet7/Door/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+shape = SubResource("BlockerF2Shape")
+
+[node name="Slab" parent="Kabinet7/Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("SlabF2Mesh")
+
 [node name="SignAnchor" type="Marker3D" parent="Kabinet7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 10.98, -2.32)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 8.08, 3.81)
 
 [node name="Presence" type="Area3D" parent="Kabinet7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 11.18, -2.32)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.04, 10.1, 3.805)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"kabinet_7"
 exit_location_id = &"etazh_2"
 
 [node name="Shape" type="CollisionShape3D" parent="Kabinet7/Presence"]
-shape = SubResource("RoomHallShape")
+shape = SubResource("RoomF2Shape")
 
 [node name="Kabinet8" type="Node3D" parent="."]
 
 [node name="Door" parent="Kabinet8" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -13.8, 9.62, -7.57)
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, -16, 6.85, -4.4)
 target_location_id = &"kabinet_8"
 in_place = true
 sign_anchor = NodePath("../SignAnchor")
 
+[node name="Shape" parent="Kabinet8/Door/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+shape = SubResource("BlockerF2Shape")
+
+[node name="Slab" parent="Kabinet8/Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("SlabF2Mesh")
+
 [node name="SignAnchor" type="Marker3D" parent="Kabinet8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 10.98, -7.57)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -20, 8.08, -4.4)
 
 [node name="Presence" type="Area3D" parent="Kabinet8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.59, 11.18, -7.57)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.04, 10.1, -4.4)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"kabinet_8"
 exit_location_id = &"etazh_2"
 
 [node name="Shape" type="CollisionShape3D" parent="Kabinet8/Presence"]
-shape = SubResource("RoomHallShape")
+shape = SubResource("RoomF2Shape")
 
 [node name="Kabinet9" type="Node3D" parent="."]
 
 [node name="Door" parent="Kabinet9" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 9.62, -2.32)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16, 6.85, 3.81)
 target_location_id = &"kabinet_9"
 in_place = true
 sign_anchor = NodePath("../SignAnchor")
 
+[node name="Shape" parent="Kabinet9/Door/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+shape = SubResource("BlockerF2Shape")
+
+[node name="Slab" parent="Kabinet9/Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("SlabF2Mesh")
+
 [node name="SignAnchor" type="Marker3D" parent="Kabinet9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 10.98, -2.32)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 8.08, 3.81)
 
 [node name="Presence" type="Area3D" parent="Kabinet9"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 11.18, -2.32)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.04, 10.1, 3.805)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"kabinet_9"
 exit_location_id = &"etazh_2"
 
 [node name="Shape" type="CollisionShape3D" parent="Kabinet9/Presence"]
-shape = SubResource("RoomHallShape")
+shape = SubResource("RoomF2Shape")
 
 [node name="Kabinet10" type="Node3D" parent="."]
 
 [node name="Door" parent="Kabinet10" instance=ExtResource("4_door")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 13.8, 9.62, -7.57)
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 16, 6.85, -4.4)
 target_location_id = &"kabinet_10"
 in_place = true
 sign_anchor = NodePath("../SignAnchor")
 
+[node name="Shape" parent="Kabinet10/Door/Blocker"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+shape = SubResource("BlockerF2Shape")
+
+[node name="Slab" parent="Kabinet10/Door"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, 0)
+mesh = SubResource("SlabF2Mesh")
+
 [node name="SignAnchor" type="Marker3D" parent="Kabinet10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 10.98, -7.57)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20, 8.08, -4.4)
 
 [node name="Presence" type="Area3D" parent="Kabinet10"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.59, 11.18, -7.57)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.04, 10.1, -4.4)
 collision_mask = 4294967295
 script = ExtResource("5_presence")
 location_id = &"kabinet_10"
 exit_location_id = &"etazh_2"
 
 [node name="Shape" type="CollisionShape3D" parent="Kabinet10/Presence"]
-shape = SubResource("RoomHallShape")
-
+shape = SubResource("RoomF2Shape")

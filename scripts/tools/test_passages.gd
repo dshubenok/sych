@@ -149,8 +149,9 @@ func _check_in_place_rooms(errors: Array) -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	await get_tree().physics_frame
+	# Проёмы в меше Шараги: по одному на крыло первого этажа, по два на крыло второго.
 	var expected := [
-		&"kabinet_1", &"kabinet_2", &"kabinet_3", &"kabinet_4", &"kabinet_5", &"kabinet_6",
+		&"kabinet_1", &"kabinet_4",
 		&"kabinet_7", &"kabinet_8", &"kabinet_9", &"kabinet_10",
 	]
 	EnergySystem.current_energy = 10
@@ -185,8 +186,8 @@ func _check_in_place_rooms(errors: Array) -> void:
 	for id in expected:
 		if not found.has(id):
 			errors.append("в Шараге нет in-place двери %s" % id)
-	if found.size() != 10:
-		errors.append("ожидали 10 in-place дверей, нашли %d" % found.size())
+	if found.size() != expected.size():
+		errors.append("ожидали %d in-place дверей, нашли %d" % [expected.size(), found.size()])
 	inst.queue_free()
 	await get_tree().process_frame
 	LocationManager.reset_streamed()
