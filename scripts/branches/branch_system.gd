@@ -1,13 +1,14 @@
 extends Node
-## Глобальная система квестов. Autoload (см. project.godot → [autoload] QuestSystem).
+## Глобальная система веток и их этапов. Autoload (см. project.godot → [autoload] BranchSystem).
 ##
-## Каждый квест привязан к ветке (kotik / demonolog) и к слоту на пробковой доске.
+## Цепочка прогрессии: branch → branch_stage → encounter.
+## Каждый этап ветки привязан к ветке (kotik / demonolog) и к слоту сердечка на пробковой доске.
 ## Нижний ряд доски — ветка Демонолога (пока портрет и сердца Лисика).
-## Жизненный цикл состояния квеста:
+## Жизненный цикл состояния этапа ветки:
 ##   EMPTY      — ничего не перетаскивали;
-##   PENDING    — энергия перетащена на сердце, но не подтверждена (не нажато «Принять»);
-##   ACTIVE     — квест заспавнен (нажато «Принять») → триггерит событие в мире;
-##   COMPLETED  — квест выполнен.
+##   PENDING    — энергинка вложена в сердечко, но план не подтверждён (не нажато «Принять»);
+##   ACTIVE     — этап запланирован (нажато «Принять») → активирует энкаунтер в мире;
+##   COMPLETED  — этап ветки закрыт.
 
 enum State { EMPTY, PENDING, ACTIVE, COMPLETED }
 
@@ -15,210 +16,210 @@ const BRANCH_KOTIK := "kotik"
 const BRANCH_LISIK := "lisik"
 const BRANCH_DEMONOLOG := BRANCH_LISIK
 
-const QUEST_FIND_KOTIK := "find_kotik"
-const QUEST_FIND_HISTORIAN := "find_historian"
-const QUEST_DEMONOLOG_2 := "demonologist_2"
+const BRANCH_STAGE_FIND_KOTIK := "find_kotik"
+const BRANCH_STAGE_FIND_HISTORIAN := "find_historian"
+const BRANCH_STAGE_DEMONOLOG_2 := "demonologist_2"
 
-const HISTORIAN_BOARD_MESSAGE := "До меня дошел слух, что наш жуткий Демонолог был когда-то студентом преподавателя Истории. Проверим из первых рук."
-const COMPLETE_BANNER_TEXT := "Ура! Ты выполнил квест!"
+const HISTORIAN_CORKBOARD_MESSAGE := "До меня дошел слух, что наш жуткий Демонолог был когда-то студентом преподавателя Истории. Проверим из первых рук."
+const COMPLETE_BANNER_TEXT := "Ура! Этап ветки закрыт!"
 const COMPLETE_BANNER_SECONDS := 2.4
 const COMPLETE_BANNER_LAYER := 205
 
-## Меняется состояние любого квеста (для обновления UI доски).
-signal quest_state_changed(quest_id: String, state: int)
-## Квест заспавнен (подтверждён через «Принять») — здесь подвешиваются игровые события.
-signal quest_spawned(quest_id: String)
-## Квест выполнен.
-signal quest_completed(quest_id: String)
+## Меняется состояние любого этапа ветки (для обновления UI доски).
+signal branch_stage_state_changed(branch_stage_id: String, state: int)
+## Этап ветки запланирован (подтверждён через «Принять») — здесь подвешиваются игровые события.
+signal branch_stage_planned(branch_stage_id: String)
+## Этап ветки закрыт.
+signal branch_stage_completed(branch_stage_id: String)
 
-var _quests: Dictionary = {}
-var _slot_to_quest: Dictionary = {}
+var _branch_stages: Dictionary = {}
+var _slot_to_branch_stage: Dictionary = {}
 var _complete_banner: CanvasLayer = null
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_define_quests()
+	_define_branch_stages()
 
 
-func _define_quests() -> void:
-	_define_quest(QUEST_FIND_KOTIK, BRANCH_KOTIK, 0, "Найти Котика и поговорить")
-	_define_quest(
-		QUEST_FIND_HISTORIAN,
+func _define_branch_stages() -> void:
+	_define_branch_stage(BRANCH_STAGE_FIND_KOTIK, BRANCH_KOTIK, 0, "Найти Котика и поговорить")
+	_define_branch_stage(
+		BRANCH_STAGE_FIND_HISTORIAN,
 		BRANCH_DEMONOLOG,
 		4,
 		"Поговорить с преподавателем Истории",
 		"",
-		HISTORIAN_BOARD_MESSAGE,
+		HISTORIAN_CORKBOARD_MESSAGE,
 	)
-	_define_quest(
-		QUEST_DEMONOLOG_2,
+	_define_branch_stage(
+		BRANCH_STAGE_DEMONOLOG_2,
 		BRANCH_DEMONOLOG,
 		5,
 		"Следующий шаг ветки Демонолога",
-		QUEST_FIND_HISTORIAN,
+		BRANCH_STAGE_FIND_HISTORIAN,
 	)
 
 
-func _define_quest(
+func _define_branch_stage(
 	id: String,
 	branch: String,
 	slot_index: int,
 	title: String,
 	requires: String = "",
-	board_message: String = "",
+	corkboard_message: String = "",
 ) -> void:
-	_quests[id] = {
+	_branch_stages[id] = {
 		"id": id,
 		"branch": branch,
 		"slot": slot_index,
 		"title": title,
 		"requires": requires,
-		"board_message": board_message,
+		"corkboard_message": corkboard_message,
 		"state": State.EMPTY,
 	}
-	_slot_to_quest[slot_index] = id
+	_slot_to_branch_stage[slot_index] = id
 
 
-func has_quest_for_slot(slot_index: int) -> bool:
-	return _slot_to_quest.has(slot_index)
+func has_branch_stage_for_slot(slot_index: int) -> bool:
+	return _slot_to_branch_stage.has(slot_index)
 
 
-func get_quest_id_for_slot(slot_index: int) -> String:
-	return _slot_to_quest.get(slot_index, "")
+func get_branch_stage_id_for_slot(slot_index: int) -> String:
+	return _slot_to_branch_stage.get(slot_index, "")
 
 
-func get_state(quest_id: String) -> int:
-	if not _quests.has(quest_id):
+func get_state(branch_stage_id: String) -> int:
+	if not _branch_stages.has(branch_stage_id):
 		return State.EMPTY
-	return _quests[quest_id]["state"]
+	return _branch_stages[branch_stage_id]["state"]
 
 
 func get_state_for_slot(slot_index: int) -> int:
-	var id := get_quest_id_for_slot(slot_index)
+	var id := get_branch_stage_id_for_slot(slot_index)
 	if id == "":
 		return State.EMPTY
 	return get_state(id)
 
 
-func get_title(quest_id: String) -> String:
-	if not _quests.has(quest_id):
+func get_title(branch_stage_id: String) -> String:
+	if not _branch_stages.has(branch_stage_id):
 		return ""
-	return _quests[quest_id]["title"]
+	return _branch_stages[branch_stage_id]["title"]
 
 
-func get_branch(quest_id: String) -> String:
-	if not _quests.has(quest_id):
+func get_branch(branch_stage_id: String) -> String:
+	if not _branch_stages.has(branch_stage_id):
 		return ""
-	return _quests[quest_id]["branch"]
+	return _branch_stages[branch_stage_id]["branch"]
 
 
-func is_unlocked(quest_id: String) -> bool:
-	if not _quests.has(quest_id):
+func is_unlocked(branch_stage_id: String) -> bool:
+	if not _branch_stages.has(branch_stage_id):
 		return false
-	var req: String = _quests[quest_id].get("requires", "")
+	var req: String = _branch_stages[branch_stage_id].get("requires", "")
 	if req == "":
 		return true
 	return get_state(req) == State.COMPLETED
 
 
 func is_slot_unlocked(slot_index: int) -> bool:
-	var id := get_quest_id_for_slot(slot_index)
+	var id := get_branch_stage_id_for_slot(slot_index)
 	if id == "":
 		return false
 	return is_unlocked(id)
 
 
 func can_accept_slot(slot_index: int) -> bool:
-	var id := get_quest_id_for_slot(slot_index)
+	var id := get_branch_stage_id_for_slot(slot_index)
 	if id == "":
 		return false
 	return get_state(id) == State.EMPTY and is_unlocked(id)
 
 
-## Текст, который можно перечитать наведением на сердце после «ок».
-## Пока квест не подтверждён, строки нет.
+## Текст, который можно перечитать наведением на сердечко после «ок».
+## Пока план не подтверждён, строки нет.
 func get_confirmed_description(slot_index: int) -> String:
-	var id := get_quest_id_for_slot(slot_index)
+	var id := get_branch_stage_id_for_slot(slot_index)
 	if id == "":
 		return ""
 	var state := get_state(id)
 	if state != State.ACTIVE and state != State.COMPLETED:
 		return ""
-	var msg: String = _quests[id].get("board_message", "")
+	var msg: String = _branch_stages[id].get("corkboard_message", "")
 	if msg != "":
 		return msg
 	return get_title(id)
 
 
-## Ворчание активного квеста. Его говорит AsideSystem снизу экрана, не подпись на доске.
-func get_board_message() -> String:
-	for id in _quests:
-		var q: Dictionary = _quests[id]
-		if int(q["state"]) < State.ACTIVE:
+## Ворчание активного этапа ветки. Его говорит VorchanieSystem снизу экрана, не подпись на доске.
+func get_corkboard_message() -> String:
+	for id in _branch_stages:
+		var stage: Dictionary = _branch_stages[id]
+		if int(stage["state"]) < State.ACTIVE:
 			continue
-		var msg: String = q.get("board_message", "")
+		var msg: String = stage.get("corkboard_message", "")
 		if msg != "":
 			return msg
 	return ""
 
 
-## EMPTY → PENDING (энергия перетащена, но не подтверждена).
-func set_pending(quest_id: String) -> bool:
-	if not _quests.has(quest_id) or _quests[quest_id]["state"] != State.EMPTY:
+## Вложить энергинку: EMPTY → PENDING (энергинка перетащена, но план не подтверждён).
+func invest_energinka(branch_stage_id: String) -> bool:
+	if not _branch_stages.has(branch_stage_id) or _branch_stages[branch_stage_id]["state"] != State.EMPTY:
 		return false
-	if not is_unlocked(quest_id):
+	if not is_unlocked(branch_stage_id):
 		return false
-	_set_state(quest_id, State.PENDING)
+	_set_state(branch_stage_id, State.PENDING)
 	return true
 
 
-## PENDING → EMPTY (вернули энергию до подтверждения).
-func cancel_pending(quest_id: String) -> bool:
-	if not _quests.has(quest_id) or _quests[quest_id]["state"] != State.PENDING:
+## PENDING → EMPTY (вернули энергинку до подтверждения).
+func cancel_pending(branch_stage_id: String) -> bool:
+	if not _branch_stages.has(branch_stage_id) or _branch_stages[branch_stage_id]["state"] != State.PENDING:
 		return false
-	_set_state(quest_id, State.EMPTY)
+	_set_state(branch_stage_id, State.EMPTY)
 	return true
 
 
 func has_pending() -> bool:
-	for id in _quests:
-		if _quests[id]["state"] == State.PENDING:
+	for id in _branch_stages:
+		if _branch_stages[id]["state"] == State.PENDING:
 			return true
 	return false
 
 
 func get_pending_count() -> int:
 	var count := 0
-	for id in _quests:
-		if _quests[id]["state"] == State.PENDING:
+	for id in _branch_stages:
+		if _branch_stages[id]["state"] == State.PENDING:
 			count += 1
 	return count
 
 
-## Подтверждение («Принять»): все PENDING → ACTIVE. Возвращает список заспавненных id.
-func confirm_pending() -> Array:
-	var spawned: Array = []
-	for id in _quests:
-		if _quests[id]["state"] == State.PENDING:
+## Подтвердить план («Принять»): все PENDING → ACTIVE. Возвращает список запланированных id.
+func confirm_plan() -> Array:
+	var planned: Array = []
+	for id in _branch_stages:
+		if _branch_stages[id]["state"] == State.PENDING:
 			_set_state(id, State.ACTIVE)
-			spawned.append(id)
-	for id in spawned:
-		quest_spawned.emit(id)
-	return spawned
+			planned.append(id)
+	for id in planned:
+		branch_stage_planned.emit(id)
+	return planned
 
 
-## Любое не завершённое состояние → COMPLETED.
-func complete_quest(quest_id: String) -> bool:
-	if not _quests.has(quest_id) or _quests[quest_id]["state"] == State.COMPLETED:
+## Закрыть этап ветки: любое не завершённое состояние → COMPLETED.
+func complete_branch_stage(branch_stage_id: String) -> bool:
+	if not _branch_stages.has(branch_stage_id) or _branch_stages[branch_stage_id]["state"] == State.COMPLETED:
 		return false
-	_set_state(quest_id, State.COMPLETED)
-	quest_completed.emit(quest_id)
-	show_quest_complete_banner()
+	_set_state(branch_stage_id, State.COMPLETED)
+	branch_stage_completed.emit(branch_stage_id)
+	show_branch_stage_complete_banner()
 	return true
 
 
-func show_quest_complete_banner() -> void:
+func show_branch_stage_complete_banner() -> void:
 	if not is_inside_tree():
 		return
 	var tree := get_tree()
@@ -227,7 +228,7 @@ func show_quest_complete_banner() -> void:
 	if is_instance_valid(_complete_banner):
 		_complete_banner.queue_free()
 	var layer := CanvasLayer.new()
-	layer.name = "QuestCompleteBanner"
+	layer.name = "BranchStageCompleteBanner"
 	layer.layer = COMPLETE_BANNER_LAYER
 	layer.process_mode = Node.PROCESS_MODE_ALWAYS
 	tree.root.add_child(layer)
@@ -276,8 +277,8 @@ func show_quest_complete_banner() -> void:
 
 
 func has_confirmed_plan() -> bool:
-	for id in _quests:
-		if int(_quests[id]["state"]) >= State.ACTIVE:
+	for id in _branch_stages:
+		if int(_branch_stages[id]["state"]) >= State.ACTIVE:
 			return true
 	return false
 
@@ -286,13 +287,13 @@ func reset_progress() -> void:
 	if is_instance_valid(_complete_banner):
 		_complete_banner.queue_free()
 	_complete_banner = null
-	_quests.clear()
-	_slot_to_quest.clear()
-	_define_quests()
-	for id in _quests:
-		quest_state_changed.emit(id, State.EMPTY)
+	_branch_stages.clear()
+	_slot_to_branch_stage.clear()
+	_define_branch_stages()
+	for id in _branch_stages:
+		branch_stage_state_changed.emit(id, State.EMPTY)
 
 
-func _set_state(quest_id: String, state: int) -> void:
-	_quests[quest_id]["state"] = state
-	quest_state_changed.emit(quest_id, state)
+func _set_state(branch_stage_id: String, state: int) -> void:
+	_branch_stages[branch_stage_id]["state"] = state
+	branch_stage_state_changed.emit(branch_stage_id, state)

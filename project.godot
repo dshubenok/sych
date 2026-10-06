@@ -21,14 +21,14 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-DialogSystem="*res://scripts/dialog/dialog_system.gd"
-AsideSystem="*res://scripts/aside/aside_system.gd"
-EnergySystem="*res://scripts/energy_system.gd"
-QuestSystem="*res://scripts/quests/quest_system.gd"
+ComicDialogueSystem="*res://scripts/comic_dialogue/comic_dialogue_system.gd"
+VorchanieSystem="*res://scripts/vorchanie/vorchanie_system.gd"
+EnerginkaSystem="*res://scripts/energinka_system.gd"
+BranchSystem="*res://scripts/branches/branch_system.gd"
 DaySystem="*res://scripts/day_system.gd"
 LocationRegistry="*res://scripts/world/location_registry.gd"
 LocationManager="*res://scripts/world/location_manager.gd"
-RoomPool="*res://scripts/world/room_pool.gd"
+CabinetPool="*res://scripts/world/cabinet_pool.gd"
 
 [input]
 

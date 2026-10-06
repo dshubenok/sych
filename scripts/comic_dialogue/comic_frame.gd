@@ -1,6 +1,6 @@
 extends Panel
-class_name ComicPanel
-## Один «кадр» комиксной страницы. Пока показывает цветной плейсхолдер,
+class_name ComicFrame
+## Один кадр комикса — один из четырёх кадров комиксного диалога. Пока показывает цветной плейсхолдер,
 ## когда появятся PNG — подхватит их в TextureRect.
 
 @onready var _background: ColorRect = $Background

@@ -1,23 +1,23 @@
 extends CanvasLayer
-## UI-слой комиксной страницы.
-## • Кадры появляются по очереди с интервалом `panel_reveal_interval`.
+## UI-слой комиксного диалога (страница из четырёх кадров комикса).
+## • Кадры появляются по очереди с интервалом `frame_reveal_interval`.
 ## • E / Пробел / ЛКМ — пропустить таймер к следующему кадру; после показа
-##   всех — закрыть диалог.
-## • ESC / Q / ПКМ — скипнуть весь диалог в любой момент.
+##   всех — закрыть комиксный диалог.
+## • ESC / Q / ПКМ — скипнуть весь комиксный диалог в любой момент.
 
 signal finished
 
-const COMIC_PANEL_SCENE := preload("res://scenes/ui/comic_panel.tscn")
+const COMIC_FRAME_SCENE := preload("res://scenes/ui/comic_frame.tscn")
 
 const HINT_REVEALING := "E / Пробел / ЛКМ — дальше        ESC — пропустить"
 const HINT_DONE := "E / Пробел / ЛКМ — продолжить        ESC — пропустить"
 
-@export var panel_reveal_interval: float = 2.0
+@export var frame_reveal_interval: float = 2.0
 
 @onready var _grid: GridContainer = $Root/Page/AspectRatio/Grid
 @onready var _hint: Label = $Root/Hint
 
-var _panels_data: Array = []
+var _frames_data: Array = []
 var _revealed: int = 0
 var _all_revealed: bool = false
 var _reveal_token: int = 0
@@ -30,7 +30,7 @@ func _ready() -> void:
 
 
 func play(data: Dictionary) -> void:
-	_panels_data = data.get("panels", [])
+	_frames_data = data.get("frames", [])
 	_revealed = 0
 	_all_revealed = false
 	_closing = false
@@ -39,12 +39,12 @@ func play(data: Dictionary) -> void:
 	for child in _grid.get_children():
 		child.queue_free()
 
-	_grid.columns = 2 if _panels_data.size() >= 2 else 1
+	_grid.columns = 2 if _frames_data.size() >= 2 else 1
 
-	for i in range(_panels_data.size()):
-		var panel: ComicPanel = COMIC_PANEL_SCENE.instantiate()
-		_grid.add_child(panel)
-		panel.set_hidden_placeholder()
+	for i in range(_frames_data.size()):
+		var frame: ComicFrame = COMIC_FRAME_SCENE.instantiate()
+		_grid.add_child(frame)
+		frame.set_hidden_placeholder()
 
 	_hint.text = HINT_REVEALING
 	_reveal_next()
@@ -52,20 +52,20 @@ func play(data: Dictionary) -> void:
 
 func _reveal_next() -> void:
 	_reveal_token += 1
-	if _revealed >= _panels_data.size():
+	if _revealed >= _frames_data.size():
 		_mark_all_revealed()
 		return
 
-	var panel_node: ComicPanel = _grid.get_child(_revealed) as ComicPanel
-	panel_node.apply_data(_panels_data[_revealed])
+	var frame_node: ComicFrame = _grid.get_child(_revealed) as ComicFrame
+	frame_node.apply_data(_frames_data[_revealed])
 	_revealed += 1
 
-	if _revealed >= _panels_data.size():
+	if _revealed >= _frames_data.size():
 		_mark_all_revealed()
 		return
 
 	var token := _reveal_token
-	var timer := get_tree().create_timer(panel_reveal_interval)
+	var timer := get_tree().create_timer(frame_reveal_interval)
 	timer.timeout.connect(func() -> void:
 		if token == _reveal_token:
 			_reveal_next()
