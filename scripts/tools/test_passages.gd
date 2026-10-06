@@ -15,11 +15,7 @@ func _ready() -> void:
 	LocationManager.set_container(self)
 
 	await _check_location_doors(&"sychevalnya", errors)
-	await _check_location_doors(&"territoriya_sharagi", errors)
 	await _check_location_doors(&"sharaga", errors)
-	await _check_stream(&"territoriya_sharagi", &"sharaga", errors)
-	await _check_stream(&"territoriya_sharagi", &"naruzha", errors)
-	await _check_stream(&"sharaga", &"territoriya_sharagi", errors)
 	await _check_in_place_cabinets(errors)
 	await _check_doors_stay_open(errors)
 

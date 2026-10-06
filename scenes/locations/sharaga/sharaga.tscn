@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://sych_loc_sharaga"]
+[gd_scene load_steps=21 format=3 uid="uid://sych_loc_sharaga"]
 
 [ext_resource type="Script" path="res://scripts/world/location.gd" id="1_loc"]
 [ext_resource type="Script" path="res://scripts/world/model_collisions.gd" id="2_col"]
@@ -21,9 +21,6 @@ size = Vector3(11.9, 6.4, 8.0)
 
 [sub_resource type="BoxShape3D" id="BlockerEntryShape"]
 size = Vector3(5.0, 6.8, 0.5)
-
-[sub_resource type="BoxMesh" id="SlabEntryMesh"]
-size = Vector3(4.9, 6.7, 0.16)
 
 [sub_resource type="BoxShape3D" id="BlockerF1Shape"]
 size = Vector3(3.9, 4.9, 0.5)
@@ -66,17 +63,12 @@ script = ExtResource("2_col")
 [node name="SychSpawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 4)
 
-[node name="DoorToTerritory" parent="." instance=ExtResource("4_door")]
+[node name="EntranceBlocker" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, -0.07, 16)
-target_location_id = &"territoriya_sharagi"
 
-[node name="Shape" parent="DoorToTerritory/Blocker"]
+[node name="Shape" type="CollisionShape3D" parent="EntranceBlocker"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
 shape = SubResource("BlockerEntryShape")
-
-[node name="Slab" parent="DoorToTerritory"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
-mesh = SubResource("SlabEntryMesh")
 
 [node name="PresenceZone" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.7, 0.2)

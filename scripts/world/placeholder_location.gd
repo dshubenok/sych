@@ -13,7 +13,7 @@ const PORTAL_SCENE := preload("res://scenes/world/location_portal.tscn")
 @export var wall_color: Color = Color(0.20, 0.20, 0.26)
 ## Соседи с бесшовными дверьми-стримерами (открываются по «E»).
 @export var stream_exits: Array[StringName] = []
-## Соседи с порталами-затемнением (граница Сычевальня ⇄ Территория).
+## Соседи с порталами-затемнением (граница между дискретными зонами, например Сычевальня ⇄ Шарага).
 @export var portal_exits: Array[StringName] = []
 
 var _door_t: Array[float] = []  # позиции дверей по периметру (для проёмов в стенах)
