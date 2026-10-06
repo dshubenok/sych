@@ -1,6 +1,6 @@
 extends Node
 
-## Этап ветки «найти Историка» на ветке Демонолога:
+## Этап ветки «найти Историка»:
 ##   godot --headless --path . res://scenes/tools/test_historian_branch_stage.tscn
 
 const HISTORIAN := "res://scenes/actors/npcs/historian.tscn"
@@ -38,15 +38,11 @@ func _test_corkboard_and_unlock(errors: Array) -> void:
 	EnerginkaSystem.reset_progress()
 	BranchSystem.reset_progress()
 	if not BranchSystem.has_branch_stage_for_slot(4):
-		errors.append("первое сердечко ветки Демонолога пусто")
+		errors.append("первое сердечко ветки Историка пусто")
 	if BranchSystem.get_branch_stage_id_for_slot(4) != BranchSystem.BRANCH_STAGE_FIND_HISTORIAN:
 		errors.append("слот 4 должен быть find_historian")
 	if not BranchSystem.is_slot_unlocked(4):
-		errors.append("первое сердечко Демонолога должно быть открыто с утра")
-	if BranchSystem.is_slot_unlocked(5):
-		errors.append("второе сердечко открылось до закрытия этапа Историка")
-	if BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_DEMONOLOG_2):
-		errors.append("второе сердечко приняло энергинку до Историка")
+		errors.append("первое сердечко Историка должно быть открыто с утра")
 	if not BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN):
 		errors.append("не удалось вложить энергинку в Историка")
 	if not EnerginkaSystem.spend_energinka(1):
@@ -150,10 +146,6 @@ func _test_comic_dialogue_reward(errors: Array) -> void:
 			errors.append("текст экрана закрытия этапа ветки неверный")
 	if EnerginkaSystem.collect_upgrade(&"historian_branch_stage"):
 		errors.append("повтор диалога не должен давать вторую энергинку")
-	if not BranchSystem.is_slot_unlocked(5):
-		errors.append("второе сердечко ветки Демонолога не открылось")
-	if not BranchSystem.invest_energinka(BranchSystem.BRANCH_STAGE_DEMONOLOG_2):
-		errors.append("во второе сердечко нельзя вложить энергинку после Историка")
 	npc._sych_in_range = true
 	npc._interact()
 	await get_tree().process_frame
@@ -163,7 +155,7 @@ func _test_comic_dialogue_reward(errors: Array) -> void:
 		await get_tree().process_frame
 	npc.queue_free()
 	await get_tree().process_frame
-	print("  OK  комиксный диалог, +1 к пулу, следующее сердечко")
+	print("  OK  комиксный диалог, +1 к пулу")
 
 
 func _test_scale_and_banner(errors: Array) -> void:
@@ -202,6 +194,5 @@ func _test_scale_and_banner(errors: Array) -> void:
 
 
 func _force_historian_cabinet_choice() -> void:
-	CabinetPool._used[&"demonologist"] = true
 	var choice: Array[StringName] = [&"historian_cabinet", &"classroom"]
 	CabinetPool._wing_cabinet_choices[CabinetPool.Wing.FIRST_FLOOR_LEFT] = choice
