@@ -2,8 +2,9 @@ extends Node3D
 class_name ModelCollisions
 
 ## Тримеш-коллизии для импортированной модели, с вырезом проёмов под двери
-## и порталы той же локации. Крупные стены — это 1–2 треугольника на всю грань,
-## поэтому пересекающие проём грани subdivидятся, а куски внутри двери отбрасываются.
+## и порталы той же локации, а также явных объёмов `CollisionCutout`.
+## Крупные стены — это 1–2 треугольника на всю грань, поэтому пересекающие
+## вырез грани subdivидятся, а куски внутри выреза отбрасываются.
 
 const DOOR_HALF_WIDTH := 1.4
 const DOOR_HEIGHT := 2.9
@@ -11,16 +12,37 @@ const DOOR_Y_MIN := 0.22
 const DOOR_DEPTH := 1.6
 const SUBDIV_DEPTH := 5
 
+## Вырез в локальных координатах узла: трансформ + границы.
+class Cutout:
+	var inverse: Transform3D
+	var box: AABB
+
+	func _init(xf: Transform3D, bounds: AABB) -> void:
+		inverse = xf.affine_inverse()
+		box = bounds
+
+	func contains(world: Vector3) -> bool:
+		return box.has_point(inverse * world)
+
+	func overlaps_tri(a: Vector3, b: Vector3, c: Vector3) -> bool:
+		var la: Vector3 = inverse * a
+		var lb: Vector3 = inverse * b
+		var lc: Vector3 = inverse * c
+		var mn := Vector3(minf(la.x, minf(lb.x, lc.x)), minf(la.y, minf(lb.y, lc.y)), minf(la.z, minf(lb.z, lc.z)))
+		var mx := Vector3(maxf(la.x, maxf(lb.x, lc.x)), maxf(la.y, maxf(lb.y, lc.y)), maxf(la.z, maxf(lb.z, lc.z)))
+		return AABB(mn, mx - mn).intersects(box)
+
+
 func _ready() -> void:
 	call_deferred("_build")
 
 
 func _build() -> void:
-	var doors: Array[Transform3D] = []
+	var cutouts: Array[Cutout] = []
 	var loc := _owner_location()
 	if loc:
-		_collect_doors(loc, doors)
-	_generate(self, doors)
+		_collect_cutouts(loc, cutouts)
+	_generate(self, cutouts)
 
 
 func _owner_location() -> Node:
@@ -32,21 +54,27 @@ func _owner_location() -> Node:
 	return get_parent()
 
 
-func _collect_doors(node: Node, acc: Array[Transform3D]) -> void:
+func _collect_cutouts(node: Node, acc: Array[Cutout]) -> void:
 	for child in node.get_children():
 		if child is StreamingDoor or child is LocationPortal:
-			acc.append((child as Node3D).global_transform)
-		_collect_doors(child, acc)
+			var door_box := AABB(
+				Vector3(-DOOR_HALF_WIDTH, DOOR_Y_MIN, -DOOR_DEPTH),
+				Vector3(DOOR_HALF_WIDTH * 2.0, DOOR_HEIGHT - DOOR_Y_MIN, DOOR_DEPTH * 2.0))
+			acc.append(Cutout.new((child as Node3D).global_transform, door_box))
+		elif child is CollisionCutout:
+			var size: Vector3 = (child as CollisionCutout).size
+			acc.append(Cutout.new((child as Node3D).global_transform, AABB(-size * 0.5, size)))
+		_collect_cutouts(child, acc)
 
 
-func _generate(node: Node, doors: Array[Transform3D]) -> void:
+func _generate(node: Node, cutouts: Array[Cutout]) -> void:
 	if node is MeshInstance3D and (node as MeshInstance3D).mesh != null:
-		_create_collision(node as MeshInstance3D, doors)
+		_create_collision(node as MeshInstance3D, cutouts)
 	for child in node.get_children():
-		_generate(child, doors)
+		_generate(child, cutouts)
 
 
-func _create_collision(mi: MeshInstance3D, doors: Array[Transform3D]) -> void:
+func _create_collision(mi: MeshInstance3D, cutouts: Array[Cutout]) -> void:
 	var mesh: Mesh = mi.mesh
 	var faces := PackedVector3Array()
 	for s in range(mesh.get_surface_count()):
@@ -58,13 +86,13 @@ func _create_collision(mi: MeshInstance3D, doors: Array[Transform3D]) -> void:
 		if indices != null and indices.size() >= 3:
 			var i := 0
 			while i + 2 < indices.size():
-				_add_filtered_tri(faces, mi, doors,
+				_add_filtered_tri(faces, mi, cutouts,
 					verts[indices[i]], verts[indices[i + 1]], verts[indices[i + 2]], 0)
 				i += 3
 		else:
 			var i := 0
 			while i + 2 < verts.size():
-				_add_filtered_tri(faces, mi, doors, verts[i], verts[i + 1], verts[i + 2], 0)
+				_add_filtered_tri(faces, mi, cutouts, verts[i], verts[i + 1], verts[i + 2], 0)
 				i += 3
 	if faces.size() < 9:
 		push_warning("[ModelCollisions] Нет треугольников для коллизии у %s" % mi.name)
@@ -119,22 +147,21 @@ func _add_box(mi: MeshInstance3D, bounds: AABB) -> void:
 
 
 func _add_filtered_tri(faces: PackedVector3Array, mi: MeshInstance3D,
-		doors: Array[Transform3D], a: Vector3, b: Vector3, c: Vector3, depth: int) -> void:
+		cutouts: Array[Cutout], a: Vector3, b: Vector3, c: Vector3, depth: int) -> void:
 	var xf := mi.global_transform
 	var wa := xf * a
 	var wb := xf * b
 	var wc := xf * c
-	var door_i := _overlapping_door_index(wa, wb, wc, doors)
-	if door_i < 0:
+	var cut := _overlapping_cutout(wa, wb, wc, cutouts)
+	if cut == null:
 		faces.append(a)
 		faces.append(b)
 		faces.append(c)
 		return
-	var door: Transform3D = doors[door_i]
-	if _point_in_door(wa, door) and _point_in_door(wb, door) and _point_in_door(wc, door):
+	if cut.contains(wa) and cut.contains(wb) and cut.contains(wc):
 		return
 	if depth >= SUBDIV_DEPTH:
-		if _aabb_overlaps_door(wa, wb, wc, door):
+		if cut.overlaps_tri(wa, wb, wc):
 			return
 		faces.append(a)
 		faces.append(b)
@@ -143,33 +170,14 @@ func _add_filtered_tri(faces: PackedVector3Array, mi: MeshInstance3D,
 	var ab := (a + b) * 0.5
 	var bc := (b + c) * 0.5
 	var ca := (c + a) * 0.5
-	_add_filtered_tri(faces, mi, doors, a, ab, ca, depth + 1)
-	_add_filtered_tri(faces, mi, doors, ab, b, bc, depth + 1)
-	_add_filtered_tri(faces, mi, doors, ca, bc, c, depth + 1)
-	_add_filtered_tri(faces, mi, doors, ab, bc, ca, depth + 1)
+	_add_filtered_tri(faces, mi, cutouts, a, ab, ca, depth + 1)
+	_add_filtered_tri(faces, mi, cutouts, ab, b, bc, depth + 1)
+	_add_filtered_tri(faces, mi, cutouts, ca, bc, c, depth + 1)
+	_add_filtered_tri(faces, mi, cutouts, ab, bc, ca, depth + 1)
 
 
-func _overlapping_door_index(a: Vector3, b: Vector3, c: Vector3,
-		doors: Array[Transform3D]) -> int:
-	for i in range(doors.size()):
-		if _aabb_overlaps_door(a, b, c, doors[i]):
-			return i
-	return -1
-
-
-func _aabb_overlaps_door(a: Vector3, b: Vector3, c: Vector3, door: Transform3D) -> bool:
-	var la: Vector3 = door.affine_inverse() * a
-	var lb: Vector3 = door.affine_inverse() * b
-	var lc: Vector3 = door.affine_inverse() * c
-	var mn := Vector3(minf(la.x, minf(lb.x, lc.x)), minf(la.y, minf(lb.y, lc.y)), minf(la.z, minf(lb.z, lc.z)))
-	var mx := Vector3(maxf(la.x, maxf(lb.x, lc.x)), maxf(la.y, maxf(lb.y, lc.y)), maxf(la.z, maxf(lb.z, lc.z)))
-	return mx.x >= -DOOR_HALF_WIDTH and mn.x <= DOOR_HALF_WIDTH \
-		and mx.y >= DOOR_Y_MIN and mn.y <= DOOR_HEIGHT \
-		and mx.z >= -DOOR_DEPTH and mn.z <= DOOR_DEPTH
-
-
-func _point_in_door(world: Vector3, door: Transform3D) -> bool:
-	var local: Vector3 = door.affine_inverse() * world
-	return absf(local.x) <= DOOR_HALF_WIDTH \
-		and local.y >= DOOR_Y_MIN and local.y <= DOOR_HEIGHT \
-		and absf(local.z) <= DOOR_DEPTH
+func _overlapping_cutout(a: Vector3, b: Vector3, c: Vector3, cutouts: Array[Cutout]) -> Cutout:
+	for cut in cutouts:
+		if cut.overlaps_tri(a, b, c):
+			return cut
+	return null
