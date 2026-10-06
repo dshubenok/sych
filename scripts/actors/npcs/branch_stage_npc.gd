@@ -1,30 +1,30 @@
 extends Node3D
-class_name QuestNpc
-## NPC, привязанный к квесту:
-##   • скрыт в мире, пока его квест не заспавнен (reveal_on_quest);
-##   • при спавне квеста становится видимым и доступным для взаимодействия;
-##   • по E показывает приветствие или комикс, затем завершает квест.
-##   • energy_upgrade_id — одноразовый +1 к максимуму энергии.
+class_name BranchStageNpc
+## NPC, привязанный к этапу ветки (энкаунтер):
+##   • скрыт в мире, пока его этап не запланирован (reveal_on_branch_stage);
+##   • когда этап запланирован, становится видимым и доступным для взаимодействия;
+##   • по E показывает приветствие или комиксный диалог, затем закрывает этап ветки.
+##   • energinka_upgrade_id — одноразовый +1 к максимуму энергинок.
 
 const INTERACTION_PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 
-## Квест, спавн которого открывает (показывает) этого NPC. Пусто — NPC виден сразу.
-@export var reveal_on_quest: String = ""
-## Квест, который завершается при взаимодействии. Пусто — ничего не завершает.
-@export var completes_quest: String = ""
-## ID комикс-диалога (JSON в res://assets/dialogs/). Пусто — только приветствие.
-@export var dialog_id: String = ""
-## Одноразовый апгрейд пула энергии после диалога/приветствия.
-@export var energy_upgrade_id: StringName = &""
+## Этап ветки, планирование которого открывает (показывает) этого NPC. Пусто — NPC виден сразу.
+@export var reveal_on_branch_stage: String = ""
+## Этап ветки, который закрывается при взаимодействии. Пусто — ничего не закрывает.
+@export var completes_branch_stage: String = ""
+## ID комиксного диалога (JSON в res://assets/comic_dialogues/). Пусто — только приветствие.
+@export var comic_dialogue_id: String = ""
+## Одноразовый апгрейд пула энергинок после диалога/приветствия.
+@export var energinka_upgrade_id: StringName = &""
 @export var interaction_radius: float = 2.5
 @export var prompt_offset: Vector3 = Vector3(0.0, 2.4, 0.0)
 @export var greeting: String = "Привет!"
 @export var greeting_font_size: int = 48
 @export var greeting_duration: float = 2.5
-## Скрывать NPC, пока reveal_on_quest не заспавнен.
+## Скрывать NPC, пока reveal_on_branch_stage не запланирован.
 @export var hidden_until_revealed: bool = true
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _revealed: bool = false
 var _done: bool = false
 var _prompt: Node3D = null
@@ -41,19 +41,19 @@ func _ready() -> void:
 	_create_message_label()
 
 	_revealed = not hidden_until_revealed
-	if reveal_on_quest != "" and QuestSystem.get_state(reveal_on_quest) >= QuestSystem.State.ACTIVE:
+	if reveal_on_branch_stage != "" and BranchSystem.get_state(reveal_on_branch_stage) >= BranchSystem.State.ACTIVE:
 		_revealed = true
-	if completes_quest != "" and QuestSystem.get_state(completes_quest) == QuestSystem.State.COMPLETED:
+	if completes_branch_stage != "" and BranchSystem.get_state(completes_branch_stage) == BranchSystem.State.COMPLETED:
 		_done = true
 		_revealed = true
 	visible = _revealed
 
-	if not QuestSystem.quest_spawned.is_connected(_on_quest_spawned):
-		QuestSystem.quest_spawned.connect(_on_quest_spawned)
+	if not BranchSystem.branch_stage_planned.is_connected(_on_branch_stage_planned):
+		BranchSystem.branch_stage_planned.connect(_on_branch_stage_planned)
 
 
-func _on_quest_spawned(quest_id: String) -> void:
-	if quest_id == reveal_on_quest:
+func _on_branch_stage_planned(branch_stage_id: String) -> void:
+	if branch_stage_id == reveal_on_branch_stage:
 		_reveal()
 
 
@@ -86,14 +86,14 @@ func _ensure_area() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		_refresh_prompt()
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		if _prompt:
 			_prompt.visible = false
 
@@ -101,7 +101,7 @@ func _on_body_exited(body: Node) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not _can_interact():
 		return
-	if DialogSystem.is_active():
+	if ComicDialogueSystem.is_active():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
 		_interact()
@@ -109,7 +109,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _can_interact() -> bool:
-	return _revealed and _player_in_range and not _done and not _message_active
+	return _revealed and _sych_in_range and not _done and not _message_active
 
 
 func _refresh_prompt() -> void:
@@ -121,17 +121,17 @@ func _refresh_prompt() -> void:
 func _interact() -> void:
 	if _done:
 		return
-	if dialog_id != "":
-		if DialogSystem.start_dialog(dialog_id):
-			if not DialogSystem.dialog_finished.is_connected(_on_dialog_finished):
-				DialogSystem.dialog_finished.connect(_on_dialog_finished, CONNECT_ONE_SHOT)
+	if comic_dialogue_id != "":
+		if ComicDialogueSystem.start_comic_dialogue(comic_dialogue_id):
+			if not ComicDialogueSystem.comic_dialogue_finished.is_connected(_on_comic_dialogue_finished):
+				ComicDialogueSystem.comic_dialogue_finished.connect(_on_comic_dialogue_finished, CONNECT_ONE_SHOT)
 		return
 	_show_greeting()
 	_finish_interaction()
 
 
-func _on_dialog_finished(finished_dialog_id: String) -> void:
-	if finished_dialog_id != dialog_id:
+func _on_comic_dialogue_finished(finished_comic_dialogue_id: String) -> void:
+	if finished_comic_dialogue_id != comic_dialogue_id:
 		return
 	_finish_interaction()
 
@@ -142,10 +142,10 @@ func _finish_interaction() -> void:
 	_done = true
 	if _prompt:
 		_prompt.visible = false
-	if completes_quest != "":
-		QuestSystem.complete_quest(completes_quest)
-	if energy_upgrade_id != &"":
-		EnergySystem.collect_upgrade(energy_upgrade_id)
+	if completes_branch_stage != "":
+		BranchSystem.complete_branch_stage(completes_branch_stage)
+	if energinka_upgrade_id != &"":
+		EnerginkaSystem.collect_upgrade(energinka_upgrade_id)
 
 
 func _create_message_label() -> void:

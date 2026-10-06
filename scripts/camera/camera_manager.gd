@@ -10,8 +10,8 @@ var _active_zones: Array = []
 var _target_camera: Camera3D
 var _is_dynamic_target: bool = false
 var _tween: Tween
-var _player: Node3D
-var _player_cam: Camera3D
+var _sych: Node3D
+var _sych_cam: Camera3D
 var blend_camera: Camera3D
 
 
@@ -25,24 +25,24 @@ func _ready() -> void:
 		blend_camera.make_current()
 
 	await get_tree().process_frame
-	_player = get_tree().get_first_node_in_group(&"player")
+	_sych = get_tree().get_first_node_in_group(&"sych")
 
-	if _player:
-		_player_cam = _player.get_node_or_null("CameraPivot/SpringArm3D/Camera3D")
+	if _sych:
+		_sych_cam = _sych.get_node_or_null("CameraPivot/SpringArm3D/Camera3D")
 
-	if _active_zones.is_empty() and _player_cam and blend_camera:
-		_target_camera = _player_cam
-		blend_camera.global_transform = _player_cam.global_transform
-		blend_camera.fov = _player_cam.fov
+	if _active_zones.is_empty() and _sych_cam and blend_camera:
+		_target_camera = _sych_cam
+		blend_camera.global_transform = _sych_cam.global_transform
+		blend_camera.fov = _sych_cam.fov
 
 
 func _process(delta: float) -> void:
-	if _target_camera == _player_cam:
-		if blend_camera and _player_cam:
+	if _target_camera == _sych_cam:
+		if blend_camera and _sych_cam:
 			blend_camera.global_transform = blend_camera.global_transform.interpolate_with(
-				_player_cam.global_transform, delta * default_smooth
+				_sych_cam.global_transform, delta * default_smooth
 			)
-			blend_camera.fov = lerp(blend_camera.fov, _player_cam.fov, delta * default_smooth)
+			blend_camera.fov = lerp(blend_camera.fov, _sych_cam.fov, delta * default_smooth)
 	elif _is_dynamic_target and blend_camera and _target_camera:
 		blend_camera.global_transform = blend_camera.global_transform.interpolate_with(
 			_target_camera.global_transform, delta * 5.0
@@ -67,11 +67,11 @@ func zone_exited(zone: Node) -> void:
 func _recalculate() -> void:
 	if _active_zones.is_empty():
 		_is_dynamic_target = false
-		if _player_cam != null and _target_camera != _player_cam:
-			_target_camera = _player_cam
+		if _sych_cam != null and _target_camera != _sych_cam:
+			_target_camera = _sych_cam
 			if _tween and _tween.is_running():
 				_tween.kill()
-			_copy_camera_extras(_player_cam)
+			_copy_camera_extras(_sych_cam)
 		return
 
 	var best = _active_zones[0]

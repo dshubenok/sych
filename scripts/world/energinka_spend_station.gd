@@ -1,18 +1,18 @@
 extends Node3D
-class_name EnergySpendStation
-## Тестовая точка расхода энергии на локации.
+class_name EnerginkaSpendStation
+## Тестовая точка расхода энергинок на локации.
 ## Нужна, чтобы проверять истощение дня без полноценного энкаунтера.
 
 const INTERACTION_PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 
 @export var interaction_radius: float = 2.0
 @export var prompt_offset: Vector3 = Vector3(0.0, 2.2, 0.0)
-@export var energy_cost: int = 1
+@export var energinka_cost: int = 1
 @export var success_message: String = "Минус энергинка"
-@export var no_energy_message: String = "Нет энергии"
+@export var no_energinka_message: String = "Нет энергинок"
 @export var message_duration: float = 1.4
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D = null
 var _message_label: Label3D = null
 var _message_active: bool = false
@@ -48,30 +48,30 @@ func _ensure_area() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		if _prompt and not _message_active:
 			_prompt.visible = true
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		if _prompt:
 			_prompt.visible = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _player_in_range or DialogSystem.is_active():
+	if not _sych_in_range or ComicDialogueSystem.is_active():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
-		_spend_energy()
+		_spend_energinka()
 		get_viewport().set_input_as_handled()
 
 
-func _spend_energy() -> void:
-	var spent := EnergySystem.try_spend(energy_cost)
-	_show_message(success_message if spent else no_energy_message)
+func _spend_energinka() -> void:
+	var spent := EnerginkaSystem.spend_energinka(energinka_cost)
+	_show_message(success_message if spent else no_energinka_message)
 
 
 func _create_message_label() -> void:
@@ -102,6 +102,6 @@ func _show_message(text: String) -> void:
 			return
 		_message_label.visible = false
 		_message_active = false
-		if _player_in_range and _prompt:
+		if _sych_in_range and _prompt:
 			_prompt.visible = true
 	)

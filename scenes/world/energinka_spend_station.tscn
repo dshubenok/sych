@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://sych_energy_spend_station"]
+[gd_scene load_steps=5 format=3 uid="uid://sych_energinka_spend_station"]
 
-[ext_resource type="Script" path="res://scripts/world/energy_spend_station.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://Icon_Energy_Full.png" id="2_texture"]
+[ext_resource type="Script" path="res://scripts/world/energinka_spend_station.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://Icon_Energinka_Full.png" id="2_texture"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_station"]
 size = Vector2(1.4, 1.4)
@@ -15,11 +15,11 @@ shading_mode = 0
 alpha_scissor_threshold = 0.1
 no_depth_test = false
 
-[node name="EnergySpendStation" type="Node3D"]
+[node name="EnerginkaSpendStation" type="Node3D"]
 script = ExtResource("1_script")
 interaction_radius = 2.0
 prompt_offset = Vector3(0, 2.0, 0)
-energy_cost = 1
+energinka_cost = 1
 success_message = "Минус энергинка"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

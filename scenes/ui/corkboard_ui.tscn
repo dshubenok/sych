@@ -1,7 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://sych_energy_board_ui"]
+[gd_scene load_steps=7 format=3 uid="uid://sych_corkboard_ui"]
 
-[ext_resource type="Script" path="res://scripts/ui/energy_board_ui.gd" id="1_script"]
-[ext_resource type="Script" path="res://scripts/ui/energy_return_zone.gd" id="2_return_zone"]
+[ext_resource type="Script" path="res://scripts/ui/corkboard_ui.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/energinka_return_zone.gd" id="2_return_zone"]
 [ext_resource type="Texture2D" path="res://Board_Test_Cut/Board.png" id="3_board"]
 [ext_resource type="Texture2D" path="res://Board_Test_Cut/BoardPortrait_Kotik.png" id="4_kotik"]
 [ext_resource type="Texture2D" path="res://assets/textures/characters/historian.png" id="5_historian"]
@@ -20,7 +20,7 @@ content_margin_right = 6.0
 content_margin_bottom = 2.0
 bg_color = Color(0.701961, 0.701961, 0.701961, 1)
 
-[node name="EnergyBoardUi" type="CanvasLayer"]
+[node name="CorkboardUi" type="CanvasLayer"]
 layer = 110
 script = ExtResource("1_script")
 
@@ -189,7 +189,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="AvailableEnergy" type="VBoxContainer" parent="Root/BoardFrame/BoardContent"]
+[node name="AvailableEnerginka" type="VBoxContainer" parent="Root/BoardFrame/BoardContent"]
 anchor_left = 0.75
 anchor_top = 0.029
 anchor_right = 0.959
@@ -198,17 +198,17 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="Label" type="Label" parent="Root/BoardFrame/BoardContent/AvailableEnergy"]
+[node name="Label" type="Label" parent="Root/BoardFrame/BoardContent/AvailableEnerginka"]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.08, 0.055, 0.05, 1)
 theme_override_colors/font_outline_color = Color(0.86, 0.75, 0.62, 0.7)
 theme_override_constants/outline_size = 2
 theme_override_font_sizes/font_size = 18
-text = "Доступная энергия"
+text = "Доступные энергинки"
 horizontal_alignment = 1
 
-[node name="Icons" type="HBoxContainer" parent="Root/BoardFrame/BoardContent/AvailableEnergy"]
+[node name="Icons" type="HBoxContainer" parent="Root/BoardFrame/BoardContent/AvailableEnerginka"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -216,7 +216,7 @@ theme_override_constants/separation = 16
 alignment = 1
 script = ExtResource("2_return_zone")
 
-[node name="KotikSlots" type="HBoxContainer" parent="Root/BoardFrame/BoardContent"]
+[node name="KotikHearts" type="HBoxContainer" parent="Root/BoardFrame/BoardContent"]
 anchor_left = 0.338
 anchor_top = 0.227
 anchor_right = 0.66
@@ -227,7 +227,7 @@ theme_override_constants/separation = 16
 alignment = 1
 clip_contents = true
 
-[node name="LisikSlots" type="HBoxContainer" parent="Root/BoardFrame/BoardContent"]
+[node name="LisikHearts" type="HBoxContainer" parent="Root/BoardFrame/BoardContent"]
 anchor_left = 0.338
 anchor_top = 0.647
 anchor_right = 0.66
@@ -255,7 +255,7 @@ horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
-[node name="ConfirmButton" type="Button" parent="Root/BoardFrame/BoardContent"]
+[node name="ConfirmPlanButton" type="Button" parent="Root/BoardFrame/BoardContent"]
 anchor_left = 0.805
 anchor_top = 0.259
 anchor_right = 0.987
@@ -275,7 +275,7 @@ theme_override_styles/focus = SubResource("StyleBox_button")
 disabled = true
 text = "ок"
 
-[node name="HowTo" type="Panel" parent="Root/BoardFrame/BoardContent"]
+[node name="Sticker" type="Panel" parent="Root/BoardFrame/BoardContent"]
 anchor_left = 0.878
 anchor_top = 0.465
 anchor_right = 1.07
@@ -287,7 +287,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBox_sticker")
 
-[node name="Text" type="Label" parent="Root/BoardFrame/BoardContent/HowTo"]
+[node name="Text" type="Label" parent="Root/BoardFrame/BoardContent/Sticker"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0

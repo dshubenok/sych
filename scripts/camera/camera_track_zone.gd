@@ -18,7 +18,7 @@ var _manager: Node
 var _start_cam: Camera3D
 var _end_cam: Camera3D
 var _poi: Node3D
-var _player: Node3D
+var _sych: Node3D
 var _track_camera: Camera3D
 var _current_t: float = 0.0
 var _is_active: bool = false
@@ -51,17 +51,17 @@ func _ready() -> void:
 	await get_tree().process_frame
 	await get_tree().process_frame
 	_manager = get_tree().get_first_node_in_group(&"camera_manager")
-	_player = get_tree().get_first_node_in_group(&"player")
+	_sych = get_tree().get_first_node_in_group(&"sych")
 	print("[CameraTrackZone] ", name, " ready. start_cam: ", _start_cam, " end_cam: ", _end_cam, " poi: ", _poi, " max_dist: ", max_distance)
 
 	# Проверяем, не находится ли игрок уже внутри зоны при старте
 	for body in get_overlapping_bodies():
-		if body.is_in_group(&"player"):
+		if body.is_in_group(&"sych"):
 			_on_body_entered(body)
 
 
 func _process(delta: float) -> void:
-	if not _is_active or not _player or not _poi or not _start_cam or not _end_cam:
+	if not _is_active or not _sych or not _poi or not _start_cam or not _end_cam:
 		return
 
 	var target_t = _calculate_progress()
@@ -80,18 +80,18 @@ func _process(delta: float) -> void:
 func _calculate_progress() -> float:
 	if max_distance < 0.01:
 		return 0.0
-	var player_dist = _player.global_position.distance_to(_poi.global_position)
+	var sych_dist = _sych.global_position.distance_to(_poi.global_position)
 	# Чем ближе к POI — тем больше t (ближе к end_camera)
-	var t = 1.0 - (player_dist / max_distance)
+	var t = 1.0 - (sych_dist / max_distance)
 	return clamp(t, 0.0, 1.0)
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		print("[CameraTrackZone] ", name, " player entered")
+	if body.is_in_group(&"sych"):
+		print("[CameraTrackZone] ", name, " sych entered")
 		_is_active = true
 		# Инициализируем t на основе текущей позиции игрока
-		if _player and _poi and max_distance > 0.01:
+		if _sych and _poi and max_distance > 0.01:
 			_current_t = _calculate_progress()
 		if _manager == null:
 			_manager = get_tree().get_first_node_in_group(&"camera_manager")
@@ -100,8 +100,8 @@ func _on_body_entered(body: Node) -> void:
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		print("[CameraTrackZone] ", name, " player exited")
+	if body.is_in_group(&"sych"):
+		print("[CameraTrackZone] ", name, " sych exited")
 		_is_active = false
 		if _manager:
 			_manager.zone_exited(self)

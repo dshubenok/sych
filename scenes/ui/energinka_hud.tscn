@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://sych_energy_hud"]
+[gd_scene load_steps=2 format=3 uid="uid://sych_energinka_hud"]
 
-[ext_resource type="Script" path="res://scripts/energy_hud.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/energinka_hud.gd" id="1_script"]
 
-[node name="EnergyHud" type="CanvasLayer"]
+[node name="EnerginkaHud" type="CanvasLayer"]
 layer = 10
 script = ExtResource("1_script")
 
@@ -28,16 +28,16 @@ mouse_filter = 0
 theme_override_constants/separation = 8
 alignment = 0
 
-[node name="Hearts" type="HBoxContainer" parent="Root/TopRight"]
+[node name="Energinkas" type="HBoxContainer" parent="Root/TopRight"]
 layout_mode = 2
 size_flags_horizontal = 8
 mouse_filter = 2
 theme_override_constants/separation = 10
 alignment = 2
 
-[node name="RefillEnergyButton" type="Button" parent="Root/TopRight"]
+[node name="RefillEnerginkaButton" type="Button" parent="Root/TopRight"]
 layout_mode = 2
 size_flags_horizontal = 8
 custom_minimum_size = Vector2(220, 44)
-text = "Повысить энергию"
+text = "Восстановить энергинки"
 flat = true

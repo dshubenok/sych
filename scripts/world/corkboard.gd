@@ -1,16 +1,18 @@
 extends Node3D
-class_name EnergyBoard
+class_name Corkboard
+
+## Пробковая доска: физический объект в Сычевальне, по «E» открывает 2D-интерфейс планирования дня.
 
 const INTERACTION_PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
-const ENERGY_BOARD_UI_SCENE := preload("res://scenes/ui/energy_board_ui.tscn")
+const CORKBOARD_UI_SCENE := preload("res://scenes/ui/corkboard_ui.tscn")
 
 @export var interaction_radius: float = 2.4
 @export var prompt_offset: Vector3 = Vector3(0.0, 2.1, 0.0)
 @export var slot_count: int = 8
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D = null
-var _active_ui: EnergyBoardUi = null
+var _active_ui: CorkboardUi = null
 var _prev_mouse_mode: int = Input.MOUSE_MODE_CAPTURED
 ## Пока true, подсказка «E» скрыта и доска не открывается.
 var interaction_locked: bool = false
@@ -32,12 +34,12 @@ func set_interaction_locked(locked: bool) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if interaction_locked or not _player_in_range or _active_ui != null:
+	if interaction_locked or not _sych_in_range or _active_ui != null:
 		return
-	if DialogSystem.is_active() or AsideSystem.is_active():
+	if ComicDialogueSystem.is_active() or VorchanieSystem.is_active():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
-		_open_board()
+		_open_corkboard()
 		get_viewport().set_input_as_handled()
 
 
@@ -62,39 +64,39 @@ func _ensure_area() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		_update_prompt()
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		_update_prompt()
 
 
 func _update_prompt() -> void:
 	if _prompt:
-		_prompt.visible = _player_in_range and not interaction_locked and _active_ui == null
+		_prompt.visible = _sych_in_range and not interaction_locked and _active_ui == null
 
 
-func _open_board() -> void:
+func _open_corkboard() -> void:
 	if _active_ui != null:
 		return
 
-	_active_ui = ENERGY_BOARD_UI_SCENE.instantiate()
+	_active_ui = CORKBOARD_UI_SCENE.instantiate()
 	get_tree().root.add_child(_active_ui)
 	_active_ui.setup(slot_count)
-	_active_ui.closed.connect(_close_board, CONNECT_ONE_SHOT)
+	_active_ui.closed.connect(_close_corkboard, CONNECT_ONE_SHOT)
 
 	_update_prompt()
 	_prev_mouse_mode = Input.get_mouse_mode()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().paused = true
-	AsideSystem.say("Что бы такого сделать чтобы нихера не делать?")
+	VorchanieSystem.vorchat("Что бы такого сделать чтобы нихера не делать?")
 
 
-func _close_board() -> void:
+func _close_corkboard() -> void:
 	if _active_ui:
 		_active_ui.queue_free()
 	_active_ui = null

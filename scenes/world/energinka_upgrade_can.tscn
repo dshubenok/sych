@@ -1,7 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://sych_energy_upgrade_can"]
+[gd_scene load_steps=4 format=3 uid="uid://sych_energinka_upgrade_can"]
 
 [ext_resource type="Texture2D" path="res://Icon_Can.png" id="1_texture"]
-[ext_resource type="Script" path="res://scripts/world/energy_upgrade_can.gd" id="2_script"]
+[ext_resource type="Script" path="res://scripts/world/energinka_upgrade_can.gd" id="2_script"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_can"]
 size = Vector2(1.2, 2.0)
@@ -15,10 +15,10 @@ shading_mode = 0
 alpha_scissor_threshold = 0.1
 no_depth_test = false
 
-[node name="EnergyUpgradeCan" type="Node3D"]
+[node name="EnerginkaUpgradeCan" type="Node3D"]
 script = ExtResource("2_script")
 upgrade_id = &"sharaga_can"
-energy_bonus = 1
+energinka_bonus = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.75, 0)

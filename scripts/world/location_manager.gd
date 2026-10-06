@@ -1,9 +1,9 @@
 extends Node
 
 ## Менеджер локаций (автозагрузка): загрузка/выгрузка сцен, переходы между
-## локациями и перенос игрока. Работает в паре с LocationRegistry.
+## локациями и перенос Сыча. Работает в паре с LocationRegistry.
 ##
-## Игрок, камера, HUD и глобальные системы остаются персистентными в корневой
+## Сыч, камера, HUD и глобальные системы остаются персистентными в корневой
 ## сцене; меняется только содержимое контейнера текущей локации.
 
 signal location_exiting(location_id: StringName)
@@ -24,7 +24,7 @@ var _fade_rect: ColorRect = null
 # --- Бесшовный стриминг внутри Территории ---
 var _streamed: Dictionary = {}        # StringName -> Node
 var _stream_container: Node = null
-var _current_room_id: StringName = &""
+var _breadcrumb_location_id: StringName = &""
 var _in_place_open: Dictionary = {}   # StringName slot -> true
 ## Двери, открытые в этот день. Живут через уход домой, сброс — в конце дня.
 var _opened_today: Dictionary = {}    # StringName location/slot -> true
@@ -102,10 +102,10 @@ func _swap_to(def: LocationDef, location_id: StringName, entry_name: StringName)
 	container.add_child(scene)
 	current_location = scene
 	current_location_id = location_id
-	_current_room_id = location_id
-	RoomPool.apply(scene)
-	# _ready сцены уже отработал (PlayerSpawn создан) — ставим игрока.
-	_place_player(scene, entry_name)
+	_breadcrumb_location_id = location_id
+	CabinetPool.apply(scene)
+	# _ready сцены уже отработал (SychSpawn создан) — ставим Сыча.
+	_place_sych(scene, entry_name)
 	return true
 
 func _unload_current() -> void:
@@ -133,19 +133,19 @@ func _load_scene(path: String) -> Node:
 		return null
 	return packed.instantiate()
 
-func _place_player(location: Node, entry_name: StringName) -> void:
-	var player := get_tree().get_first_node_in_group(&"player")
-	if player == null or not player is Node3D:
+func _place_sych(location: Node, entry_name: StringName) -> void:
+	var sych := get_tree().get_first_node_in_group(&"sych")
+	if sych == null or not sych is Node3D:
 		return
 	var entry: Node3D = null
 	if location.has_method("get_entry_point"):
 		entry = location.get_entry_point(entry_name)
 	if entry == null:
-		entry = location.get_node_or_null(^"PlayerSpawn") as Node3D
+		entry = location.get_node_or_null(^"SychSpawn") as Node3D
 	if entry:
-		player.global_transform = entry.global_transform
-		if player is CharacterBody3D:
-			(player as CharacterBody3D).velocity = Vector3.ZERO
+		sych.global_transform = entry.global_transform
+		if sych is CharacterBody3D:
+			(sych as CharacterBody3D).velocity = Vector3.ZERO
 
 # --- Бесшовный стриминг --------------------------------------------------
 
@@ -167,15 +167,15 @@ func get_loaded(id: StringName) -> Node:
 		return current_location
 	return _streamed.get(id, null)
 
-## Игрок физически вошёл в комнату — обновляем «текущую» для крошек.
-func notify_player_entered(id: StringName) -> void:
-	if id == &"" or id == _current_room_id:
+## Сыч физически вошёл в локацию — обновляем «текущую» для крошек.
+func notify_sych_entered(id: StringName) -> void:
+	if id == &"" or id == _breadcrumb_location_id:
 		return
-	_current_room_id = id
+	_breadcrumb_location_id = id
 	location_entered.emit(id)
 
 ## Открыть кабинет, который уже стоит в меше: вывеска + проём, без стрима заглушки.
-func open_in_place_room(door: Node) -> void:
+func open_in_place_cabinet(door: Node) -> void:
 	var target: StringName = door.target_location_id
 	if target == &"":
 		return
@@ -183,7 +183,7 @@ func open_in_place_room(door: Node) -> void:
 	var path = door.get("sign_anchor")
 	if path != null and path != NodePath():
 		anchor = door.get_node_or_null(path) as Node3D
-	RoomPool.apply_to_anchor(target, anchor)
+	CabinetPool.apply_to_anchor(target, anchor)
 	_in_place_open[target] = true
 	mark_opened(target)
 	door.set_open(true)
@@ -212,8 +212,8 @@ func open_streaming_door(door: Node) -> void:
 		push_error("[LocationManager] Нет контейнера стриминга.")
 		inst.queue_free()
 		return
-	container.add_child(inst)  # _ready строит двери комнаты
-	RoomPool.apply(inst)
+	container.add_child(inst)  # _ready строит двери локации
+	CabinetPool.apply(inst)
 	var owner_id: StringName = door.owner_location_id()
 	var ret: Node3D = _find_return_door(inst, owner_id)
 	var inst3d := inst as Node3D
@@ -234,10 +234,10 @@ func open_streaming_door(door: Node) -> void:
 	_refresh_door_label(door, target)
 
 func _refresh_door_label(door: Node, target: StringName) -> void:
-	if not RoomPool.is_slot(target):
+	if not CabinetPool.is_cabinet_slot(target):
 		return
-	var room_id: StringName = RoomPool.get_drawn(target)
-	if room_id == &"":
+	var cabinet_id: StringName = CabinetPool.get_selected_cabinet(target)
+	if cabinet_id == &"":
 		return
 	if door.has_method("refresh_label"):
 		door.refresh_label()
@@ -260,7 +260,7 @@ func reset_streamed() -> void:
 			n.queue_free()
 	_streamed.clear()
 	_in_place_open.clear()
-	_current_room_id = &""
+	_breadcrumb_location_id = &""
 
 
 func mark_opened(id: StringName) -> void:

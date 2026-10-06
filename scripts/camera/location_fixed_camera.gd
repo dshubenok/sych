@@ -10,7 +10,7 @@ extends Node
 @export var look_at_local: Vector3 = Vector3(0.0, 1.35, 0.0)
 
 var _manager: Node
-var _player: Node
+var _sych: Node
 
 
 func _ready() -> void:
@@ -21,8 +21,8 @@ func _ready() -> void:
 func _exit_tree() -> void:
 	if _manager and is_instance_valid(_manager) and _manager.has_method("zone_exited"):
 		_manager.zone_exited(self)
-	if is_instance_valid(_player) and _player.has_method("clear_view_lock"):
-		_player.clear_view_lock(self)
+	if is_instance_valid(_sych) and _sych.has_method("clear_view_lock"):
+		_sych.clear_view_lock(self)
 
 
 func _aim_camera() -> void:
@@ -36,9 +36,9 @@ func _aim_camera() -> void:
 func _engage() -> void:
 	var cam := get_node_or_null(camera_path) as Camera3D
 	_manager = get_tree().get_first_node_in_group(&"camera_manager")
-	_player = get_tree().get_first_node_in_group(&"player")
+	_sych = get_tree().get_first_node_in_group(&"sych")
 	if _manager and cam and _manager.has_method("zone_entered"):
 		# snap: при пробуждении угол уже верный, без доворота из камеры игрока.
 		_manager.zone_entered(self, cam, priority, false, true)
-	if _player and cam and _player.has_method("set_view_lock"):
-		_player.set_view_lock(self, cam.global_transform.basis)
+	if _sych and cam and _sych.has_method("set_view_lock"):
+		_sych.set_view_lock(self, cam.global_transform.basis)

@@ -21,12 +21,12 @@ var _facing_xz := Vector3(0, 0, 1)
 ## WASD считается от этого базиса.
 var _view_lock: Node = null
 var _locked_basis := Basis.IDENTITY
-## Центр спрайта: половина 1 сыча (2 м), ноги на полу. Bounce только вверх.
+## Центр спрайта: половина 1 СЫЧа (sych_unit, 2 м), ноги на полу. Bounce только вверх.
 var _body_rest_y: float = 1.0
 
 
 func _ready():
-	add_to_group("player")
+	add_to_group("sych")
 	Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
 	if body:
 		_body_rest_y = body.position.y
@@ -60,7 +60,7 @@ func _physics_process(delta):
 
 	var input_dir = Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 
-	# WASD относительно вида: pivot игрока, либо зафиксированная камера локации.
+	# WASD относительно вида: pivot Сыча, либо зафиксированная камера локации.
 	var axes := _horizontal_axes()
 	var forward: Vector3 = axes[0]
 	var right: Vector3 = axes[1]

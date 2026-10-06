@@ -1,6 +1,6 @@
 [gd_scene load_steps=7 format=3 uid="uid://bqxv8yqxqxqxq"]
 
-[ext_resource type="Script" path="res://scripts/actors/player/player_controller.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/actors/sych/sych_controller.gd" id="1_sych"]
 [ext_resource type="Texture2D" path="res://assets/textures/characters/sych.png" id="2_texture"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_1"]
@@ -20,9 +20,9 @@ alpha_scissor_threshold = 0.1
 no_depth_test = false
 
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Sych" type="CharacterBody3D"]
 floor_snap_length = 0.2
-script = ExtResource("1_player")
+script = ExtResource("1_sych")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)

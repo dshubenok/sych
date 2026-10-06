@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://sych_dialog_player"]
+[gd_scene load_steps=2 format=3 uid="uid://sych_comic_dialogue_player"]
 
-[ext_resource type="Script" path="res://scripts/dialog/dialog_player.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/comic_dialogue/comic_dialogue_player.gd" id="1_script"]
 
-[node name="DialogPlayer" type="CanvasLayer"]
+[node name="ComicDialoguePlayer" type="CanvasLayer"]
 layer = 100
 script = ExtResource("1_script")
 

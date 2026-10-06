@@ -1,7 +1,7 @@
 extends Area3D
 class_name LocationPortal
 
-## Дверь/переход в другую локацию. По умолчанию срабатывает, когда игрок
+## Дверь/переход в другую локацию. По умолчанию срабатывает, когда Сыч
 ## входит в зону; можно переключить на ручной режим (по взаимодействию).
 
 const PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
@@ -11,17 +11,17 @@ const PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 ## true — переход сразу при входе в зону; false — только по «E».
 @export var auto_travel: bool = true
 @export var prompt_offset: Vector3 = Vector3(0.0, 2.2, 0.0)
-## Если не пусто, первое «E» — реплика, следующее — переход.
-@export var aside_before_travel: String = ""
+## Если не пусто, первое «E» — ворчание, следующее — переход.
+@export var vorchanie_before_travel: String = ""
 ## Дверь открывается только после подтверждённого плана на доске.
 @export var unlock_on_plan: bool = false
 
 ## Пока true, переход не срабатывает и «E» не показывается.
 var interaction_locked: bool = false
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D = null
-var _exit_aside_done: bool = false
+var _exit_vorchanie_done: bool = false
 
 func _ready() -> void:
 	monitoring = true
@@ -36,12 +36,12 @@ func _ready() -> void:
 		_prompt.position = prompt_offset
 		_prompt.visible = false
 	if unlock_on_plan:
-		interaction_locked = not QuestSystem.has_confirmed_plan()
-		if not QuestSystem.quest_spawned.is_connected(_on_plan_confirmed):
-			QuestSystem.quest_spawned.connect(_on_plan_confirmed)
+		interaction_locked = not BranchSystem.has_confirmed_plan()
+		if not BranchSystem.branch_stage_planned.is_connected(_on_plan_confirmed):
+			BranchSystem.branch_stage_planned.connect(_on_plan_confirmed)
 		_refresh_prompt()
 
-func _on_plan_confirmed(_quest_id: String) -> void:
+func _on_plan_confirmed(_branch_stage_id: String) -> void:
 	if unlock_on_plan:
 		set_interaction_locked(false)
 
@@ -53,22 +53,22 @@ func set_interaction_locked(locked: bool) -> void:
 	_refresh_prompt()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if auto_travel or interaction_locked or not _player_in_range:
+	if auto_travel or interaction_locked or not _sych_in_range:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
-		if aside_before_travel != "" and not _exit_aside_done:
-			_exit_aside_done = true
-			if AsideSystem.say(aside_before_travel, false, false):
-				AsideSystem.finished.connect(_refresh_prompt, CONNECT_ONE_SHOT)
+		if vorchanie_before_travel != "" and not _exit_vorchanie_done:
+			_exit_vorchanie_done = true
+			if VorchanieSystem.vorchat(vorchanie_before_travel, false, false):
+				VorchanieSystem.finished.connect(_refresh_prompt, CONNECT_ONE_SHOT)
 			_refresh_prompt()
 		else:
 			_travel()
 		get_viewport().set_input_as_handled()
 
 func _on_body_entered(body: Node) -> void:
-	if not body.is_in_group(&"player"):
+	if not body.is_in_group(&"sych"):
 		return
-	_player_in_range = true
+	_sych_in_range = true
 	if auto_travel:
 		if not interaction_locked:
 			_travel()
@@ -76,14 +76,14 @@ func _on_body_entered(body: Node) -> void:
 	_refresh_prompt()
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
-		_exit_aside_done = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
+		_exit_vorchanie_done = false
 		_refresh_prompt()
 
 func _refresh_prompt() -> void:
 	if _prompt:
-		_prompt.visible = _player_in_range and not interaction_locked and not auto_travel
+		_prompt.visible = _sych_in_range and not interaction_locked and not auto_travel
 
 ## Ручной переход (например, по нажатию «E»).
 func interact() -> void:

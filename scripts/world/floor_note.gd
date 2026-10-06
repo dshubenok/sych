@@ -9,13 +9,13 @@ const VIEWER_SCENE := preload("res://scenes/ui/note_viewer.tscn")
 @export var note_texture: Texture2D
 @export var interaction_radius: float = 1.15
 @export var prompt_offset: Vector3 = Vector3(0.0, 0.55, 0.0)
-## Первое «E» показывает эту реплику Сыча, следующее открывает записку.
-@export_multiline var aside_before_open: String = ""
+## Первое «E» показывает это ворчание Сыча, следующее открывает записку.
+@export_multiline var vorchanie_before_open: String = ""
 
 var has_been_read: bool = false
-var _aside_done: bool = false
+var _vorchanie_done: bool = false
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D
 var _viewer = null
 var _prev_mouse_mode: int = Input.MOUSE_MODE_CAPTURED
@@ -34,18 +34,18 @@ func _ready() -> void:
 	if DaySystem.DEV_SKIP_STAROSTA_NOTE and OS.has_feature("editor"):
 		DaySystem.starosta_note_read = true
 	has_been_read = DaySystem.starosta_note_read
-	_aside_done = has_been_read
-	call_deferred("_set_room_locked", not has_been_read)
+	_vorchanie_done = has_been_read
+	call_deferred("_set_location_locked", not has_been_read)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _viewer != null or not _player_in_range:
+	if _viewer != null or not _sych_in_range:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
-		if aside_before_open != "" and not _aside_done:
-			_aside_done = true
-			if AsideSystem.say(aside_before_open, false, false):
-				AsideSystem.finished.connect(_update_prompt, CONNECT_ONE_SHOT)
+		if vorchanie_before_open != "" and not _vorchanie_done:
+			_vorchanie_done = true
+			if VorchanieSystem.vorchat(vorchanie_before_open, false, false):
+				VorchanieSystem.finished.connect(_update_prompt, CONNECT_ONE_SHOT)
 			_update_prompt()
 		else:
 			_open()
@@ -73,14 +73,14 @@ func _ensure_area() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		_update_prompt()
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		_update_prompt()
 
 
@@ -104,21 +104,21 @@ func _on_viewer_closed() -> void:
 	if not has_been_read:
 		has_been_read = true
 		DaySystem.starosta_note_read = true
-		_set_room_locked(false)
+		_set_location_locked(false)
 	_update_prompt()
 
 
 func _update_prompt() -> void:
 	if _prompt:
-		_prompt.visible = _player_in_range and _viewer == null
+		_prompt.visible = _sych_in_range and _viewer == null
 
 
-func _set_room_locked(locked: bool) -> void:
+func _set_location_locked(locked: bool) -> void:
 	var host := get_parent()
 	if host == null:
 		return
 	for child in host.get_children():
 		if child is LocationPortal and child.unlock_on_plan:
-			child.set_interaction_locked(locked or not QuestSystem.has_confirmed_plan())
+			child.set_interaction_locked(locked or not BranchSystem.has_confirmed_plan())
 		elif child.has_method("set_interaction_locked"):
 			child.set_interaction_locked(locked)

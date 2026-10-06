@@ -1,17 +1,17 @@
 extends CanvasLayer
-class_name RoomDraftUi
+class_name CabinetChoiceUi
 
-## Модальное окно выбора кабинета. Цена списывается при выборе.
+## Модальное окно выбора кабинетов: игрок вытаскивает один из двух. Стоимость в энергинках списывается при выборе.
 
-const HEART_PATH := "res://Icon_Energy_Full.png"
+const ENERGINKA_ICON_PATH := "res://Icon_Energinka_Full.png"
 const CARD_COLORS := {
 	&"demonologist": Color(0.46, 0.22, 0.34),
 	&"library": Color(0.24, 0.28, 0.44),
-	&"lavatory": Color(0.22, 0.36, 0.34),
+	&"toilet": Color(0.22, 0.36, 0.34),
 	&"greenhouse": Color(0.28, 0.40, 0.22),
-	&"history": Color(0.42, 0.32, 0.20),
+	&"historian_cabinet": Color(0.42, 0.32, 0.20),
 	&"classroom": Color(0.34, 0.32, 0.30),
-	&"assembly": Color(0.40, 0.28, 0.24),
+	&"assembly_hall": Color(0.40, 0.28, 0.24),
 	&"cafeteria": Color(0.38, 0.30, 0.18),
 	&"gym": Color(0.22, 0.30, 0.38),
 }
@@ -20,25 +20,25 @@ const CREAM := Color(0.93, 0.84, 0.70)
 const WINDOW_BG := Color(0.14, 0.10, 0.09, 0.98)
 const HEADER_BG := Color(0.18, 0.13, 0.11, 1)
 
-static var current: RoomDraftUi = null
+static var current: CabinetChoiceUi = null
 
 var _door: StreamingDoor = null
 var _message: Label = null
 var _prev_mouse_mode: int = Input.MOUSE_MODE_CAPTURED
-var _heart: Texture2D = null
-var _offer: Array = []
+var _energinka_icon: Texture2D = null
+var _cabinet_choice: Array = []
 
 
 static func is_open() -> bool:
 	return current != null
 
 
-static func open_for(door: StreamingDoor, offer: Array) -> void:
+static func open_for(door: StreamingDoor, cabinet_choice: Array) -> void:
 	if current != null:
 		return
-	var ui := RoomDraftUi.new()
+	var ui := CabinetChoiceUi.new()
 	ui._door = door
-	ui._offer = offer
+	ui._cabinet_choice = cabinet_choice
 	var tree := door.get_tree()
 	ui._prev_mouse_mode = Input.get_mouse_mode()
 	tree.root.add_child(ui)
@@ -50,7 +50,7 @@ func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	layer = 80
 	current = self
-	_heart = load(HEART_PATH) as Texture2D
+	_energinka_icon = load(ENERGINKA_ICON_PATH) as Texture2D
 	_build()
 
 
@@ -126,8 +126,8 @@ func _build() -> void:
 	row.add_theme_constant_override("separation", 28)
 	row.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	inner.add_child(row)
-	for room_id in _offer:
-		row.add_child(_make_card(room_id))
+	for cabinet_id in _cabinet_choice:
+		row.add_child(_make_card(cabinet_id))
 
 	_message = Label.new()
 	_message.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -198,12 +198,12 @@ func _make_cancel_button() -> Button:
 	return cancel
 
 
-func _make_card(room_id: StringName) -> Button:
-	var cost: int = RoomPool.entry_cost(room_id)
+func _make_card(cabinet_id: StringName) -> Button:
+	var cost: int = CabinetPool.energinka_cost(cabinet_id)
 	var card := Button.new()
 	card.custom_minimum_size = Vector2(300, 260)
 	card.flat = true
-	var bg: Color = CARD_COLORS.get(room_id, Color(0.22, 0.22, 0.28))
+	var bg: Color = CARD_COLORS.get(cabinet_id, Color(0.22, 0.22, 0.28))
 	var style := _flat(bg, CREAM, 10, 2)
 	style.content_margin_left = 18
 	style.content_margin_right = 18
@@ -223,7 +223,7 @@ func _make_card(room_id: StringName) -> Button:
 	inner.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	card.add_child(inner)
 	var name_label := Label.new()
-	name_label.text = RoomPool.room_title(room_id)
+	name_label.text = CabinetPool.cabinet_title(cabinet_id)
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_label.add_theme_font_size_override("font_size", 32)
@@ -235,14 +235,14 @@ func _make_card(room_id: StringName) -> Button:
 	cost_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	inner.add_child(cost_row)
 	for i in range(cost):
-		var heart := TextureRect.new()
-		heart.custom_minimum_size = Vector2(44, 44)
-		heart.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-		heart.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		heart.texture = _heart
-		heart.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		cost_row.add_child(heart)
-	card.pressed.connect(_on_pick.bind(room_id))
+		var energinka := TextureRect.new()
+		energinka.custom_minimum_size = Vector2(44, 44)
+		energinka.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		energinka.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		energinka.texture = _energinka_icon
+		energinka.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		cost_row.add_child(energinka)
+	card.pressed.connect(_on_select_cabinet.bind(cabinet_id))
 	return card
 
 
@@ -260,10 +260,10 @@ func _on_dim_gui_input(event: InputEvent) -> void:
 		_cancel()
 
 
-func _on_pick(room_id: StringName) -> void:
+func _on_select_cabinet(cabinet_id: StringName) -> void:
 	if _door == null:
 		return
-	if not _door.apply_choice(room_id):
+	if not _door.select_cabinet(cabinet_id):
 		_close()
 		return
 	_close()

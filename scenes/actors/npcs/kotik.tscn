@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://sych_kotik_npc"]
 
-[ext_resource type="Script" path="res://scripts/actors/npcs/quest_npc.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/actors/npcs/branch_stage_npc.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://Board_Test_Cut/kotik.jpg" id="2_texture"]
 
 [sub_resource type="QuadMesh" id="QuadMesh_kotik"]
@@ -15,8 +15,8 @@ no_depth_test = false
 
 [node name="Kotik" type="Node3D"]
 script = ExtResource("1_script")
-reveal_on_quest = "find_kotik"
-completes_quest = "find_kotik"
+reveal_on_branch_stage = "find_kotik"
+completes_branch_stage = "find_kotik"
 interaction_radius = 2.5
 prompt_offset = Vector3(0, 2.7, 0)
 greeting = "Привет!"

@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://sych_aside_line"]
+[gd_scene load_steps=3 format=3 uid="uid://sych_vorchanie_panel"]
 
-[ext_resource type="Script" path="res://scripts/ui/aside_line.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/ui/vorchanie_panel.gd" id="1_script"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_bubble"]
 content_margin_left = 28.0
@@ -13,7 +13,7 @@ corner_radius_top_right = 32
 corner_radius_bottom_right = 32
 corner_radius_bottom_left = 32
 
-[node name="AsideLine" type="CanvasLayer"]
+[node name="VorchaniePanel" type="CanvasLayer"]
 layer = 140
 script = ExtResource("1_script")
 

@@ -1,6 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://sych_energy_board"]
+[gd_scene load_steps=7 format=3 uid="uid://sych_corkboard"]
 
-[ext_resource type="Script" path="res://scripts/world/energy_board.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/world/corkboard.gd" id="1_script"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_board"]
 size = Vector3(3.2, 2.0, 0.16)
@@ -19,7 +19,7 @@ roughness = 0.7
 [sub_resource type="SphereShape3D" id="SphereShape3D_interaction"]
 radius = 2.6
 
-[node name="EnergyBoard" type="Node3D"]
+[node name="Corkboard" type="Node3D"]
 script = ExtResource("1_script")
 interaction_radius = 2.6
 prompt_offset = Vector3(0, 1.75, 0.25)

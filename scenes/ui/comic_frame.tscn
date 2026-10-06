@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://sych_comic_panel"]
+[gd_scene load_steps=4 format=3 uid="uid://sych_comic_frame"]
 
-[ext_resource type="Script" path="res://scripts/dialog/comic_panel.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/comic_dialogue/comic_frame.gd" id="1_script"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_frame"]
 bg_color = Color(0.08, 0.08, 0.1, 1)
 border_width_left = 2
 border_width_top = 2
@@ -22,14 +22,14 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 
-[node name="ComicPanel" type="Panel"]
+[node name="ComicFrame" type="Panel"]
 custom_minimum_size = Vector2(360, 240)
 anchors_preset = 0
 offset_right = 360.0
 offset_bottom = 240.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+theme_override_styles/panel = SubResource("StyleBoxFlat_frame")
 script = ExtResource("1_script")
 
 [node name="Background" type="ColorRect" parent="."]

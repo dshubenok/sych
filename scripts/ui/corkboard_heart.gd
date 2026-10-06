@@ -1,26 +1,29 @@
 extends TextureRect
-class_name EnergyBoardSlot
+class_name CorkboardHeart
 
-signal energy_dropped(slot_index: int)
+## Сердечко на пробковой доске: UI-представление одного этапа ветки.
+## Принимает перетаскиваемую энергинку (available_heart) и отдаёт её обратно, пока план не подтверждён.
 
-const DRAG_TYPE := "energy_board_energy"
-const FILLED_SLOT_DRAG_TYPE := "energy_board_filled_slot"
+signal energinka_dropped(slot_index: int)
+
+const DRAG_TYPE := "corkboard_energinka"
+const FILLED_HEART_DRAG_TYPE := "corkboard_filled_heart"
 
 var slot_index: int = -1
 var _can_accept: bool = false
 var _can_return: bool = false
 
 
-func setup(index: int, slot_texture: Texture2D, can_accept_energy: bool, can_return_energy: bool, icon_size: Vector2, tooltip: String, dim: bool) -> void:
+func setup(index: int, heart_texture: Texture2D, can_accept_energinka: bool, can_return_energinka: bool, icon_size: Vector2, tooltip: String, dim: bool) -> void:
 	slot_index = index
-	_can_accept = can_accept_energy
-	_can_return = can_return_energy
+	_can_accept = can_accept_energinka
+	_can_return = can_return_energinka
 	custom_minimum_size = icon_size
 	size = icon_size
 	expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	texture = slot_texture
+	texture = heart_texture
 	tooltip_text = tooltip
 	modulate = Color(1, 1, 1, 0.45) if dim else Color(1, 1, 1, 1)
 	if _can_return:
@@ -39,13 +42,13 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 	set_drag_preview(preview)
 
 	return {
-		"type": FILLED_SLOT_DRAG_TYPE,
+		"type": FILLED_HEART_DRAG_TYPE,
 		"slot_index": slot_index,
 	}
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	if not _can_accept or EnergySystem.current_energy <= 0:
+	if not _can_accept or EnerginkaSystem.energinka_pool <= 0:
 		return false
 	if typeof(data) != TYPE_DICTIONARY:
 		return false
@@ -55,7 +58,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	if _can_drop_data(_at_position, data):
-		energy_dropped.emit(slot_index)
+		energinka_dropped.emit(slot_index)
 
 
 func _create_drag_preview() -> Control:

@@ -16,7 +16,7 @@ cull_mode = 2
 [node name="StarostaNote" type="Node3D"]
 script = ExtResource("1_script")
 note_texture = ExtResource("2_texture")
-aside_before_open = "Записка? Под моей дверью? У МЕНЯ ТАЙНЫЙ ПОКЛОННИК"
+vorchanie_before_open = "Записка? Под моей дверью? У МЕНЯ ТАЙНЫЙ ПОКЛОННИК"
 
 [node name="Sheet" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)

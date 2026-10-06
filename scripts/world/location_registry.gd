@@ -26,14 +26,14 @@ func _build_tree() -> void:
 	# 1.2.1. Шарага
 	_add(&"sharaga", "Шарага", &"territoriya_sharagi", T.BUILDING,
 		"%s/sharaga/sharaga.tscn" % SCENES_ROOT)
-	# 1.2.1.1. Первый этаж (крылья в меше Шараги)
-	_add(&"etazh_1", "Первый этаж", &"sharaga", T.FLOOR, "")
+	# 1.2.1.1. Первый этаж (крылья в меше Шараги); слоты кабинетов
+	_add(&"first_floor", "Первый этаж", &"sharaga", T.FLOOR, "")
 	for i in range(1, 7):
-		_add(StringName("kabinet_%d" % i), "Кабинет %d" % i, &"etazh_1", T.ROOM, "")
-	# 1.2.1.2. Второй этаж (крылья в меше Шараги)
-	_add(&"etazh_2", "Второй этаж", &"sharaga", T.FLOOR, "")
+		_add(StringName("cabinet_slot_%d" % i), "Кабинет %d" % i, &"first_floor", T.ROOM, "")
+	# 1.2.1.2. Второй этаж (крылья в меше Шараги); слоты кабинетов
+	_add(&"second_floor", "Второй этаж", &"sharaga", T.FLOOR, "")
 	for i in range(7, 11):
-		_add(StringName("kabinet_%d" % i), "Кабинет %d" % i, &"etazh_2", T.ROOM, "")
+		_add(StringName("cabinet_slot_%d" % i), "Кабинет %d" % i, &"second_floor", T.ROOM, "")
 	# 1.2.2. Наружа
 	_add(&"naruzha", "Наружа", &"territoriya_sharagi", T.AREA,
 		"%s/naruzha/naruzha.tscn" % SCENES_ROOT)

@@ -1,8 +1,10 @@
 extends TextureRect
-class_name EnergyDragIcon
+class_name EnerginkaDragIcon
 
-const DRAG_TYPE := "energy_board_energy"
-const FILLED_SLOT_DRAG_TYPE := "energy_board_filled_slot"
+## Перетаскиваемая энергинка из блока доступных энергинок на пробковой доске.
+
+const DRAG_TYPE := "corkboard_energinka"
+const FILLED_HEART_DRAG_TYPE := "corkboard_filled_heart"
 
 
 func setup(texture: Texture2D, icon_size: Vector2) -> void:
@@ -16,7 +18,7 @@ func setup(texture: Texture2D, icon_size: Vector2) -> void:
 
 
 func _get_drag_data(_at_position: Vector2) -> Variant:
-	if EnergySystem.current_energy <= 0:
+	if EnerginkaSystem.energinka_pool <= 0:
 		return null
 
 	var preview := _create_drag_preview()
@@ -28,21 +30,21 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 
 
 func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
-	if EnergySystem.current_energy >= EnergySystem.max_energy:
+	if EnerginkaSystem.energinka_pool >= EnerginkaSystem.max_energinka:
 		return false
 	if typeof(data) != TYPE_DICTIONARY:
 		return false
 	var drag_data: Dictionary = data
-	return drag_data.get("type", "") == FILLED_SLOT_DRAG_TYPE and drag_data.has("slot_index")
+	return drag_data.get("type", "") == FILLED_HEART_DRAG_TYPE and drag_data.has("slot_index")
 
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	if not _can_drop_data(_at_position, data):
 		return
 	var parent := get_parent()
-	if parent and parent.has_signal("energy_returned"):
+	if parent and parent.has_signal("energinka_returned"):
 		var drag_data: Dictionary = data
-		parent.emit_signal("energy_returned", int(drag_data["slot_index"]))
+		parent.emit_signal("energinka_returned", int(drag_data["slot_index"]))
 
 
 func _create_drag_preview() -> Control:

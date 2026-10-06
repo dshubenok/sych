@@ -33,14 +33,14 @@ func _ready() -> void:
 	var bodies = get_overlapping_bodies()
 	print("[CameraZone] ", name, " overlapping bodies: ", bodies.size())
 	for body in bodies:
-		print("[CameraZone] ", name, " found body: ", body.name, " in_player_group: ", body.is_in_group(&"player"))
-		if body.is_in_group(&"player"):
+		print("[CameraZone] ", name, " found body: ", body.name, " in_sych_group: ", body.is_in_group(&"sych"))
+		if body.is_in_group(&"sych"):
 			_on_body_entered(body)
 
 
 func _on_body_entered(body: Node) -> void:
 	print("[CameraZone] ", name, " body_entered: ", body.name)
-	if body.is_in_group(&"player"):
+	if body.is_in_group(&"sych"):
 		if _manager == null:
 			_manager = get_tree().get_first_node_in_group(&"camera_manager")
 		if _manager and _camera:
@@ -53,7 +53,7 @@ func _on_body_entered(body: Node) -> void:
 
 func _on_body_exited(body: Node) -> void:
 	print("[CameraZone] ", name, " body_exited: ", body.name)
-	if body.is_in_group(&"player"):
+	if body.is_in_group(&"sych"):
 		if _manager:
 			print("[CameraZone] ", name, " -> zone_exited")
 			_manager.zone_exited(self)

@@ -1,26 +1,26 @@
 extends Node3D
-class_name EnergyUpgradeCan
+class_name EnerginkaUpgradeCan
 
-## Банка в мире: по «E» выпивается, исчезает, максимум энергии растёт навсегда.
+## Банка в мире: по «E» выпивается, исчезает, максимум энергинок растёт навсегда.
 
 const INTERACTION_PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 
 @export var upgrade_id: StringName = &"sharaga_can"
-@export var energy_bonus: int = 1
+@export var energinka_bonus: int = 1
 @export var interaction_radius: float = 2.0
 @export var prompt_offset: Vector3 = Vector3(0.0, 3.05, 0.0)
 @export var interaction_message: String = "ФФФФФЬЬЬ"
 @export var interaction_message_font_size: int = 20
 @export var interaction_message_duration: float = 2.0
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D = null
 var _message_label: Label3D = null
 var _drunk: bool = false
 
 
 func _ready() -> void:
-	if EnergySystem.has_upgrade(upgrade_id):
+	if EnerginkaSystem.has_upgrade(upgrade_id):
 		queue_free()
 		return
 	_ensure_area()
@@ -59,23 +59,23 @@ func _ensure_area() -> void:
 func _on_body_entered(body: Node) -> void:
 	if _drunk:
 		return
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		if _prompt:
 			_prompt.visible = true
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		if _prompt:
 			_prompt.visible = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if _drunk or not _player_in_range:
+	if _drunk or not _sych_in_range:
 		return
-	if DialogSystem.is_active() or RoomDraftUi.is_open():
+	if ComicDialogueSystem.is_active() or CabinetChoiceUi.is_open():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
 		_drink()
@@ -85,7 +85,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _drink() -> void:
 	if _drunk:
 		return
-	if not EnergySystem.collect_upgrade(upgrade_id, energy_bonus):
+	if not EnerginkaSystem.collect_upgrade(upgrade_id, energinka_bonus):
 		queue_free()
 		return
 	_drunk = true
