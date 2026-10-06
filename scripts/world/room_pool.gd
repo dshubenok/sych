@@ -337,8 +337,8 @@ func _place_quest_npc(group_name: String, place: Callable) -> void:
 
 
 ## Историк появляется в открытом кабинете истории, пока квест взят.
-## SignAnchor на высоте центра комнаты; ноги ставим на пол (порог дверей ≈ 0.14).
-const HISTORIAN_FLOOR_Y := 0.14
+## SignAnchor на высоте центра комнаты; ноги ставим на пол крыла первого этажа (≈ -0.03).
+const HISTORIAN_FLOOR_Y := -0.03
 
 func place_historian(host: Node3D) -> void:
 	if host == null:

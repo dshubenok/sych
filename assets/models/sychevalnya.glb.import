@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://b7p1wt680vqtj"
-path="res://.godot/imported/sharaga_1_2_floor.glb-e7bce8167a7e3b1957a5c5a007580f13.scn"
+uid="uid://dfixiq8apauf3"
+path="res://.godot/imported/sychevalnya.glb-41fb8836c9c397a6800b7b0de280773c.scn"
 
 [deps]
 
-source_file="res://assets/models/sharaga_1_2_floor.glb"
-dest_files=["res://.godot/imported/sharaga_1_2_floor.glb-e7bce8167a7e3b1957a5c5a007580f13.scn"]
+source_file="res://assets/models/sychevalnya.glb"
+dest_files=["res://.godot/imported/sychevalnya.glb-41fb8836c9c397a6800b7b0de280773c.scn"]
 
 [params]
 

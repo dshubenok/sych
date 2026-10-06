@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/world/location.gd" id="1_loc"]
 [ext_resource type="Script" path="res://scripts/world/model_collisions.gd" id="2_col"]
-[ext_resource type="PackedScene" path="res://изометрия сычевальня.blend" id="3_room"]
+[ext_resource type="PackedScene" uid="uid://dfixiq8apauf3" path="res://assets/models/sychevalnya.glb" id="3_room"]
 [ext_resource type="PackedScene" uid="uid://sych_energy_board" path="res://scenes/world/energy_board.tscn" id="4_board"]
 [ext_resource type="PackedScene" uid="uid://sych_location_portal" path="res://scenes/world/location_portal.tscn" id="9_portal"]
 [ext_resource type="Script" path="res://scripts/camera/location_fixed_camera.gd" id="10_cam"]
@@ -110,5 +110,5 @@ transform = Transform3D(0.939693, 0, 0.34202, 0, 1, 0, -0.34202, 0, 0.939693, -2
 interaction_radius = 0.7
 
 [node name="RoomComic" parent="." instance=ExtResource("12_comic")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.314, 0.56, 0.94)
-interaction_radius = 0.65
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.61, 1.09, -0.4)
+interaction_radius = 1.3
