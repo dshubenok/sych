@@ -1,14 +1,14 @@
 extends CanvasLayer
 class_name MainMenu
 
-## Меню. Открывается при запуске игры и по Escape в процессе.
+## Меню: стартовое меню при запуске игры и игровое меню по Escape в процессе.
 ## Фон — четыре кадра, сменяются по кругу каждые 3 секунды,
-## поверх них лежит слой с нарисованными кнопками: свой для запуска
-## («начать», «выйти») и свой для паузы в игре.
+## поверх них лежит слой с нарисованными кнопками: свой для стартового меню
+## («начать», «выйти») и свой для игрового меню.
 
 const GAME_SCENE := "res://scenes/main.tscn"
-const BOOT_ART := "res://меню начало игры.png"
-const PAUSE_ART := "res://меню свежее.png"
+const START_MENU_ART := "res://меню начало игры.png"
+const GAME_MENU_ART := "res://меню свежее.png"
 const BACKGROUNDS: Array[String] = [
 	"res://photo_2025-10-04_15-46-35.jpg",
 	"res://photo_2025-10-04_15-46-38.jpg",
@@ -19,8 +19,8 @@ const SWITCH_INTERVAL := 3.0
 const FADE_TIME := 0.45
 
 enum Mode {
-	BOOT,  ## меню запуска: игры ещё нет
-	PAUSE, ## вызвано по Escape поверх игры
+	START_MENU, ## стартовое меню: игры ещё нет
+	GAME_MENU,  ## игровое меню: вызвано по Escape поверх игры
 }
 
 static var current: MainMenu = null
@@ -30,16 +30,16 @@ static var current: MainMenu = null
 @onready var _overlay: TextureRect = $Frame/Art/Overlay
 @onready var _patch: Panel = $Frame/Art/Patch
 @onready var _timer: Timer = $SwitchTimer
-@onready var _boot_buttons: Control = $Frame/Art/BootButtons
-@onready var _start_button: Button = $Frame/Art/BootButtons/StartButton
-@onready var _boot_quit_button: Button = $Frame/Art/BootButtons/BootQuitButton
-@onready var _pause_buttons: Control = $Frame/Art/PauseButtons
-@onready var _save_button: Button = $Frame/Art/PauseButtons/SaveButton
-@onready var _end_day_button: Button = $Frame/Art/PauseButtons/EndDayButton
-@onready var _new_game_button: Button = $Frame/Art/PauseButtons/NewGameButton
-@onready var _quit_button: Button = $Frame/Art/PauseButtons/QuitButton
+@onready var _start_menu_buttons: Control = $Frame/Art/StartMenuButtons
+@onready var _start_button: Button = $Frame/Art/StartMenuButtons/StartButton
+@onready var _start_menu_quit_button: Button = $Frame/Art/StartMenuButtons/StartMenuQuitButton
+@onready var _game_menu_buttons: Control = $Frame/Art/GameMenuButtons
+@onready var _save_button: Button = $Frame/Art/GameMenuButtons/SaveButton
+@onready var _end_day_button: Button = $Frame/Art/GameMenuButtons/EndDayButton
+@onready var _new_game_button: Button = $Frame/Art/GameMenuButtons/NewGameButton
+@onready var _quit_button: Button = $Frame/Art/GameMenuButtons/QuitButton
 
-var mode: int = Mode.BOOT
+var mode: int = Mode.START_MENU
 
 var _frames: Array[Texture2D] = []
 var _index: int = 0
@@ -51,15 +51,15 @@ static func is_open() -> bool:
 	return current != null and is_instance_valid(current)
 
 
-## Открыть меню поверх игры: ставит дерево на паузу и показывает курсор.
-static func open_paused(tree: SceneTree) -> void:
+## Открыть игровое меню поверх игры: ставит дерево на паузу и показывает курсор.
+static func open_game_menu(tree: SceneTree) -> void:
 	if is_open():
 		return
 	var scene: PackedScene = load("res://scenes/ui/main_menu.tscn")
 	if scene == null:
 		return
 	var menu: MainMenu = scene.instantiate()
-	menu.mode = Mode.PAUSE
+	menu.mode = Mode.GAME_MENU
 	tree.root.add_child(menu)
 	tree.paused = true
 
@@ -70,11 +70,11 @@ func _ready() -> void:
 	_prev_mouse_mode = Input.get_mouse_mode()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
-	var in_game := mode == Mode.PAUSE
-	_overlay.texture = load(PAUSE_ART if in_game else BOOT_ART) as Texture2D
-	_boot_buttons.visible = not in_game
-	_pause_buttons.visible = in_game
-	# На слое запуска кнопок всего две, а на фоне нарисованы четыре:
+	var in_game := mode == Mode.GAME_MENU
+	_overlay.texture = load(GAME_MENU_ART if in_game else START_MENU_ART) as Texture2D
+	_start_menu_buttons.visible = not in_game
+	_game_menu_buttons.visible = in_game
+	# На слое стартового меню кнопок всего две, а на фоне нарисованы четыре:
 	# лишние закрываем заплаткой цвета бумаги.
 	_patch.visible = not in_game
 	_load_frames()
@@ -83,7 +83,7 @@ func _ready() -> void:
 	_save_button.disabled = true
 	_end_day_button.disabled = not in_game or not DaySystem.is_day_active()
 	_start_button.pressed.connect(_on_new_game_pressed)
-	_boot_quit_button.pressed.connect(_on_quit_pressed)
+	_start_menu_quit_button.pressed.connect(_on_quit_pressed)
 	_end_day_button.pressed.connect(_on_end_day_pressed)
 	_new_game_button.pressed.connect(_on_new_game_pressed)
 	_quit_button.pressed.connect(_on_quit_pressed)
@@ -104,16 +104,16 @@ func _exit_tree() -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if mode != Mode.PAUSE:
+	if mode != Mode.GAME_MENU:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
 		get_viewport().set_input_as_handled()
 		close()
 
 
-## Закрыть меню паузы и вернуться в игру.
+## Закрыть игровое меню и вернуться в игру.
 func close() -> void:
-	if mode != Mode.PAUSE:
+	if mode != Mode.GAME_MENU:
 		return
 	get_tree().paused = false
 	Input.set_mouse_mode(_prev_mouse_mode)
@@ -153,13 +153,13 @@ func _commit_frame() -> void:
 	_front.modulate.a = 0.0
 
 
-## «Закончить день»: та самая кнопка «Ой всё», переехавшая из HUD.
+## «Закончить день»: нажать «Ой, всё» (кнопка переехала из HUD).
 func _on_end_day_pressed() -> void:
 	if not DaySystem.is_day_active():
 		return
 	_end_day_button.disabled = true
 	close()
-	DaySystem.request_end_day()
+	DaySystem.trigger_oy_vse()
 
 
 ## «Начать» и «Новая игра»: всё с чистого листа, как будто игру только запустили.
@@ -184,9 +184,9 @@ func _on_new_game_pressed() -> void:
 ## Автозагрузки живут дольше сцены, их состояние чистим руками.
 func _reset_progress() -> void:
 	LocationManager.reset_streamed()
-	RoomPool._reset_day()
-	QuestSystem.reset_progress()
-	EnergySystem.reset_progress()
+	CabinetPool.reroll_sharaga()
+	BranchSystem.reset_progress()
+	EnerginkaSystem.reset_progress()
 	DaySystem.day_number = 1
 	DaySystem.starosta_note_read = false
 

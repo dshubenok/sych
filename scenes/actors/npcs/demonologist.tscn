@@ -17,10 +17,10 @@ no_depth_test = false
 
 [node name="Demonologist" type="Node3D"]
 script = ExtResource("2_interactable")
-dialog_id = "demonologist_intro"
+comic_dialogue_id = "demonologist_intro"
 interaction_radius = 2.5
 prompt_offset = Vector3(0, 2.4, 0)
-energy_cost_after_dialog = 1
+energinka_cost_after_comic_dialogue = 1
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)

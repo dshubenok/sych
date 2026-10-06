@@ -5,7 +5,7 @@
 [node name="TerritoriyaSharagi" type="Node3D"]
 script = ExtResource("1_loc")
 location_id = &"territoriya_sharagi"
-room_size = Vector3(22, 4, 22)
+location_size = Vector3(22, 4, 22)
 floor_color = Color(0.24, 0.3, 0.24, 1)
 stream_exits = Array[StringName]([&"sharaga", &"naruzha"])
 portal_exits = Array[StringName]([&"sychevalnya"])

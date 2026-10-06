@@ -1,11 +1,12 @@
 extends Node3D
 
-## Комикс в комнате. Пока записка не прочитана — без «E».
-## Первое «E» — ворчание, второе — +1 энергия, дальше случайные реплики.
+## Комикс в Сычевальне — источник энергинок. Пока записка не прочитана — без «E».
+## Первое «E» — ворчание, второе — +1 энергинка, дальше пул ворчания.
 
 const PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 
 const INTRO_LINE := "Комикс про то, как один Пингвин не справляется. Охренительный."
+## Пул ворчания после прочтения.
 const DONE_LINES: PackedStringArray = [
 	"Всё, начиталась",
 	"Не",
@@ -16,12 +17,12 @@ enum Phase { INTRO, READ, LOOP }
 
 @export var interaction_radius: float = 1.05
 @export var prompt_offset: Vector3 = Vector3(0.0, 0.7, 0.0)
-@export var energy_reward: int = 1
+@export var energinka_reward: int = 1
 
 var interaction_locked: bool = false
 
 var _phase: Phase = Phase.INTRO
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D
 
 
@@ -39,7 +40,7 @@ func set_interaction_locked(locked: bool) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if interaction_locked or not _player_in_range:
+	if interaction_locked or not _sych_in_range:
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
 		_on_interact()
@@ -50,17 +51,17 @@ func _on_interact() -> void:
 	match _phase:
 		Phase.INTRO:
 			_phase = Phase.READ
-			_say(INTRO_LINE)
+			_vorchat(INTRO_LINE)
 		Phase.READ:
-			EnergySystem.restore(energy_reward)
+			EnerginkaSystem.gain_energinka(energinka_reward)
 			_phase = Phase.LOOP
 		Phase.LOOP:
-			_say(DONE_LINES[randi() % DONE_LINES.size()])
+			_vorchat(DONE_LINES[randi() % DONE_LINES.size()])
 
 
-func _say(line: String) -> void:
-	if AsideSystem.say(line, true, false):
-		AsideSystem.finished.connect(_update_prompt, CONNECT_ONE_SHOT)
+func _vorchat(line: String) -> void:
+	if VorchanieSystem.vorchat(line, true, false):
+		VorchanieSystem.finished.connect(_update_prompt, CONNECT_ONE_SHOT)
 	_update_prompt()
 
 
@@ -85,17 +86,17 @@ func _ensure_area() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		_update_prompt()
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		_update_prompt()
 
 
 func _update_prompt() -> void:
 	if _prompt:
-		_prompt.visible = _player_in_range and not interaction_locked
+		_prompt.visible = _sych_in_range and not interaction_locked

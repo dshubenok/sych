@@ -1,14 +1,14 @@
 extends Location
 class_name PlaceholderLocation
 
-## Временная комната для локаций без 3D-арта. Строит пол, стены с проёмами,
-## двери (стримеры/порталы), точку спавна, подпись и зону присутствия игрока.
+## Временная локация без 3D-арта. Строит пол, стены с проёмами,
+## двери (стримеры/порталы), точку спавна, подпись и зону присутствия Сыча.
 ## Когда появится модель — сцена заменяется на полноценную, реестр не трогаем.
 
 const STREAMING_DOOR := preload("res://scenes/world/streaming_door.tscn")
 const PORTAL_SCENE := preload("res://scenes/world/location_portal.tscn")
 
-@export var room_size: Vector3 = Vector3(16.0, 4.0, 16.0)
+@export var location_size: Vector3 = Vector3(16.0, 4.0, 16.0)
 @export var floor_color: Color = Color(0.28, 0.28, 0.34)
 @export var wall_color: Color = Color(0.20, 0.20, 0.26)
 ## Соседи с бесшовными дверьми-стримерами (открываются по «E»).
@@ -28,14 +28,14 @@ func _ready() -> void:
 	_build_presence()
 
 func _build_floor() -> void:
-	var body := _make_box_body(Vector3(room_size.x, 0.4, room_size.z), floor_color)
+	var body := _make_box_body(Vector3(location_size.x, 0.4, location_size.z), floor_color)
 	body.name = "Floor"
 	body.position = Vector3(0, -0.2, 0)
 	add_child(body)
 
 func _build_spawn() -> void:
 	var spawn := Marker3D.new()
-	spawn.name = "PlayerSpawn"
+	spawn.name = "SychSpawn"
 	spawn.position = Vector3(0, 1.0, 0)
 	add_child(spawn)
 
@@ -81,7 +81,7 @@ func _build_doors() -> void:
 			_door_t.append(t)
 
 func _build_walls() -> void:
-	var perim := 2.0 * (room_size.x + room_size.z)
+	var perim := 2.0 * (location_size.x + location_size.z)
 	var seg := 2.0
 	var count := int(ceil(perim / seg))
 	var gap := 2.5  # половина ширины проёма (мир. единицы)
@@ -95,10 +95,10 @@ func _build_walls() -> void:
 		if skip:
 			continue
 		var pn := _perimeter_point(t)
-		var wall := _make_box_body(Vector3(seg + 0.1, room_size.y, 0.4), wall_color)
+		var wall := _make_box_body(Vector3(seg + 0.1, location_size.y, 0.4), wall_color)
 		wall.name = "WallSeg"
 		wall.transform = Transform3D(_outward_basis(pn["normal"]),
-			pn["pos"] + Vector3(0, room_size.y * 0.5, 0))
+			pn["pos"] + Vector3(0, location_size.y * 0.5, 0))
 		add_child(wall)
 
 func _build_presence() -> void:
@@ -107,7 +107,7 @@ func _build_presence() -> void:
 	area.collision_mask = 0xFFFFFFFF
 	var cs := CollisionShape3D.new()
 	var box := BoxShape3D.new()
-	box.size = Vector3(room_size.x - 0.5, 2.0, room_size.z - 0.5)
+	box.size = Vector3(location_size.x - 0.5, 2.0, location_size.z - 0.5)
 	cs.shape = box
 	cs.position = Vector3(0, 1.0, 0)
 	area.add_child(cs)
@@ -115,15 +115,15 @@ func _build_presence() -> void:
 	area.body_entered.connect(_on_presence)
 
 func _on_presence(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		LocationManager.notify_player_entered(location_id)
+	if body.is_in_group(&"sych"):
+		LocationManager.notify_sych_entered(location_id)
 
 # --- Геометрия периметра --------------------------------------------------
 
 ## t ∈ [0,1) для двери на стене `wall` (0: −Z, 1: +X, 2: +Z, 3: −X).
 func _wall_door_t(wall: int, index: int, count: int) -> float:
-	var hx := room_size.x
-	var hz := room_size.z
+	var hx := location_size.x
+	var hz := location_size.z
 	var perim := 2.0 * (hx + hz)
 	var lengths := [hx, hz, hx, hz]
 	var starts := [0.0, hx, hx + hz, hx + hz + hx]
@@ -136,21 +136,21 @@ func _wall_door_t(wall: int, index: int, count: int) -> float:
 
 ## Точка на периметре прямоугольника по параметру t ∈ [0,1) и внешняя нормаль.
 func _perimeter_point(t: float) -> Dictionary:
-	var hx := room_size.x * 0.5
-	var hz := room_size.z * 0.5
-	var d := t * 2.0 * (room_size.x + room_size.z)
-	if d < room_size.x:
+	var hx := location_size.x * 0.5
+	var hz := location_size.z * 0.5
+	var d := t * 2.0 * (location_size.x + location_size.z)
+	if d < location_size.x:
 		return {"pos": Vector3(-hx + d, 0, -hz), "normal": Vector3(0, 0, -1)}
-	d -= room_size.x
-	if d < room_size.z:
+	d -= location_size.x
+	if d < location_size.z:
 		return {"pos": Vector3(hx, 0, -hz + d), "normal": Vector3(1, 0, 0)}
-	d -= room_size.z
-	if d < room_size.x:
+	d -= location_size.z
+	if d < location_size.x:
 		return {"pos": Vector3(hx - d, 0, hz), "normal": Vector3(0, 0, 1)}
-	d -= room_size.x
+	d -= location_size.x
 	return {"pos": Vector3(-hx, 0, hz - d), "normal": Vector3(-1, 0, 0)}
 
-## Базис, у которого +Z = внешняя нормаль (дверь смотрит наружу комнаты).
+## Базис, у которого +Z = внешняя нормаль (дверь смотрит наружу локации).
 func _outward_basis(normal: Vector3) -> Basis:
 	var z := normal.normalized()
 	var y := Vector3.UP

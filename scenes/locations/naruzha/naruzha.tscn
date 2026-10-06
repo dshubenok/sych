@@ -5,6 +5,6 @@
 [node name="Naruzha" type="Node3D"]
 script = ExtResource("1_loc")
 location_id = &"naruzha"
-room_size = Vector3(24, 4, 24)
+location_size = Vector3(24, 4, 24)
 floor_color = Color(0.22, 0.28, 0.22, 1)
 stream_exits = Array[StringName]([&"territoriya_sharagi", &"kladbische", &"besedka", &"skver"])

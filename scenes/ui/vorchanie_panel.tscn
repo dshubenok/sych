@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=3 uid="uid://sych_vorchanie_panel"]
+
+[ext_resource type="Script" path="res://scripts/ui/vorchanie_panel.gd" id="1_script"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_bubble"]
+content_margin_left = 28.0
+content_margin_top = 14.0
+content_margin_right = 28.0
+content_margin_bottom = 14.0
+bg_color = Color(0.98, 0.97, 0.94, 1)
+corner_radius_top_left = 32
+corner_radius_top_right = 32
+corner_radius_bottom_right = 32
+corner_radius_bottom_left = 32
+
+[node name="VorchaniePanel" type="CanvasLayer"]
+layer = 140
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Bottom" type="CenterContainer" parent="Root"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -168.0
+offset_bottom = -42.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="Bubble" type="PanelContainer" parent="Root/Bottom"]
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBox_bubble")
+
+[node name="Label" type="Label" parent="Root/Bottom/Bubble"]
+custom_minimum_size = Vector2(640, 0)
+theme_override_colors/font_color = Color(0.16, 0.13, 0.12, 1)
+theme_override_font_sizes/font_size = 28
+text = "..."
+horizontal_alignment = 1
+autowrap_mode = 3

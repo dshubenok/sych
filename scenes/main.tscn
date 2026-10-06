@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://fjvowto6qu6y"]
 
 [ext_resource type="Script" uid="uid://bsak6a8wpwbts" path="res://scripts/main_controller.gd" id="3_main"]
-[ext_resource type="PackedScene" uid="uid://bqxv8yqxqxqxq" path="res://scenes/actors/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://bqxv8yqxqxqxq" path="res://scenes/actors/sych/sych.tscn" id="2_sych"]
 [ext_resource type="Script" uid="uid://bnna53txdej6i" path="res://scripts/tools/debug_collisions.gd" id="4_debug"]
 [ext_resource type="Script" path="res://scripts/camera/camera_manager.gd" id="7_camera_manager"]
-[ext_resource type="PackedScene" path="res://scenes/ui/energy_hud.tscn" id="8_energy_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/energinka_hud.tscn" id="8_energinka_hud"]
 [ext_resource type="PackedScene" uid="uid://sych_location_breadcrumb" path="res://scenes/ui/location_breadcrumb.tscn" id="9_breadcrumb"]
 
 [sub_resource type="Environment" id="Environment_fog"]
@@ -36,7 +36,7 @@ shadow_enabled = true
 
 [node name="Actors" type="Node3D" parent="."]
 
-[node name="Player" parent="Actors" instance=ExtResource("2_player")]
+[node name="Sych" parent="Actors" instance=ExtResource("2_sych")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 
 [node name="CameraSystem" type="Node3D" parent="."]
@@ -56,6 +56,6 @@ far = 30.0
 [node name="DebugCollisions" type="Node3D" parent="Debug"]
 script = ExtResource("4_debug")
 
-[node name="EnergyHud" parent="." instance=ExtResource("8_energy_hud")]
+[node name="EnerginkaHud" parent="." instance=ExtResource("8_energinka_hud")]
 
 [node name="LocationBreadcrumb" parent="." instance=ExtResource("9_breadcrumb")]

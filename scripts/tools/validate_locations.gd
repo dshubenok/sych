@@ -27,7 +27,7 @@ func _ready() -> void:
 				await _check_scene(def, errors, warnings)
 		elif def.type == LocationTypes.Type.ROOT:
 			pass
-		elif RoomPool.is_slot(id) or def.type == LocationTypes.Type.FLOOR:
+		elif CabinetPool.is_cabinet_slot(id) or def.type == LocationTypes.Type.FLOOR:
 			print("  OK  %s  →  %s" % [id, LocationRegistry.breadcrumb_text(id)])
 		else:
 			warnings.append("%s: нет сцены (тип не ROOT)" % id)
@@ -51,10 +51,10 @@ func _check_scene(def: LocationDef, errors: Array, warnings: Array) -> void:
 	if scene_id != def.id:
 		warnings.append("%s: location_id в сцене = '%s'" % [def.id, scene_id])
 
-	if inst.get_node_or_null(^"PlayerSpawn") == null:
+	if inst.get_node_or_null(^"SychSpawn") == null:
 		var eps = inst.get("entry_points")
 		if eps == null or (eps as Array).is_empty():
-			warnings.append("%s: нет PlayerSpawn / entry_points" % def.id)
+			warnings.append("%s: нет SychSpawn / entry_points" % def.id)
 
 	# Соседи placeholder-локаций (двери-стримеры и порталы).
 	for prop in ["stream_exits", "portal_exits"]:

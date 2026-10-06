@@ -94,7 +94,7 @@ mouse_filter = 2
 expand_mode = 1
 stretch_mode = 6
 
-[node name="BootButtons" type="Control" parent="Frame/Art"]
+[node name="StartMenuButtons" type="Control" parent="Frame/Art"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -103,7 +103,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="StartButton" type="Button" parent="Frame/Art/BootButtons"]
+[node name="StartButton" type="Button" parent="Frame/Art/StartMenuButtons"]
 layout_mode = 1
 anchor_left = 0.035
 anchor_top = 0.358
@@ -118,7 +118,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
 
-[node name="BootQuitButton" type="Button" parent="Frame/Art/BootButtons"]
+[node name="StartMenuQuitButton" type="Button" parent="Frame/Art/StartMenuButtons"]
 layout_mode = 1
 anchor_left = 0.05
 anchor_top = 0.512
@@ -133,7 +133,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
 
-[node name="PauseButtons" type="Control" parent="Frame/Art"]
+[node name="GameMenuButtons" type="Control" parent="Frame/Art"]
 visible = false
 layout_mode = 1
 anchors_preset = 15
@@ -143,7 +143,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="SaveButton" type="Button" parent="Frame/Art/PauseButtons"]
+[node name="SaveButton" type="Button" parent="Frame/Art/GameMenuButtons"]
 layout_mode = 1
 anchor_left = 0.04
 anchor_top = 0.345
@@ -159,7 +159,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
 
-[node name="EndDayButton" type="Button" parent="Frame/Art/PauseButtons"]
+[node name="EndDayButton" type="Button" parent="Frame/Art/GameMenuButtons"]
 layout_mode = 1
 anchor_left = 0.042
 anchor_top = 0.499
@@ -174,7 +174,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
 
-[node name="NewGameButton" type="Button" parent="Frame/Art/PauseButtons"]
+[node name="NewGameButton" type="Button" parent="Frame/Art/GameMenuButtons"]
 layout_mode = 1
 anchor_left = 0.043
 anchor_top = 0.659
@@ -189,7 +189,7 @@ theme_override_styles/hover = SubResource("StyleBoxFlat_hover")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_flat")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hover")
 
-[node name="QuitButton" type="Button" parent="Frame/Art/PauseButtons"]
+[node name="QuitButton" type="Button" parent="Frame/Art/GameMenuButtons"]
 layout_mode = 1
 anchor_left = 0.044
 anchor_top = 0.801

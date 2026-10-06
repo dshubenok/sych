@@ -1,6 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://sych_test_room_entry"]
-
-[ext_resource type="Script" path="res://scripts/tools/test_room_entry.gd" id="1_test"]
-
-[node name="TestRoomEntry" type="Node"]
-script = ExtResource("1_test")

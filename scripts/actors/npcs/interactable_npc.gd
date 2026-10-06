@@ -2,29 +2,29 @@ extends Node3D
 class_name InteractableNpc
 ## Вешай этот скрипт на корневой Node3D персонажа — он:
 ##   • создаёт триггерную Area3D вокруг NPC (если её ещё нет);
-##   • показывает Label3D "E" над головой, когда игрок в зоне;
-##   • по нажатию E запускает DialogSystem.start_dialog(dialog_id).
+##   • показывает Label3D "E" над головой, когда Сыч в зоне;
+##   • по нажатию E запускает ComicDialogueSystem.start_comic_dialogue(comic_dialogue_id).
 
 const INTERACTION_PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 
-## ID диалога — имя JSON-файла в res://assets/dialogs/ без расширения.
-@export var dialog_id: String = ""
+## ID комиксного диалога — имя JSON-файла в res://assets/comic_dialogues/ без расширения.
+@export var comic_dialogue_id: String = ""
 ## Радиус триггерной сферы (если Area3D создаётся автоматически).
 @export var interaction_radius: float = 2.5
 ## Смещение подсказки "E" относительно корня NPC.
 @export var prompt_offset: Vector3 = Vector3(0.0, 2.4, 0.0)
-## Сколько энергии списать после завершения диалога.
-@export var energy_cost_after_dialog: int = 0
+## Сколько энергинок потратить после завершения комиксного диалога.
+@export var energinka_cost_after_comic_dialogue: int = 0
 ## Текст, который показывается над NPC вместо запуска диалога.
 @export var interaction_message: String = ""
 ## Размер шрифта для `interaction_message`.
 @export var interaction_message_font_size: int = 96
 ## Сколько секунд показывать `interaction_message`.
 @export var interaction_message_duration: float = 2.0
-## Сколько энергии восстановить после показа сообщения.
-@export var energy_restore_after_message: int = 0
+## Сколько энергинок получить после показа сообщения.
+@export var energinka_restore_after_message: int = 0
 
-var _player_in_range: bool = false
+var _sych_in_range: bool = false
 var _prompt: Node3D = null
 var _message_label: Label3D = null
 var _message_active: bool = false
@@ -60,45 +60,45 @@ func _ensure_area() -> void:
 
 
 func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = true
+	if body.is_in_group(&"sych"):
+		_sych_in_range = true
 		if _prompt and not _message_active:
 			_prompt.visible = true
 
 
 func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"player"):
-		_player_in_range = false
+	if body.is_in_group(&"sych"):
+		_sych_in_range = false
 		if _prompt:
 			_prompt.visible = false
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if not _player_in_range:
+	if not _sych_in_range:
 		return
-	if DialogSystem.is_active():
+	if ComicDialogueSystem.is_active():
 		return
 	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
 		if interaction_message != "":
 			_show_interaction_message()
 			get_viewport().set_input_as_handled()
 			return
-		if dialog_id == "":
+		if comic_dialogue_id == "":
 			return
-		if energy_cost_after_dialog > 0 and not EnergySystem.can_spend(energy_cost_after_dialog):
-			EnergySystem.try_spend(energy_cost_after_dialog)
+		if energinka_cost_after_comic_dialogue > 0 and not EnerginkaSystem.can_spend_energinka(energinka_cost_after_comic_dialogue):
+			EnerginkaSystem.spend_energinka(energinka_cost_after_comic_dialogue)
 			get_viewport().set_input_as_handled()
 			return
-		var dialog_started := DialogSystem.start_dialog(dialog_id)
-		if dialog_started and energy_cost_after_dialog > 0:
-			DialogSystem.dialog_finished.connect(_on_dialog_finished, CONNECT_ONE_SHOT)
+		var comic_dialogue_started := ComicDialogueSystem.start_comic_dialogue(comic_dialogue_id)
+		if comic_dialogue_started and energinka_cost_after_comic_dialogue > 0:
+			ComicDialogueSystem.comic_dialogue_finished.connect(_on_comic_dialogue_finished, CONNECT_ONE_SHOT)
 		get_viewport().set_input_as_handled()
 
 
-func _on_dialog_finished(finished_dialog_id: String) -> void:
-	if finished_dialog_id != dialog_id:
+func _on_comic_dialogue_finished(finished_comic_dialogue_id: String) -> void:
+	if finished_comic_dialogue_id != comic_dialogue_id:
 		return
-	EnergySystem.try_spend(energy_cost_after_dialog)
+	EnerginkaSystem.spend_energinka(energinka_cost_after_comic_dialogue)
 
 
 func _create_message_label() -> void:
@@ -124,12 +124,12 @@ func _show_interaction_message() -> void:
 		_prompt.visible = false
 	_message_label.text = interaction_message
 	_message_label.visible = true
-	EnergySystem.restore(energy_restore_after_message)
+	EnerginkaSystem.gain_energinka(energinka_restore_after_message)
 
 	var timer := get_tree().create_timer(interaction_message_duration)
 	timer.timeout.connect(func() -> void:
 		_message_label.visible = false
 		_message_active = false
-		if _player_in_range and _prompt:
+		if _sych_in_range and _prompt:
 			_prompt.visible = true
 	)

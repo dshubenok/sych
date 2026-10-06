@@ -9,8 +9,8 @@ class_name Location
 @export var display_name: String
 @export var location_type: LocationTypes.Type = LocationTypes.Type.ROOM
 
-## Точки входа (Marker3D). Игрок ставится в нужную при переходе.
-## Если пусто — используется узел с именем "PlayerSpawn".
+## Точки входа (Marker3D). Сыч ставится в нужную при переходе.
+## Если пусто — используется узел с именем "SychSpawn".
 @export var entry_points: Array[NodePath] = []
 
 func _ready() -> void:
@@ -31,12 +31,12 @@ func get_entry_point(point_name: StringName = &"") -> Node3D:
 		var by_name := get_node_or_null(NodePath(String(point_name)))
 		if by_name is Node3D:
 			return by_name
-	# Точка по умолчанию: первый объявленный entry_point или "PlayerSpawn".
+	# Точка по умолчанию: первый объявленный entry_point или "SychSpawn".
 	if entry_points.size() > 0:
 		var first := get_node_or_null(entry_points[0])
 		if first is Node3D:
 			return first
-	var spawn := get_node_or_null(^"PlayerSpawn")
+	var spawn := get_node_or_null(^"SychSpawn")
 	if spawn is Node3D:
 		return spawn
 	return null

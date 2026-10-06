@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/world/location.gd" id="1_loc"]
 [ext_resource type="Script" path="res://scripts/world/model_collisions.gd" id="2_col"]
 [ext_resource type="PackedScene" uid="uid://dfixiq8apauf3" path="res://assets/models/sychevalnya.glb" id="3_room"]
-[ext_resource type="PackedScene" uid="uid://sych_energy_board" path="res://scenes/world/energy_board.tscn" id="4_board"]
+[ext_resource type="PackedScene" uid="uid://sych_corkboard" path="res://scenes/world/corkboard.tscn" id="4_corkboard"]
 [ext_resource type="PackedScene" uid="uid://sych_location_portal" path="res://scenes/world/location_portal.tscn" id="9_portal"]
 [ext_resource type="Script" path="res://scripts/camera/location_fixed_camera.gd" id="10_cam"]
 [ext_resource type="PackedScene" uid="uid://sych_starosta_note" path="res://scenes/world/starosta_note.tscn" id="11_note"]
@@ -42,7 +42,7 @@ script = ExtResource("2_col")
 
 [node name="Room" parent="Model" instance=ExtResource("3_room")]
 
-[node name="PlayerSpawn" type="Marker3D" parent="."]
+[node name="SychSpawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1, 0.35, 0.7)
 
 [node name="IsoCamera" type="Camera3D" parent="."]
@@ -81,17 +81,17 @@ shape = SubResource("Box_edge_z")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.1, -3.35)
 shape = SubResource("Box_edge_z")
 
-[node name="EnergyBoard" parent="." instance=ExtResource("4_board")]
+[node name="Corkboard" parent="." instance=ExtResource("4_corkboard")]
 transform = Transform3D(0.719, 0, 0, 0, 0.694, 0, 0, 0, 0.7, 1.102, 2.385, -2.97)
 interaction_radius = 3.2
 
-[node name="Frame" parent="EnergyBoard"]
+[node name="Frame" parent="Corkboard"]
 visible = false
 
-[node name="Cork" parent="EnergyBoard"]
+[node name="Cork" parent="Corkboard"]
 visible = false
 
-[node name="CollisionShape3D" parent="EnergyBoard/InteractionArea"]
+[node name="CollisionShape3D" parent="Corkboard/InteractionArea"]
 shape = SubResource("Sphere_board")
 
 [node name="PortalToTerritory" parent="." instance=ExtResource("9_portal")]
@@ -99,7 +99,7 @@ transform = Transform3D(0, 0, 0.978491, 0, 1.241981, 0, -1, 0, 0, -2.997433, 0.0
 target_location_id = &"territoriya_sharagi"
 auto_travel = false
 unlock_on_plan = true
-aside_before_travel = "Наружа. Вэээ."
+vorchanie_before_travel = "Наружа. Вэээ."
 
 [node name="CollisionShape3D" parent="PortalToTerritory"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -0.35)
