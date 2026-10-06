@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://sych_loc_kladbische"]
-
-[ext_resource type="Script" path="res://scripts/world/placeholder_location.gd" id="1_loc"]
-
-[node name="Kladbische" type="Node3D"]
-script = ExtResource("1_loc")
-location_id = &"kladbische"
-floor_color = Color(0.2, 0.24, 0.2, 1)
-stream_exits = Array[StringName]([&"naruzha"])

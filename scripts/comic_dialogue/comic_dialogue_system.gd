@@ -3,7 +3,7 @@ extends Node
 ## Регистрируется как autoload (см. project.godot → [autoload] ComicDialogueSystem).
 ##
 ## Использование из любого места:
-##   ComicDialogueSystem.start_comic_dialogue("demonologist_intro")
+##   ComicDialogueSystem.start_comic_dialogue("historian_intro")
 
 const COMIC_DIALOGUES_DIR := "res://assets/comic_dialogues/"
 const COMIC_DIALOGUE_PLAYER_SCENE := preload("res://scenes/ui/comic_dialogue_player.tscn")

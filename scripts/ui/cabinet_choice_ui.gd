@@ -5,7 +5,6 @@ class_name CabinetChoiceUi
 
 const ENERGINKA_ICON_PATH := "res://Icon_Energinka_Full.png"
 const CARD_COLORS := {
-	&"demonologist": Color(0.46, 0.22, 0.34),
 	&"library": Color(0.24, 0.28, 0.44),
 	&"toilet": Color(0.22, 0.36, 0.34),
 	&"greenhouse": Color(0.28, 0.40, 0.22),

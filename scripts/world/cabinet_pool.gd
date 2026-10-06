@@ -3,7 +3,7 @@ extends Node
 ## Пул кабинетов. Слот кабинета пустой, пока не открыли дверь: тогда система роллит
 ## выбор кабинетов по правилам крыла и этажа, игрок вытаскивает один, в кабинете
 ## появляется 3D-вывеска. Перероллить Шарагу — в начале каждого дня.
-## 1 этаж: демонолог только справа. 2 этаж: библиотека только справа;
+## 2 этаж: библиотека только справа;
 ## актовый зал 30% на каждый ролл выбора, любое крыло; столовая в любом;
 ## спортзал после столовой. Classroom — базовый кабинет, без условий, оба этажа,
 ## сколько угодно раз. Выбор кабинетов общий на крыло этажа, всегда из двух.
@@ -31,7 +31,6 @@ const CABINET_SLOT_WING := {
 }
 
 const CABINET_TITLE := {
-	&"demonologist": "Демонолог",
 	&"toilet": "Туалет",
 	&"greenhouse": "Оранжерея",
 	&"historian_cabinet": "Кабинет Историка",
@@ -43,7 +42,6 @@ const CABINET_TITLE := {
 }
 
 const CABINET_MODEL := {
-	&"demonologist": "res://assets/models/cabinets/demonologist.glb",
 	&"toilet": "res://assets/models/cabinets/toilet.glb",
 	&"greenhouse": "res://assets/models/cabinets/greenhouse.glb",
 	&"historian_cabinet": "res://assets/models/cabinets/historian_cabinet.glb",
@@ -55,7 +53,7 @@ const CABINET_MODEL := {
 }
 
 const FIRST_FLOOR_CABINETS: Array[StringName] = [
-	&"demonologist", &"toilet", &"greenhouse", &"historian_cabinet", &"classroom",
+	&"toilet", &"greenhouse", &"historian_cabinet", &"classroom",
 ]
 const SECOND_FLOOR_CABINETS: Array[StringName] = [
 	&"library", &"assembly_hall", &"cafeteria", &"gym", &"classroom",
@@ -66,7 +64,6 @@ const ASSEMBLY_HALL_CHANCE := 0.3
 const CABINET_CHOICE_SIZE := 2
 
 const CABINET_ENERGINKA_COST := {
-	&"demonologist": 2,
 	&"library": 2,
 	&"toilet": 1,
 	&"greenhouse": 1,
@@ -406,8 +403,6 @@ func _allowed_cabinets(wing: int) -> Array[StringName]:
 	for cabinet_id in (SECOND_FLOOR_CABINETS if is_second_floor(wing) else FIRST_FLOOR_CABINETS):
 		if _used.has(cabinet_id):
 			continue
-		if cabinet_id == &"historian_cabinet" and not _used.has(&"demonologist"):
-			continue
 		if cabinet_id == &"gym" and not _used.has(&"cafeteria"):
 			continue
 		if not _allowed_in_wing(cabinet_id, wing):
@@ -440,8 +435,6 @@ func _wing_title(wing: int) -> String:
 
 func _allowed_in_wing(cabinet_id: StringName, wing: int) -> bool:
 	match cabinet_id:
-		&"demonologist":
-			return wing == Wing.FIRST_FLOOR_RIGHT
 		&"library":
 			return wing == Wing.SECOND_FLOOR_RIGHT
 		&"greenhouse":

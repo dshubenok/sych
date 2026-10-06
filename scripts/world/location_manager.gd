@@ -21,7 +21,7 @@ var _busy := false
 var _fade_layer: CanvasLayer = null
 var _fade_rect: ColorRect = null
 
-# --- Бесшовный стриминг внутри Территории ---
+# --- Бесшовный стриминг внутри дискретной зоны ---
 var _streamed: Dictionary = {}        # StringName -> Node
 var _stream_container: Node = null
 var _breadcrumb_location_id: StringName = &""
