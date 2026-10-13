@@ -1,0 +1,31 @@
+{
+  "id": "kotik_final",
+  "title": "Котик — финальный комикс",
+  "stub": "ЗАГЛУШКА для потока G: Награда ветки Котика: тёмная Сычевальня, Сыч держит Котика на ошейнике (решение §7.6: обычный комиксный диалог, 4 кадра). Кадры временно из historian_intro.",
+  "frames": [
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_1.png",
+      "color": "#f5f5f0"
+    },
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_2.png",
+      "color": "#f5f5f0"
+    },
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_3.png",
+      "color": "#f5f5f0"
+    },
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_4.png",
+      "color": "#f5f5f0"
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "kotik_talk",
+  "title": "Котик — первый разговор",
+  "stub": "ЗАГЛУШКА для потока G: Сыч понимает, что Котику нужен ошейник (ветка Котика, этап 1). Кадры временно из historian_intro.",
+  "frames": [
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_1.png",
+      "color": "#f5f5f0"
+    },
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_2.png",
+      "color": "#f5f5f0"
+    },
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_3.png",
+      "color": "#f5f5f0"
+    },
+    {
+      "speaker": "",
+      "text": "",
+      "image": "res://assets/comic_dialogues/historian_intro/frame_4.png",
+      "color": "#f5f5f0"
+    }
+  ]
+}

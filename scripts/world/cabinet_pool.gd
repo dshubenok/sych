@@ -89,8 +89,6 @@ var _wing_cabinet_choices: Dictionary = {}  # Wing -> Array[StringName]
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	DaySystem.day_started.connect(_on_day_started)
-	if not BranchSystem.branch_stage_planned.is_connected(_on_branch_stage_planned):
-		BranchSystem.branch_stage_planned.connect(_on_branch_stage_planned)
 	reroll_sharaga()
 
 
@@ -320,30 +318,13 @@ func _spawn_sign(host: Node3D, cabinet_id: StringName) -> void:
 		place_kotik(host)
 
 
-func _on_branch_stage_planned(branch_stage_id: String) -> void:
-	if branch_stage_id == BranchSystem.BRANCH_STAGE_FIND_HISTORIAN:
-		_place_branch_stage_npc(HISTORIAN_CABINET_GROUP, place_historian)
-	elif branch_stage_id == BranchSystem.BRANCH_STAGE_FIND_KOTIK:
-		_place_branch_stage_npc(LIBRARY_CABINET_GROUP, place_kotik)
-
-
-func _place_branch_stage_npc(group_name: String, place: Callable) -> void:
-	var tree := get_tree()
-	if tree == null:
-		return
-	for node in tree.get_nodes_in_group(group_name):
-		if node is Node3D:
-			place.call(node)
-
-
-## Историк появляется в открытом кабинете Историка, пока этап ветки активен.
+## Историк — стабильное содержимое Кабинета Историка (план демо §6): стоит там всегда,
+## а что он скажет, решает BranchSystem по активному энкаунтеру (активировать ≠ заспавнить).
 ## SignAnchor на высоте центра кабинета; ноги ставим на пол крыла первого этажа (≈ -0.03).
 const HISTORIAN_FLOOR_Y := -0.03
 
 func place_historian(host: Node3D) -> void:
 	if host == null:
-		return
-	if BranchSystem.get_state(BranchSystem.BRANCH_STAGE_FIND_HISTORIAN) < BranchSystem.State.ACTIVE:
 		return
 	if host.get_node_or_null(^"Historian") != null:
 		return
@@ -354,22 +335,18 @@ func place_historian(host: Node3D) -> void:
 		npc.position = Vector3(0.0, -host.position.y + HISTORIAN_FLOOR_Y, 0.8)
 
 
-## Котик появляется в библиотеке, когда этап ветки активен и кабинет уже открыт.
+## Котик — стабильное содержимое Библиотеки (план демо §6): всегда там, когда кабинет вытащен.
 ## Якорь вывески на 1.36 м выше пола и на втором этаже тоже.
 const SIGN_ABOVE_FLOOR := 1.36
 
 func place_kotik(host: Node3D) -> void:
 	if host == null:
 		return
-	if BranchSystem.get_state(BranchSystem.BRANCH_STAGE_FIND_KOTIK) < BranchSystem.State.ACTIVE:
-		return
 	if host.get_node_or_null(^"Kotik") != null:
 		return
 	var npc := KOTIK_SCENE.instantiate() as Node3D
 	npc.name = "Kotik"
-	npc.set("hidden_until_revealed", false)
 	host.add_child(npc)
-	npc.visible = true
 	if host is Marker3D:
 		npc.position = Vector3(0.0, -SIGN_ABOVE_FLOOR, 0.8)
 
