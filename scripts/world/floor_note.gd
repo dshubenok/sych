@@ -1,32 +1,27 @@
 extends Node3D
 
-## Записка на полу. В первый раз, пока её не прочитали, доска и выход закрыты.
-## После первого прочтения она остаётся на полу, но больше ничего не блокирует.
+## Записка старосты на полу (план демо §2.3). Одно E: ворчание Сыча + открытие
+## записки отдельным 2D-экраном. Пока её не прочитали в первый день, комикс,
+## пробковая доска и выход закрыты. Прочитанная остаётся на полу и открывается
+## снова, уже без ворчания.
 
-const PROMPT_SCENE := preload("res://scenes/ui/interaction_prompt.tscn")
 const VIEWER_SCENE := preload("res://scenes/ui/note_viewer.tscn")
 
+const STATE_UNREAD := &"unread"
+const STATE_READ := &"read"
+
 @export var note_texture: Texture2D
-@export var interaction_radius: float = 1.15
-@export var prompt_offset: Vector3 = Vector3(0.0, 0.55, 0.0)
-## Первое «E» показывает это ворчание Сыча, следующее открывает записку.
+## Ворчание первого взаимодействия: Сыч комментирует записку и тем же E открывает её.
 @export_multiline var vorchanie_before_open: String = ""
 
 var has_been_read: bool = false
-var _vorchanie_done: bool = false
+var interaction: Interaction = null
 
-var _sych_in_range: bool = false
-var _prompt: Node3D
 var _viewer = null
 var _prev_mouse_mode: int = Input.MOUSE_MODE_CAPTURED
 
 
 func _ready() -> void:
-	_ensure_area()
-	_prompt = PROMPT_SCENE.instantiate()
-	add_child(_prompt)
-	_prompt.position = prompt_offset
-	_prompt.visible = false
 	# Обязательное чтение только в первый день. Со второго дня флаг уже стоит.
 	if DaySystem.day_number > 1:
 		DaySystem.starosta_note_read = true
@@ -34,54 +29,24 @@ func _ready() -> void:
 	if DaySystem.DEV_SKIP_STAROSTA_NOTE and OS.has_feature("editor"):
 		DaySystem.starosta_note_read = true
 	has_been_read = DaySystem.starosta_note_read
-	_vorchanie_done = has_been_read
+
+	interaction = Interaction.ensure(self, 1.15, Vector3(0.0, 0.55, 0.0))
+	var unread := InteractionState.new()
+	unread.id = STATE_UNREAD
+	if vorchanie_before_open != "":
+		unread.vorchanie_pool = [vorchanie_before_open]
+	unread.next_state = STATE_READ
+	interaction.add_state(unread)
+	var read := InteractionState.new()
+	read.id = STATE_READ
+	interaction.add_state(read)
+	interaction.set_interaction_state(STATE_READ if has_been_read else STATE_UNREAD)
+	interaction.action.connect(_on_action)
 	call_deferred("_set_location_locked", not has_been_read)
 
 
-func _unhandled_input(event: InputEvent) -> void:
-	if _viewer != null or not _sych_in_range:
-		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
-		if vorchanie_before_open != "" and not _vorchanie_done:
-			_vorchanie_done = true
-			if VorchanieSystem.vorchat(vorchanie_before_open, false, false):
-				VorchanieSystem.finished.connect(_update_prompt, CONNECT_ONE_SHOT)
-			_update_prompt()
-		else:
-			_open()
-		get_viewport().set_input_as_handled()
-
-
-func _ensure_area() -> void:
-	var area := get_node_or_null("InteractionArea") as Area3D
-	if area == null:
-		area = Area3D.new()
-		area.name = "InteractionArea"
-		var shape := CollisionShape3D.new()
-		var sphere := SphereShape3D.new()
-		sphere.radius = interaction_radius
-		shape.shape = sphere
-		area.add_child(shape)
-		add_child(area)
-	area.monitoring = true
-	area.monitorable = true
-	area.collision_mask = 0xFFFFFFFF
-	if not area.body_entered.is_connected(_on_body_entered):
-		area.body_entered.connect(_on_body_entered)
-	if not area.body_exited.is_connected(_on_body_exited):
-		area.body_exited.connect(_on_body_exited)
-
-
-func _on_body_entered(body: Node) -> void:
-	if body.is_in_group(&"sych"):
-		_sych_in_range = true
-		_update_prompt()
-
-
-func _on_body_exited(body: Node) -> void:
-	if body.is_in_group(&"sych"):
-		_sych_in_range = false
-		_update_prompt()
+func _on_action(_interaction: Interaction) -> void:
+	_open()
 
 
 func _open() -> void:
@@ -91,7 +56,7 @@ func _open() -> void:
 	get_tree().root.add_child(_viewer)
 	_viewer.show_note(note_texture)
 	_viewer.closed.connect(_on_viewer_closed, CONNECT_ONE_SHOT)
-	_update_prompt()
+	interaction.busy = true
 	_prev_mouse_mode = Input.get_mouse_mode()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 	get_tree().paused = true
@@ -101,16 +66,11 @@ func _on_viewer_closed() -> void:
 	_viewer = null
 	get_tree().paused = false
 	Input.set_mouse_mode(_prev_mouse_mode)
+	interaction.busy = false
 	if not has_been_read:
 		has_been_read = true
 		DaySystem.starosta_note_read = true
 		_set_location_locked(false)
-	_update_prompt()
-
-
-func _update_prompt() -> void:
-	if _prompt:
-		_prompt.visible = _sych_in_range and _viewer == null
 
 
 func _set_location_locked(locked: bool) -> void:

@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://sych_starosta_note"]
+[gd_scene load_steps=6 format=3 uid="uid://sych_starosta_note"]
 
 [ext_resource type="Script" path="res://scripts/world/floor_note.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://записка староста.png" id="2_texture"]
+[ext_resource type="Script" path="res://scripts/interaction/interaction.gd" id="3_interaction"]
 
 [sub_resource type="QuadMesh" id="Quad_note"]
 size = Vector2(0.9, 0.8)
@@ -23,3 +24,8 @@ transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0.02, 0)
 mesh = SubResource("Quad_note")
 surface_material_override/0 = SubResource("Mat_note")
 cast_shadow = 0
+
+[node name="Interaction" type="Area3D" parent="."]
+script = ExtResource("3_interaction")
+interaction_radius = 1.15
+prompt_offset = Vector3(0, 0.55, 0)
