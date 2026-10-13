@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3 uid="uid://sych_corkboard"]
+[gd_scene load_steps=8 format=3 uid="uid://sych_corkboard"]
 
 [ext_resource type="Script" path="res://scripts/world/corkboard.gd" id="1_script"]
+[ext_resource type="Script" path="res://scripts/interaction/interaction.gd" id="2_interaction"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_board"]
 size = Vector3(3.2, 2.0, 0.16)
@@ -21,8 +22,6 @@ radius = 2.6
 
 [node name="Corkboard" type="Node3D"]
 script = ExtResource("1_script")
-interaction_radius = 2.6
-prompt_offset = Vector3(0, 1.75, 0.25)
 slot_count = 8
 
 [node name="Frame" type="MeshInstance3D" parent="."]
@@ -34,9 +33,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.03)
 mesh = SubResource("BoxMesh_board")
 surface_material_override/0 = SubResource("StandardMaterial3D_cork")
 
-[node name="InteractionArea" type="Area3D" parent="."]
+[node name="Interaction" type="Area3D" parent="."]
+script = ExtResource("2_interaction")
+interaction_radius = 2.6
+prompt_offset = Vector3(0, 1.75, 0.25)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractionArea"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Interaction"]
 shape = SubResource("SphereShape3D_interaction")
 
 [node name="SpawnPoint" type="Node3D" parent="."]
