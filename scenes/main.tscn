@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://fjvowto6qu6y"]
+[gd_scene load_steps=9 format=3 uid="uid://fjvowto6qu6y"]
 
 [ext_resource type="Script" uid="uid://bsak6a8wpwbts" path="res://scripts/main_controller.gd" id="3_main"]
 [ext_resource type="PackedScene" uid="uid://bqxv8yqxqxqxq" path="res://scenes/actors/sych/sych.tscn" id="2_sych"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/camera/camera_manager.gd" id="7_camera_manager"]
 [ext_resource type="PackedScene" path="res://scenes/ui/energinka_hud.tscn" id="8_energinka_hud"]
 [ext_resource type="PackedScene" uid="uid://sych_location_breadcrumb" path="res://scenes/ui/location_breadcrumb.tscn" id="9_breadcrumb"]
+[ext_resource type="PackedScene" uid="uid://sych_vorchanie_panel" path="res://scenes/ui/vorchanie_panel.tscn" id="10_vorchanie_panel"]
 
 [sub_resource type="Environment" id="Environment_fog"]
 background_mode = 1
@@ -59,3 +60,5 @@ script = ExtResource("4_debug")
 [node name="EnerginkaHud" parent="." instance=ExtResource("8_energinka_hud")]
 
 [node name="LocationBreadcrumb" parent="." instance=ExtResource("9_breadcrumb")]
+
+[node name="VorchaniePanel" parent="." instance=ExtResource("10_vorchanie_panel")]
