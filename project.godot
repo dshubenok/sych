@@ -29,6 +29,7 @@ DaySystem="*res://scripts/day_system.gd"
 LocationRegistry="*res://scripts/world/location_registry.gd"
 LocationManager="*res://scripts/world/location_manager.gd"
 CabinetPool="*res://scripts/world/cabinet_pool.gd"
+TramTransition="*res://scripts/world/tram_transition.gd"
 
 [input]
 

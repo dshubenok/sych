@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://sych_test_tram"]
+
+[ext_resource type="Script" path="res://scripts/tools/test_tram_transition.gd" id="1_script"]
+
+[node name="TestTramTransition" type="Node"]
+script = ExtResource("1_script")

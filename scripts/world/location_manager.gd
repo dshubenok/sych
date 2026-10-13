@@ -8,6 +8,8 @@ extends Node
 
 signal location_exiting(location_id: StringName)
 signal location_entered(location_id: StringName)
+## Экран уже чёрный: можно убрать переход с трамваем до проявления новой локации.
+signal travel_covered
 
 const FADE_LAYER := 200
 const FADE_TIME := 0.45
@@ -62,7 +64,8 @@ func start_at(location_id: StringName, entry_name: StringName = &"") -> void:
 	_busy = false
 
 ## Переход в другую локацию (используется порталами).
-func travel_to(location_id: StringName, entry_name: StringName = &"") -> void:
+## from_black: экран уже чёрный (конец перехода с трамваем) — не затемнять повторно.
+func travel_to(location_id: StringName, entry_name: StringName = &"", from_black: bool = false) -> void:
 	if _busy:
 		return
 	if location_id == current_location_id:
@@ -76,7 +79,11 @@ func travel_to(location_id: StringName, entry_name: StringName = &"") -> void:
 		return
 	_busy = true
 	_ensure_fade()
-	await _fade(1.0)
+	if from_black:
+		_set_fade(1.0)
+	else:
+		await _fade(1.0)
+	travel_covered.emit()
 	if current_location_id != &"":
 		location_exiting.emit(current_location_id)
 	var ok := await _swap_to(def, location_id, entry_name)

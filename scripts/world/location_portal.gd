@@ -91,6 +91,10 @@ func _travel() -> void:
 	if target_location_id == &"":
 		push_warning("[LocationPortal] target_location_id не задан на %s" % name)
 		return
+	# Выход из Сычевальни — переход с трамваем, затем Шарага (GDD §2, §4; план демо §5).
+	if target_location_id == &"sharaga" and LocationManager.current_location_id == &"sychevalnya":
+		TramTransition.play(target_location_id, target_entry)
+		return
 	LocationManager.travel_to(target_location_id, target_entry)
 
 func _update_label() -> void:
