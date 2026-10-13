@@ -6,7 +6,8 @@ signal day_started(day_number: int)
 signal day_ending(day_number: int)
 signal day_ended(day_number: int)
 
-const WAKE_UP_COST := 2
+## Базовая стоимость пробуждения (GDD §2). Награда ветки Историка снижает её до 1 (план демо §7).
+const WAKE_UP_COST_DEFAULT := 2
 const UI_LAYER := 220
 const ENERGINKA_ICON_SIZE := Vector2(64.0, 64.0)
 const BUTTON_ENERGINKA_ICON_SIZE := Vector2(54.0, 54.0)
@@ -16,8 +17,13 @@ const FADE_IN_TIME := 1.125
 const FADE_OUT_TIME := 1.125
 
 var day_number: int = 1
+## Текущая стоимость пробуждения в энергинках. Постоянная прокачка: меняется наградой ветки.
+var wake_up_cost: int = WAKE_UP_COST_DEFAULT
 ## Записка старосты обязательна только один раз. Дальше не блокирует доску и выход.
 var starosta_note_read: bool = false
+## Лимит использования на день (GDD §7): id действия → сколько раз использовано сегодня.
+## Сбрасывается при каждом пробуждении.
+var _daily_uses: Dictionary = {}
 ## Только для разработки: при запуске из редактора записка считается прочитанной
 ## с самого начала. В экспортированной игре не действует. Выключить — false.
 # TODO: перед релизом убрать этот флаг и его проверку в scripts/world/floor_note.gd.
@@ -61,6 +67,7 @@ func _show_wake_up_screen(keep_overlay: bool = false) -> void:
 	get_tree().root.add_child(_wake_up_layer)
 
 	EnerginkaSystem.refill()
+	_daily_uses.clear()
 	_spent_today = 0
 	_ending_day = false
 	_waking_up = true
@@ -109,6 +116,37 @@ func is_day_active() -> bool:
 	return not _waking_up and not _ending_day
 
 
+## Изменить стоимость пробуждения (награда ветки Историка: 2 → 1).
+func set_wake_up_cost(cost: int) -> void:
+	wake_up_cost = maxi(0, cost)
+
+
+## Сколько раз действие use_id уже использовано сегодня.
+func uses_today(use_id: StringName) -> int:
+	return int(_daily_uses.get(use_id, 0))
+
+
+## Можно ли ещё использовать действие use_id сегодня при лимите limit раз в день.
+func can_use_today(use_id: StringName, limit: int = 1) -> bool:
+	return limit <= 0 or uses_today(use_id) < limit
+
+
+## Использовать действие с лимитом на день. false — лимит исчерпан, действие не выполнять.
+func use_today(use_id: StringName, limit: int = 1) -> bool:
+	if not can_use_today(use_id, limit):
+		return false
+	_daily_uses[use_id] = uses_today(use_id) + 1
+	return true
+
+
+## Новая игра: автозагрузка живёт дольше сцены, прогресс чистим руками.
+func reset_progress() -> void:
+	day_number = 1
+	wake_up_cost = WAKE_UP_COST_DEFAULT
+	starosta_note_read = false
+	_daily_uses.clear()
+
+
 ## Нажать «Ой, всё»: добровольно завершить текущий день (из игрового меню).
 func trigger_oy_vse() -> void:
 	if not is_day_active():
@@ -120,8 +158,8 @@ func _start_day() -> void:
 	if not _waking_up:
 		return
 	_fade_out_and_clear(_wake_up_layer, FADE_OUT_TIME)
-	EnerginkaSystem.spend_energinka(WAKE_UP_COST)
-	_spent_today += WAKE_UP_COST
+	EnerginkaSystem.spend_energinka(wake_up_cost)
+	_spent_today += wake_up_cost
 	_waking_up = false
 	get_tree().paused = false
 	Input.set_mouse_mode(_prev_mouse_mode)
@@ -290,7 +328,7 @@ func _make_wake_up_button() -> Button:
 	label.custom_minimum_size = Vector2(86.0, 62.0)
 	content.add_child(label)
 
-	for i in range(WAKE_UP_COST):
+	for i in range(wake_up_cost):
 		var icon := TextureRect.new()
 		icon.texture = _energinka_texture
 		icon.custom_minimum_size = BUTTON_ENERGINKA_ICON_SIZE

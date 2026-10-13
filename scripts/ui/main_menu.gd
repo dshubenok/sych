@@ -187,8 +187,7 @@ func _reset_progress() -> void:
 	CabinetPool.reroll_sharaga()
 	BranchSystem.reset_progress()
 	EnerginkaSystem.reset_progress()
-	DaySystem.day_number = 1
-	DaySystem.starosta_note_read = false
+	DaySystem.reset_progress()
 
 
 func _on_quit_pressed() -> void:
