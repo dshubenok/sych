@@ -4,18 +4,18 @@ class_name CorkboardHeart
 ## Сердечко на пробковой доске: UI-представление одного этапа ветки.
 ## Принимает перетаскиваемую энергинку (available_heart) и отдаёт её обратно, пока план не подтверждён.
 
-signal energinka_dropped(slot_index: int)
+signal energinka_dropped(branch_stage_id: String)
 
 const DRAG_TYPE := "corkboard_energinka"
 const FILLED_HEART_DRAG_TYPE := "corkboard_filled_heart"
 
-var slot_index: int = -1
+var branch_stage_id: String = ""
 var _can_accept: bool = false
 var _can_return: bool = false
 
 
-func setup(index: int, heart_texture: Texture2D, can_accept_energinka: bool, can_return_energinka: bool, icon_size: Vector2, tooltip: String, dim: bool) -> void:
-	slot_index = index
+func setup(stage_id: String, heart_texture: Texture2D, can_accept_energinka: bool, can_return_energinka: bool, icon_size: Vector2, tooltip: String, dim: bool) -> void:
+	branch_stage_id = stage_id
 	_can_accept = can_accept_energinka
 	_can_return = can_return_energinka
 	custom_minimum_size = icon_size
@@ -43,7 +43,7 @@ func _get_drag_data(_at_position: Vector2) -> Variant:
 
 	return {
 		"type": FILLED_HEART_DRAG_TYPE,
-		"slot_index": slot_index,
+		"branch_stage_id": branch_stage_id,
 	}
 
 
@@ -58,7 +58,7 @@ func _can_drop_data(_at_position: Vector2, data: Variant) -> bool:
 
 func _drop_data(_at_position: Vector2, data: Variant) -> void:
 	if _can_drop_data(_at_position, data):
-		energinka_dropped.emit(slot_index)
+		energinka_dropped.emit(branch_stage_id)
 
 
 func _create_drag_preview() -> Control:

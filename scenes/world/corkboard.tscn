@@ -23,7 +23,6 @@ radius = 2.6
 script = ExtResource("1_script")
 interaction_radius = 2.6
 prompt_offset = Vector3(0, 1.75, 0.25)
-slot_count = 8
 
 [node name="Frame" type="MeshInstance3D" parent="."]
 mesh = SubResource("BoxMesh_frame")

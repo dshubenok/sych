@@ -30,9 +30,9 @@ const STICKER_LINES: PackedStringArray = [
 const STICKER_LINE_COUNT := 6
 const ENERGINKA_GAP_RATIO := 0.12
 const HEART_GAP_RATIO := 0.23
-const HISTORIAN_SLOTS: Array[int] = [4, 5, -1]
-const KOTIK_SLOTS: Array[int] = [0, -1, -1]
+const TITLE := "Мои хитрые планы"
 const OPEN_LINE := "Что бы такого сделать чтобы нихера не делать?"
+## Ворчание после «ок» (план демо §4); следом — ворчание каждого запланированного этапа (§7–8).
 const CONFIRM_LINE := "Дальше надо перестать планировать и реализовать план. Как? Да хрен его знает, на месте разберемся."
 const HISTORIAN_COMMENT := "Кому вообще нужна история..."
 const KOTIK_COMMENT := "Боже, ну что за Котик..."
@@ -50,8 +50,8 @@ const CORKBOARD_HEART_SCRIPT := preload("res://scripts/ui/corkboard_heart.gd")
 @onready var _sticker_text: Label = $Root/BoardFrame/BoardContent/Sticker/Text
 @onready var _historian_name: Label = $Root/BoardFrame/BoardContent/HistorianName
 @onready var _kotik_name: Label = $Root/BoardFrame/BoardContent/KotikName
+@onready var _title: Label = $Root/BoardFrame/BoardContent/Title
 
-var _slot_count: int = 8
 var _closing: bool = false
 var _applying_layout: bool = false
 var _energinka_texture: Texture2D = null
@@ -77,6 +77,8 @@ func _ready() -> void:
 			BranchSystem.State.COMPLETED: _load_texture(HISTORIAN_COMPLETED_HEART_PATH),
 		},
 	}
+	_title.text = TITLE
+	_title.visible = true
 	_confirm_plan_button.text = "ок"
 	_close_button.text = "закрыть"
 	if not _board_content.resized.is_connected(_apply_layout):
@@ -103,12 +105,6 @@ func _ready() -> void:
 		BranchSystem.branch_stage_state_changed.connect(_on_branch_stage_state_changed)
 	_refresh()
 	call_deferred("_apply_layout")
-
-
-func setup(slot_count: int) -> void:
-	_slot_count = max(1, slot_count)
-	if is_node_ready():
-		_refresh()
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -205,23 +201,24 @@ func _energinka_icon_size() -> Vector2:
 
 
 func _refresh_hearts() -> void:
-	_fill_hearts(_historian_hearts, HISTORIAN_SLOTS, BranchSystem.BRANCH_HISTORIAN)
-	_fill_hearts(_kotik_hearts, KOTIK_SLOTS, BranchSystem.BRANCH_KOTIK)
+	_fill_hearts(_historian_hearts, BranchSystem.BRANCH_HISTORIAN)
+	_fill_hearts(_kotik_hearts, BranchSystem.BRANCH_KOTIK)
 
 
-func _fill_hearts(container: HBoxContainer, slot_indices: Array[int], branch: String) -> void:
+## Три сердечка ветки — по одному на этап (план демо §4). Доступное сердечко — только то,
+## в которое BranchSystem разрешает вложить энергинку (один незакрытый этап на ветку).
+func _fill_hearts(container: HBoxContainer, branch: String) -> void:
 	for child in container.get_children():
 		child.queue_free()
-	for slot_index in slot_indices:
-		var has_branch_stage := slot_index >= 0 and BranchSystem.has_branch_stage_for_slot(slot_index)
-		var unlocked := has_branch_stage and BranchSystem.is_slot_unlocked(slot_index)
-		var state := BranchSystem.get_state_for_slot(slot_index) if has_branch_stage else BranchSystem.State.EMPTY
-		var can_accept := has_branch_stage and unlocked and state == BranchSystem.State.EMPTY and _has_unreserved_energinka()
-		var can_return := has_branch_stage and unlocked and state == BranchSystem.State.PENDING
+	for branch_stage_id in BranchSystem.get_branch_stage_ids(branch):
+		var state := BranchSystem.get_state(branch_stage_id)
+		var available := BranchSystem.can_plan(branch_stage_id)
+		var can_accept := available and _has_unreserved_energinka()
+		var can_return := state == BranchSystem.State.PENDING
 		var heart: CorkboardHeart = CORKBOARD_HEART_SCRIPT.new()
 		var heart_size := _heart_size(container)
 		heart.setup(
-			slot_index,
+			branch_stage_id,
 			_texture_for(branch, state),
 			can_accept,
 			can_return,
@@ -230,11 +227,11 @@ func _fill_hearts(container: HBoxContainer, slot_indices: Array[int], branch: St
 			false
 		)
 		if state == BranchSystem.State.EMPTY:
-			heart.modulate = Color(0.55, 0.55, 0.55, 1.0 if unlocked else 0.35)
+			heart.modulate = Color(0.55, 0.55, 0.55, 1.0 if available else 0.35)
 		heart.energinka_dropped.connect(_place_energinka)
 		if state == BranchSystem.State.ACTIVE or state == BranchSystem.State.COMPLETED:
 			heart.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
-			heart.mouse_entered.connect(_on_confirmed_heart_hovered.bind(slot_index))
+			heart.mouse_entered.connect(_on_confirmed_heart_hovered.bind(branch_stage_id))
 		container.add_child(heart)
 
 
@@ -278,27 +275,29 @@ func _texture_for(branch: String, state: int) -> Texture2D:
 
 
 ## Вложить энергинку в сердечко.
-func _place_energinka(slot_index: int) -> void:
-	if not BranchSystem.can_accept_slot(slot_index):
+func _place_energinka(branch_stage_id: String) -> void:
+	if not BranchSystem.can_plan(branch_stage_id):
 		return
 	if not _has_unreserved_energinka():
 		_vorchat("Недостаточно энергинок.")
 		_refresh_available_energinka()
 		return
 
-	BranchSystem.invest_energinka(BranchSystem.get_branch_stage_id_for_slot(slot_index))
+	BranchSystem.invest_energinka(branch_stage_id)
 	_vorchat("Энергинка вложена. Нажми «Ок», чтобы подтвердить план.")
 	_refresh()
 
 
-func _return_energinka(slot_index: int) -> void:
-	if BranchSystem.get_state_for_slot(slot_index) != BranchSystem.State.PENDING:
+func _return_energinka(branch_stage_id: String) -> void:
+	if BranchSystem.get_state(branch_stage_id) != BranchSystem.State.PENDING:
 		return
-	BranchSystem.cancel_pending(BranchSystem.get_branch_stage_id_for_slot(slot_index))
+	BranchSystem.cancel_pending(branch_stage_id)
 	_vorchat("Энергинка возвращена.")
 	_refresh()
 
 
+## Подтвердить план: 1 энергинка за каждый запланированный этап (GDD §3), затем ворчание
+## после «ок» и ворчание каждого запланированного этапа по очереди.
 func _on_confirm_plan_pressed() -> void:
 	if not BranchSystem.has_pending():
 		_vorchat("Нет этапов для подтверждения.")
@@ -308,13 +307,28 @@ func _on_confirm_plan_pressed() -> void:
 		_vorchat("Недостаточно энергинок.")
 		_refresh()
 		return
-	BranchSystem.confirm_plan()
+	var planned := BranchSystem.confirm_plan()
 	_refresh()
-	_vorchat(CONFIRM_LINE)
+	var lines: Array[String] = [CONFIRM_LINE]
+	for branch_stage_id in planned:
+		var line := BranchSystem.get_vorchanie(branch_stage_id)
+		if line != "":
+			lines.append(line)
+	_vorchat_sequence(lines)
 
 
-func _on_confirmed_heart_hovered(slot_index: int) -> void:
-	_vorchat(BranchSystem.get_confirmed_description(slot_index))
+func _on_confirmed_heart_hovered(branch_stage_id: String) -> void:
+	_vorchat(BranchSystem.get_confirmed_description(branch_stage_id))
+
+
+## Ворчать несколько реплик подряд: следующая — когда предыдущая исчезла.
+func _vorchat_sequence(lines: Array[String]) -> void:
+	if lines.is_empty():
+		return
+	var rest := lines.duplicate()
+	var first: String = rest.pop_front()
+	if VorchanieSystem.vorchat(first, true) and not rest.is_empty():
+		VorchanieSystem.finished.connect(_vorchat_sequence.bind(rest), CONNECT_ONE_SHOT)
 
 
 func _vorchat(text: String) -> void:
@@ -342,10 +356,7 @@ func _close() -> void:
 ## При выходе из доски откатываем только неподтверждённые изменения.
 ## ACTIVE остаётся до прохождения энкаунтера в Шараге.
 func _cancel_pending_branch_stages() -> void:
-	for i in range(_slot_count):
-		if BranchSystem.get_state_for_slot(i) != BranchSystem.State.PENDING:
-			continue
-		BranchSystem.cancel_pending(BranchSystem.get_branch_stage_id_for_slot(i))
+	BranchSystem.cancel_all_pending()
 
 
 func _has_unreserved_energinka() -> bool:

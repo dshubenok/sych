@@ -8,7 +8,6 @@ const CORKBOARD_UI_SCENE := preload("res://scenes/ui/corkboard_ui.tscn")
 
 @export var interaction_radius: float = 2.4
 @export var prompt_offset: Vector3 = Vector3(0.0, 2.1, 0.0)
-@export var slot_count: int = 8
 
 var _sych_in_range: bool = false
 var _prompt: Node3D = null
@@ -20,7 +19,6 @@ var interaction_locked: bool = false
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	slot_count = max(1, slot_count)
 	_ensure_area()
 	_prompt = INTERACTION_PROMPT_SCENE.instantiate()
 	add_child(_prompt)
@@ -86,7 +84,6 @@ func _open_corkboard() -> void:
 
 	_active_ui = CORKBOARD_UI_SCENE.instantiate()
 	get_tree().root.add_child(_active_ui)
-	_active_ui.setup(slot_count)
 	_active_ui.closed.connect(_close_corkboard, CONNECT_ONE_SHOT)
 
 	_update_prompt()
